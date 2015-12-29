@@ -1,0 +1,27 @@
+{
+	"manifest_version": 2,
+	"name": "Image Filter",
+	"description": "Applies filters to images on web-pages to improve contrast.",
+	"version": "1.0",
+	"applications": {
+		"gecko": {
+			"id": "dontknowwhatgoeshere@mozilla.org"
+		}
+	},
+	"browser_action": {
+		"default_icon": "icon.png",
+		"default_popup": "popup.html"
+	},
+	"options_page": "options.html",
+	"permissions": ["tabs", "<all_urls>"],
+	"content_scripts": [
+		{
+			"matches": [
+				"http://*/*",
+				"https://*/*"
+			],
+			"js": ["content.js"],
+			"run_at": "document_idle"
+		}
+	]
+}
