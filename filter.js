@@ -1,6 +1,8 @@
 
 
 function ImageFilter(sources, histogram) {
+	this.animatedHistogramRegex = /%([0-9]*)LH([RGBY])/g;
+	this.histogramRegex = /%([0-9]*)(L?)H([RGBY])/g;
 	this.sources = sources;
 	this.histogram = histogram;
 	this.source = this.chooseSource(this.sources);
@@ -11,9 +13,32 @@ function ImageFilter(sources, histogram) {
 }
 
 ImageFilter.prototype.update = function(sources) {
+	var that = this;
 	if (sources)
 		this.sources = sources;
 	this.source = this.chooseSource(this.sources);
+
+	if (this.histogram && this.histogram.success)
+	{
+		var lh = this.histogram.lastHistogram;
+		var h = this.histogram.histogram;
+		this.source = this.source.replace(this.histogramRegex, function(matches, blockSize, previous, channelChar) {
+			var channel = "RGBY".indexOf(channelChar);
+			blockSize = Math.max(1, blockSize.length ? parseFloat(blockSize) : 1);
+			if (blockSize > 0 && channel >= 0)
+				return that.histogram.getData(channel, that.histogram.animated && previous, blockSize);
+			else
+				return "0 1";
+		});
+	}
+
+	/*
+	filterString = filterString.replace(/%\(([^\)]*V[1-3][^\)]*)\)/g, function(m, equation){
+		equation = equation.replace(/V([1-3])/g, function (m, i) {return options.get("value" + i);});
+		return eval(equation);
+	});
+	*/
+
 	var svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0"><filter id="' + this.id +
 		'" color-interpolation-filters="sRGB">' + this.source +
 		'</filter></svg>';
@@ -42,13 +67,11 @@ ImageFilter.prototype.remove = function() {
 };
 
 ImageFilter.prototype.chooseSource = function(sources) {
-	var animatedHistogramRegex = /%([0-9]*)LH([RGBY])/g;
-	var histogramRegex = /%([0-9]*)(L?)H([RGBY])/g;
 	for (var i in sources)
 	{
 		var source = sources[i];
-		var requiresAnimatedHistogram = source.match(animatedHistogramRegex);
-		var requiresHistogram = source.match(histogramRegex);
+		var requiresAnimatedHistogram = source.match(this.animatedHistogramRegex);
+		var requiresHistogram = source.match(this.histogramRegex);
 		if (requiresHistogram && (!this.histogram || !this.histogram.success))
 			continue;
 		if (requiresAnimatedHistogram && !this.histogram.animated)

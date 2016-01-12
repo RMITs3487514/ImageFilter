@@ -1,7 +1,8 @@
 
 function Histogram(source, element, updateInterval) {
+
 	this.maxHistogramSampleDimension = 128; //if image is bigger than this, scale down before generating the histogram
-	this.attempts = 4; //try this many times to generate a histogram and then give up
+	this.attemptsLeft = 4; //try this many times to generate a histogram and then give up
 
 	this.histogram = [];
 	this.lastHistogram = [];
@@ -14,6 +15,8 @@ function Histogram(source, element, updateInterval) {
 	this.onload = null;
 	this.onupdate = null;
 	this.timer = null;
+	this.id = Histogram.nextID++;
+
 	if (this.animated)
 	{
 		this.drawObject = element;
@@ -23,10 +26,28 @@ function Histogram(source, element, updateInterval) {
 	{
 		this.drawObject = new Image();
 		var that = this;
+		this.drawObject.crossOrigin = "Anonymous";
 		this.drawObject.onload = this.loaded.bind(this);
 		this.drawObject.src = this.src;
 	}
+
+	console.log("Histogram for " + this.src + ", " + (this.animated ? "animated" : "still"));
 }
+Histogram.nextID = 0;
+
+Histogram.prototype.histoSkip = function(a, n) {
+	var l = [];
+	for (var i = 0; i < a.length; i += n)
+		l.push(Math.round(a[i]*1000)/1000);
+	return l;
+};
+
+Histogram.prototype.getData = function(channel, last, blockSize) {
+	if (last)
+		return this.histoSkip(this.lastHistogram.slice(256*channel, 256*(1+channel)), blockSize).join(" ");
+	else
+		return this.histoSkip(this.histogram.slice(256*channel, 256*(1+channel)), blockSize).join(" ");
+};
 
 Histogram.prototype.stop = function() {
 	window.clearInterval(this.timer);
@@ -41,15 +62,18 @@ Histogram.prototype.getImagePixels = function(drawable) {
 		if (!Histogram.prototype.getImagePixels.tempCanvas)
 			Histogram.prototype.getImagePixels.tempCanvas = document.createElement("canvas");
 
+		var w = drawable.naturalWidth || drawable.clientWidth;
+		var h = drawable.naturalHeight || drawable.clientHeight;
+
 		var scale = 1.0 / Math.max(Math.max(
-			drawable.naturalWidth / this.maxHistogramSampleDimension,
-			drawable.naturalHeight / this.maxHistogramSampleDimension
+			w / this.maxHistogramSampleDimension,
+			h / this.maxHistogramSampleDimension
 			), 1.0);
-		Histogram.prototype.getImagePixels.tempCanvas.width = drawable.naturalWidth * scale;
-		Histogram.prototype.getImagePixels.tempCanvas.height = drawable.naturalHeight * scale;
+		Histogram.prototype.getImagePixels.tempCanvas.width = w * scale;
+		Histogram.prototype.getImagePixels.tempCanvas.height = h * scale;
 
 		var canvasContext = Histogram.prototype.getImagePixels.tempCanvas.getContext("2d");
-		canvasContext.drawImage(drawable, 0, 0, drawable.clientWidth, drawable.clientHeight, 0, 0, Histogram.prototype.getImagePixels.tempCanvas.width, Histogram.prototype.getImagePixels.tempCanvas.height);
+		canvasContext.drawImage(drawable, 0, 0, w, h, 0, 0, Histogram.prototype.getImagePixels.tempCanvas.width, Histogram.prototype.getImagePixels.tempCanvas.height);
 		var pixels = canvasContext.getImageData(0, 0, canvasContext.canvas.width, canvasContext.canvas.height);
 		return pixels;
 	}
@@ -107,11 +131,16 @@ Histogram.prototype.updateHistogram = function(drawable) {
 
 Histogram.prototype.loaded = function() {
 	this.success = this.updateHistogram(this.drawObject);
-	this.attempts -= 1;
-	if (!this.success && this.attempts > 0)
+	this.attemptsLeft -= 1;
+	if (this.success)
 	{
-		window.setTimeout(this.loaded.bind(this), 1000);
-		return;
+		if (this.attemptsLeft > 0)
+		{
+			window.setTimeout(this.loaded.bind(this), 1000);
+			return;
+		}
+		else
+			console.error("Failed to compute histogram for " + this.src);
 	}
 
 	this.ready = true;
@@ -120,7 +149,7 @@ Histogram.prototype.loaded = function() {
 		this.onload(this);
 
 	if (this.animated)
-		this.timer = window.setInterval(this.update.bind(this), updateInterval);
+		this.timer = window.setInterval(this.update.bind(this), this.updateInterval);
 };
 
 Histogram.prototype.update = function() {
