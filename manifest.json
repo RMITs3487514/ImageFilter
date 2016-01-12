@@ -20,7 +20,14 @@
 				"http://*/*",
 				"https://*/*"
 			],
-			"js": ["content.js"],
+			"js": [
+				"jquery-2.2.0.min.js",
+				"imagefinder.js",
+				"histogram.js",
+				"filter.js",
+				"imagefilter.js",
+				"content.js"
+			],
 			"run_at": "document_idle"
 		}
 	]
