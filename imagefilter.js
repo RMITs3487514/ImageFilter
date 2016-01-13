@@ -25,6 +25,9 @@ function ImageFilterer() {
 	];
 }
 
+//an element to put debug info into the document
+ImageFilterer.debugInfo = null;
+
 ImageFilterer.prototype.setFilterSources = function(sources) {
 	this.filterSources = sources;
 	this.defaultFilter.update(source);
@@ -112,6 +115,52 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 		if (url in this.histograms && this.histograms[url].ready)
 			this.applyFilterToImage([img], this.histograms[url]);
 	}
+
+	var that = this;
+	$(img).on('mouseover', function(){
+		if (ImageFilterer.debugInfo && $(ImageFilterer.debugInfo).data('imagefilter-stay'))
+			return;
+		ImageFilterer.timeout = window.setTimeout(function(){
+			$(ImageFilterer.debugInfo).css('pointer-events', 'auto').css('opacity', '1').data('imagefilter-stay', true)
+		}, 2000);
+		if (ImageFilterer.debugInfo)
+			$(ImageFilterer.debugInfo).remove();
+		ImageFilterer.debugInfo = $('<div style="opacity: 0.5; pointer-events: none; z-index: 19999999999; position:fixed; top:0px; left:0px; right:0px; background: white; font-size: 24px; border-bottom: 2px solid black;" data-imagefilter-haschild="1"></div>');
+		$(document.body).append(ImageFilterer.debugInfo);
+		ImageFilterer.debugInfo.on('click', function(){ $(this).remove(); });
+
+		var histogram;
+		if (this.nodeName == 'VIDEO')
+			histogram = that.animatedHistograms[$(this).data('imagefilter-histogram-id')];
+		else
+			histogram = that.histograms[url];
+
+		var info = $('<div><div>URL: <a href="' + url + '">' + url + '</a></div></div>');
+		ImageFilterer.debugInfo.append(info);
+
+		if (histogram)
+		{
+			if (histogram.success)
+			{
+				ImageFilterer.debugInfo.append(histogram.createGraph());
+				info.css('position', 'absolute');
+			}
+			else
+				info.append($('<div>Histogram status: '+histogram.status+'</div>'));
+		}
+
+		if (url && this.nodeName != 'VIDEO')
+			ImageFilterer.debugInfo.append($('<img data-imagefilter-haschild="1" style="border:1px solid black; max-height: 254px;" alt="debugimg" src="' + url + '"/>'));
+
+	}).on('mouseout', function(){
+		if (ImageFilterer.debugInfo && !$(ImageFilterer.debugInfo).data('imagefilter-stay'))
+			$(ImageFilterer.debugInfo).remove();
+		if (typeof ImageFilterer.timeout !== 'undefined')
+		{
+			window.clearTimeout(ImageFilterer.timeout);
+			ImageFilterer.timeout = null;
+		}
+	});
 };
 
 ImageFilterer.prototype.imageRemoved = function(img, url) {

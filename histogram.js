@@ -15,25 +15,66 @@ function Histogram(source, element, updateInterval) {
 	this.onload = null;
 	this.onupdate = null;
 	this.timer = null;
+	this.status = 'About to start';
 	this.id = Histogram.nextID++;
 
 	if (this.animated)
 	{
+		this.status = 'Waiting for video';
 		this.drawObject = element;
 		window.setTimeout(this.loaded.bind(this), 100);
 	}
 	else
 	{
+		this.status = 'Loading Image';
 		this.drawObject = new Image();
 		var that = this;
 		this.drawObject.crossOrigin = "Anonymous";
 		this.drawObject.onload = this.loaded.bind(this);
+		this.drawObject.onerror = this.loadError.bind(this);
 		this.drawObject.src = this.src;
 	}
 
 	console.log("Histogram for " + this.src + ", " + (this.animated ? "animated" : "still"));
 }
 Histogram.nextID = 0;
+
+
+Histogram.prototype.createGraph = function() {
+	var canvas = document.createElement("canvas");
+	canvas.context = canvas.getContext("2d");
+	var w = canvas.width = 256;
+	var h = canvas.height = 256;
+	var ctx = canvas.context;
+
+	ctx.fillStyle="rgba(0,0,0,0.5)";
+	ctx.fillRect(0, 0, w, h);
+	ctx.lineWidth = 3;
+
+	var stroke = ['rgba(255,0,0,1)', 'rgba(0,255,0,1)', 'rgba(0,0,255,1)', 'rgba(255,255,255,1)'];
+	var fill = ['rgba(255,0,0,1)', 'rgba(0,255,0,0.5)', 'rgba(0,0,255,0.25)', 'rgba(220,220,220,0.125)'];
+
+	for (var f = 0; f < 2; ++f)
+	{
+		for (var c = 0; c < 4; ++c)
+		{
+			ctx.beginPath();
+			ctx.moveTo(0, h);
+			for (var i = 0; i < 255; ++i)
+				ctx.lineTo((i/254)*256, h - h * this.histogram[c*256+i]);
+			ctx.lineTo(256, h);
+			ctx.closePath();
+			ctx.strokeStyle = stroke[c];
+			ctx.fillStyle = fill[c];
+			if (f == 0)
+				ctx.fill();
+			else
+				ctx.stroke();
+		}
+	}
+
+	return canvas;
+}
 
 Histogram.prototype.histoSkip = function(a, n) {
 	var l = [];
@@ -65,6 +106,12 @@ Histogram.prototype.getImagePixels = function(drawable) {
 		var w = drawable.naturalWidth || drawable.clientWidth;
 		var h = drawable.naturalHeight || drawable.clientHeight;
 
+		if (w == 0 || h == 0)
+		{
+			this.status = "Error: image has zero width/height";
+			return false;
+		}
+
 		var scale = 1.0 / Math.max(Math.max(
 			w / this.maxHistogramSampleDimension,
 			h / this.maxHistogramSampleDimension
@@ -78,6 +125,7 @@ Histogram.prototype.getImagePixels = function(drawable) {
 		return pixels;
 	}
 	catch (e) {
+		this.status = e;
 		Histogram.prototype.getImagePixels.tempCanvas = null; //canvas is tainted. can't use it any more
 		console.log(e);
 		return null;
@@ -126,13 +174,19 @@ Histogram.prototype.updateHistogram = function(drawable) {
 	if (this.lastHistogram.length != this.histogram.length)
 		this.lastHistogram = this.histogram;
 
+	this.status = 'Histogram success';
 	return true;
 };
 
+Histogram.prototype.loadError = function(event) {
+	this.status = 'Failed to load image (img.onerror fired). No idea why.';
+};
+
 Histogram.prototype.loaded = function() {
+	this.status = 'Loaded';
 	this.success = this.updateHistogram(this.drawObject);
 	this.attemptsLeft -= 1;
-	if (this.success)
+	if (!this.success)
 	{
 		if (this.attemptsLeft > 0)
 		{

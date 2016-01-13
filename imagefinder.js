@@ -121,6 +121,11 @@ ImageFinder.prototype.parseMutations = function(mutations) {
 			that.removeImages(mutation.removedNodes)
 		if (mutation.attributeName == "style")
 			that.processElements([mutation.target]);
+		if (mutation.attributeName == "src")
+		{
+			that.removeImages([mutation.target]);
+			that.processElements([mutation.target]);
+		}
 	});
 };
 
@@ -142,6 +147,6 @@ ImageFinder.prototype.start = function(elements) {
 		subtree: true,
 		attributes: true,
 		characterData: false,
-		attributeFilter: ["style"]
+		attributeFilter: ["style", "src"]
 	});
 };
