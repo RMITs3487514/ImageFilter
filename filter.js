@@ -22,11 +22,12 @@ ImageFilter.prototype.update = function(sources) {
 	{
 		var lh = this.histogram.lastHistogram;
 		var h = this.histogram.histogram;
-		this.source = this.source.replace(this.histogramRegex, function(matches, blockSize, previous, channelChar) {
+		this.source = this.source.replace(this.histogramRegex, function(matches, blockSize, last, channelChar) {
+			last = last.length > 0;
 			var channel = "RGBY".indexOf(channelChar);
 			blockSize = Math.max(1, blockSize.length ? parseFloat(blockSize) : 1);
 			if (blockSize > 0 && channel >= 0)
-				return that.histogram.getData(channel, that.histogram.animated && previous, blockSize);
+				return that.histogram.getData(channel, that.histogram.animated && last, blockSize);
 			else
 				return "0 1";
 		});
@@ -44,7 +45,7 @@ ImageFilter.prototype.update = function(sources) {
 		'</filter></svg>';
 	var existing = $('#' + this.id);
 	if (existing.length)
-		existing.replaceWith(svg)
+		existing.parent().replaceWith(svg)
 	else
 		$(document.body).append($(svg));
 

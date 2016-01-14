@@ -13,6 +13,7 @@ function Histogram(source, element, updateInterval) {
 	this.success = false;
 	this.ready = false;
 	this.onload = null;
+	this.onerror = null;
 	this.onupdate = null;
 	this.timer = null;
 	this.status = 'About to start';
@@ -140,6 +141,7 @@ Histogram.prototype.updateHistogram = function(drawable) {
 	var data = pixels.data;
 
 	this.lastHistogram = this.histogram;
+	this.histogram = [];
 
 	//initialize arrays
 	var channels = 4;
@@ -180,6 +182,9 @@ Histogram.prototype.updateHistogram = function(drawable) {
 
 Histogram.prototype.loadError = function(event) {
 	this.status = 'Failed to load image (img.onerror fired). No idea why.';
+	this.ready = true;
+	if (this.onerror)
+		this.onerror(this);
 };
 
 Histogram.prototype.loaded = function() {
@@ -199,8 +204,9 @@ Histogram.prototype.loaded = function() {
 
 	this.ready = true;
 
-	if (this.onload)
-		this.onload(this);
+	var callback = this.success ? this.onload : this.onerror;
+	if (callback)
+		callback(this);
 
 	if (this.animated)
 		this.timer = window.setInterval(this.update.bind(this), this.updateInterval);

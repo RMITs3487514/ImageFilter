@@ -1,6 +1,6 @@
 
 function ImageFilterer() {
-	this.animationUpdateFrequency = 2000;
+	this.animationUpdateFrequency = 1000;
 
 	this.finder = new ImageFinder();
 	this.images = [];
@@ -19,8 +19,12 @@ function ImageFilterer() {
 	this.defaultFilter = null;
 	this.filters = {};
 	this.filterSources = [
-		'<feComponentTransfer in="SourceGraphic" result="Current"> <feFuncR type="table" tableValues="%HR"/> <feFuncG type="table" tableValues="%HG"/> <feFuncB type="table" tableValues="%HB"/> </feComponentTransfer> <feComponentTransfer in="SourceGraphic" result="Last"> <feFuncR type="table" tableValues="%LHR"/> <feFuncG type="table" tableValues="%LHG"/> <feFuncB type="table" tableValues="%LHB"/> </feComponentTransfer> <feComposite in="Last" in2="Current" operator="arithmetic" k1="0" k2="1" k3="0" k4="0"> <animate attributeName="k2" from="1" to="0" dur="1s" /> <animate attributeName="k3" from="0" to="1" dur="1s" /> </feComposite>',
-		'<feComponentTransfer in="SourceGraphic" result="A"> <feFuncR type="table" tableValues="%HR"/> <feFuncG type="table" tableValues="%HG"/> <feFuncB type="table" tableValues="%HB"/> </feComponentTransfer>',
+		'<feComponentTransfer in="SourceGraphic" result="Current"><feFuncR type="table" tableValues="%HR"/> <feFuncG type="table" tableValues="%HG"/> <feFuncB type="table" tableValues="%HB"/></feComponentTransfer>'
+		+ '<feComponentTransfer in="SourceGraphic" result="Last"><feFuncR type="table" tableValues="%LHR"/> <feFuncG type="table" tableValues="%LHG"/> <feFuncB type="table" tableValues="%LHB"/> </feComponentTransfer>'
+		+ '<feComposite in="Last" in2="Current" operator="arithmetic" k1="0" k2="1" k3="0" k4="0"> <animate attributeName="k2" from="1" to="0" dur="1s" /> <animate attributeName="k3" from="0" to="1" dur="1s" /> </feComposite>'
+		,
+		'<feComponentTransfer in="SourceGraphic" result="A"> <feFuncR type="table" tableValues="%HR"/> <feFuncG type="table" tableValues="%HG"/> <feFuncB type="table" tableValues="%HB"/> </feComponentTransfer>'
+		,
 		'<feColorMatrix in="SourceGraphic" type="matrix" values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0"/>'
 	];
 }
@@ -76,7 +80,13 @@ ImageFilterer.prototype.applyFilterToImage = function(images, histogram) {
 
 ImageFilterer.prototype.updateFilter = function(histogram) {
 	if (histogram.success)
+	{
 		this.filters[histogram.id].update();
+
+		//update the debug histogram if it exists
+		if (ImageFilterer.debugInfo && ImageFilterer.debugInfo.data('imagefilter-src') == histogram.src)
+			ImageFilterer.debugInfo.find('#imagefilter-histogram').replaceWith($(histogram.createGraph()).attr('id', 'imagefilter-histogram').css('border', '1px solid black'));
+	}
 };
 
 ImageFilterer.prototype.removeFilter = function(histogram) {
@@ -90,6 +100,7 @@ ImageFilterer.prototype.sourceAdded = function(src, firstElement) {
 		console.log("Added " + src);
 		this.histograms[src] = new Histogram(src, firstElement, 0);
 		this.histograms[src].onload = this.histogramReady.bind(this);
+		this.histograms[src].onerror = this.histogramReady.bind(this);
 	}
 };
 
@@ -121,7 +132,7 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 	var that = this;
 	$(img).on('mouseover', function(){
 		//shouldn't need ImageFilterer.debugInfo.id == 'imagefilter-debug' but something weird is making it point to random elements
-		if (ImageFilterer.debugInfo && $(ImageFilterer.debugInfo).data('imagefilter-stay'))
+		if (ImageFilterer.debugInfo && ImageFilterer.debugInfo.data('imagefilter-stay'))
 		{
 			if (ImageFilterer.debugInfo.attr('id') == 'imagefilter-debug')
 				return;
@@ -134,10 +145,13 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 			$(ImageFilterer.debugInfo).css('pointer-events', 'auto').css('opacity', '1').data('imagefilter-stay', true)
 		}, 2000);
 		if (ImageFilterer.debugInfo)
-			$(ImageFilterer.debugInfo).remove();
+			ImageFilterer.debugInfo.remove();
 		ImageFilterer.debugInfo = $('<div id="imagefilter-debug" style="opacity: 0.5; pointer-events: none; z-index: 19999999999; position:fixed; top:0px; left:0px; right:0px; background: white; font-size: 14px; border-bottom: 2px solid black;" data-imagefilter-haschild="1"></div>');
 		$(document.body).append(ImageFilterer.debugInfo);
-		ImageFilterer.debugInfo.on('click', function(){ $(this).remove(); });
+		ImageFilterer.debugInfo.on('click', function(){
+			ImageFilterer.debugInfo.remove();
+			ImageFilterer.debugInfo = null;
+		});
 
 		var histogram;
 		if (this.nodeName == 'VIDEO')
@@ -150,9 +164,10 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 
 		if (histogram)
 		{
+			ImageFilterer.debugInfo.data('imagefilter-src', histogram.src);
 			if (histogram.success)
 			{
-				ImageFilterer.debugInfo.append($(histogram.createGraph()).css('border', '1px solid black'));
+				ImageFilterer.debugInfo.append($(histogram.createGraph()).attr('id', 'imagefilter-histogram').css('border', '1px solid black'));
 				info.css('position', 'absolute');
 			}
 			else
@@ -163,9 +178,9 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 			ImageFilterer.debugInfo.append($('<img data-imagefilter-haschild="1" style="border:1px solid black; max-height: 128px;" alt="debugimg" src="' + url + '"/>'));
 
 	}).on('mouseout', function(){
-		if (ImageFilterer.debugInfo && !$(ImageFilterer.debugInfo).data('imagefilter-stay'))
+		if (ImageFilterer.debugInfo && !ImageFilterer.debugInfo.data('imagefilter-stay'))
 		{
-			$(ImageFilterer.debugInfo).remove();
+			ImageFilterer.debugInfo.remove();
 			ImageFilterer.debugInfo = null;
 		}
 		if (typeof ImageFilterer.timeout !== 'undefined')

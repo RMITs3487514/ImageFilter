@@ -36,9 +36,10 @@ ImageFinder.prototype.addImages = function(elements, url) {
 	//remove images with changed sources
 	var modifiedElements = $(this.images).filter(elements).filter(function(){
 		var eurl = url || this.src || this.currentSrc;
-		return $(this).data('imagefilter-src') != eurl;
+		return $(this).attr('data-imagefilter-src') != eurl;
 	});
-	this.removeImages(modifiedElements);
+	if (modifiedElements.length)
+		this.removeImages(modifiedElements);
 
 	//add everything not already added
 	elements = elements.not(this.images);
@@ -46,7 +47,7 @@ ImageFinder.prototype.addImages = function(elements, url) {
 		var eurl = url || this.src || this.currentSrc;
 		if (!eurl)
 			console.error("ImageFilter: Missing image url for " + this)
-		$(this).data('imagefilter-src', eurl);
+		$(this).attr('data-imagefilter-src', eurl);
 		if (!(eurl in that.sources))
 		{
 			that.sources[eurl] = [];
@@ -66,7 +67,7 @@ ImageFinder.prototype.removeImages = function(elements) {
 	if (!removed.length)
 		return;
 	$(removed).each(function() {
-		var eurl = $(this).data('imagefilter-src');
+		var eurl = $(this).attr('data-imagefilter-src');
 		that.sources[eurl].splice(that.sources[eurl].indexOf(this), 1);
 		if (that.imageRemoved)
 			that.imageRemoved(this, eurl)
@@ -75,7 +76,7 @@ ImageFinder.prototype.removeImages = function(elements) {
 			delete that.sources[eurl];
 			that.sourceRemoved(eurl);
 		}
-		$(this).removeData('imagefilter-src')
+		$(this).removeAttr('data-imagefilter-src')
 	});
 	this.images = this.images.not(removed);
 }
@@ -96,7 +97,7 @@ ImageFinder.prototype.getImageURL = function(element) {
 	if (!url)
 	{
 		var computedStyle = element.currentStyle || getComputedStyle(element, null);
-		url = that.getCSSBackgroundImage(computedStyle);
+		url = this.getCSSBackgroundImage(computedStyle);
 	}
 	return url;
 }
@@ -152,17 +153,17 @@ ImageFinder.prototype.processElements = function(elements) {
 ImageFinder.prototype.parseMutations = function(mutations) {
 	var that = this;
 	mutations.forEach(function(mutation) {
-		if (mutation.addedNodes)
-			that.processElements(mutation.addedNodes)
-		if (mutation.removedNodes)
-			that.removeImages(mutation.removedNodes)
+		if (mutation.addedNodes.length)
+			that.processElements($(mutation.addedNodes).find('*').addBack())
+		if (mutation.removedNodes.length)
+			that.removeImages($(mutation.removedNodes).find('*').addBack())
 		if (mutation.attributeName == "style")
 			that.processElements([mutation.target]);
 		if (mutation.attributeName == "src")
 			that.processElements([mutation.target]);
 
 		//images applied via class names are handled by parseStyle. this handles changes to class names specifically
-		if (mutation.attributeName == "class" && $(mutation.target).data('imagefilter-src'))
+		if (mutation.attributeName == "class" && $(mutation.target).attr('data-imagefilter-src'))
 		{
 			var url = that.getImageURL(mutation.target);
 			if (url)
@@ -192,7 +193,7 @@ ImageFinder.prototype.start = function(elements) {
 	//set up observer to catch modifications to style node contents
 	this.styleMutationObserver = new MutationObserver(this.parseStyleMutations.bind(this));
 	this.styleMutationObserverOptions = {
-		childList: true, //makes sense as its the text node that changes, not the style
+		childList: true, //would make sense as its the text node that changes, not the style
 		subtree: true, //no idea why this is needed, but since styles don't really have nested children its ok
 		characterData: true,
 	};
@@ -207,7 +208,7 @@ ImageFinder.prototype.start = function(elements) {
 
 	//catch future node injections
 	this.mutationObserver = new MutationObserver(this.parseMutations.bind(this));
-	this.mutationObserver.observe(document.body, {
+	this.mutationObserver.observe(document, {
 		childList: true,
 		subtree: true,
 		attributes: true,
