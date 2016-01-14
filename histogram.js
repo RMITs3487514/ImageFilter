@@ -43,8 +43,8 @@ Histogram.nextID = 0;
 Histogram.prototype.createGraph = function() {
 	var canvas = document.createElement("canvas");
 	canvas.context = canvas.getContext("2d");
-	var w = canvas.width = 256;
-	var h = canvas.height = 256;
+	var w = canvas.width = 128;
+	var h = canvas.height = 128;
 	var ctx = canvas.context;
 
 	ctx.fillStyle="rgba(0,0,0,0.5)";

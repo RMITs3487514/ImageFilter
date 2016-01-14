@@ -87,6 +87,7 @@ ImageFilterer.prototype.removeFilter = function(histogram) {
 ImageFilterer.prototype.sourceAdded = function(src, firstElement) {
 	if (src && firstElement.nodeName != 'VIDEO')
 	{
+		console.log("Added " + src);
 		this.histograms[src] = new Histogram(src, firstElement, 0);
 		this.histograms[src].onload = this.histogramReady.bind(this);
 	}
@@ -95,6 +96,7 @@ ImageFilterer.prototype.sourceAdded = function(src, firstElement) {
 ImageFilterer.prototype.sourceRemoved = function(src) {
 	if (src in this.histograms)
 	{
+		console.log("Removed " + src);
 		this.removeFilter(this.histograms[src]);
 		this.histograms[src].stop();
 		delete this.histograms[src];
@@ -118,14 +120,22 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 
 	var that = this;
 	$(img).on('mouseover', function(){
+		//shouldn't need ImageFilterer.debugInfo.id == 'imagefilter-debug' but something weird is making it point to random elements
 		if (ImageFilterer.debugInfo && $(ImageFilterer.debugInfo).data('imagefilter-stay'))
-			return;
+		{
+			if (ImageFilterer.debugInfo.attr('id') == 'imagefilter-debug')
+				return;
+			else
+				debugger;
+		}
+		if (ImageFilterer.timeout)
+			window.clearTimeout(ImageFilterer.timeout);
 		ImageFilterer.timeout = window.setTimeout(function(){
 			$(ImageFilterer.debugInfo).css('pointer-events', 'auto').css('opacity', '1').data('imagefilter-stay', true)
 		}, 2000);
 		if (ImageFilterer.debugInfo)
 			$(ImageFilterer.debugInfo).remove();
-		ImageFilterer.debugInfo = $('<div style="opacity: 0.5; pointer-events: none; z-index: 19999999999; position:fixed; top:0px; left:0px; right:0px; background: white; font-size: 24px; border-bottom: 2px solid black;" data-imagefilter-haschild="1"></div>');
+		ImageFilterer.debugInfo = $('<div id="imagefilter-debug" style="opacity: 0.5; pointer-events: none; z-index: 19999999999; position:fixed; top:0px; left:0px; right:0px; background: white; font-size: 14px; border-bottom: 2px solid black;" data-imagefilter-haschild="1"></div>');
 		$(document.body).append(ImageFilterer.debugInfo);
 		ImageFilterer.debugInfo.on('click', function(){ $(this).remove(); });
 
@@ -135,14 +145,14 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 		else
 			histogram = that.histograms[url];
 
-		var info = $('<div><div>URL: <a href="' + url + '">' + url + '</a></div></div>');
+		var info = $('<div><div style="background:rgba(255,255,255,0.5);">URL: <a href="' + url + '">' + url + '</a></div></div>');
 		ImageFilterer.debugInfo.append(info);
 
 		if (histogram)
 		{
 			if (histogram.success)
 			{
-				ImageFilterer.debugInfo.append(histogram.createGraph());
+				ImageFilterer.debugInfo.append($(histogram.createGraph()).css('border', '1px solid black'));
 				info.css('position', 'absolute');
 			}
 			else
@@ -150,11 +160,14 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 		}
 
 		if (url && this.nodeName != 'VIDEO')
-			ImageFilterer.debugInfo.append($('<img data-imagefilter-haschild="1" style="border:1px solid black; max-height: 254px;" alt="debugimg" src="' + url + '"/>'));
+			ImageFilterer.debugInfo.append($('<img data-imagefilter-haschild="1" style="border:1px solid black; max-height: 128px;" alt="debugimg" src="' + url + '"/>'));
 
 	}).on('mouseout', function(){
 		if (ImageFilterer.debugInfo && !$(ImageFilterer.debugInfo).data('imagefilter-stay'))
+		{
 			$(ImageFilterer.debugInfo).remove();
+			ImageFilterer.debugInfo = null;
+		}
 		if (typeof ImageFilterer.timeout !== 'undefined')
 		{
 			window.clearTimeout(ImageFilterer.timeout);
