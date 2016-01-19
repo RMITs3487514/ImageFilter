@@ -9,7 +9,20 @@ function ev(selector, event, handler)
 
 function sendOption(key, value)
 {
-	chrome.runtime.sendMessage({key:key, value:value});
+	var data = {key:key, value:value};
+	//send to active tab first
+	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+		var active = tabs[0].id;
+		console.log(active);
+		chrome.tabs.sendMessage(active, data);
+
+		//then to all the rest
+		chrome.tabs.query({}, function(tabs) {
+			for (var i=0; i < tabs.length; ++i)
+				if (tabs[i].id != active)
+					chrome.tabs.sendMessage(tabs[i].id, data);
+		});
+	});
 }
 
 function applyOption(key, value)

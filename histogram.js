@@ -135,7 +135,7 @@ Histogram.prototype.getImagePixels = function(drawable) {
 
 Histogram.prototype.updateHistogram = function(drawable) {
 	var pixels = this.getImagePixels(drawable);
-	if (!pixels)
+	if (!pixels || pixels.width * pixels.heigh == 0)
 		return false;
 
 	var data = pixels.data;
@@ -152,7 +152,7 @@ Histogram.prototype.updateHistogram = function(drawable) {
 
 	//compute histogram h
 	var n = pixels.width * pixels.height;
-	var scale = 1.0/(n-1);
+	var scale = 1.0 / n;
 	var total = [0, 0, 0];
 	for (i = 0; i < n; ++i)
 	{
