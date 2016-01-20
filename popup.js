@@ -1,4 +1,7 @@
 
+var activeTab = null;
+var activeHostname = null;
+
 //helper function to catch events given a selector (avoid pulling in jquery)
 function ev(selector, event, handler)
 {
@@ -7,31 +10,63 @@ function ev(selector, event, handler)
 		elements[i].addEventListener(event, handler);
 }
 
-function sendOption(key, value)
+function getHostname(url)
 {
-	var data = {key:key, value:value};
-	//send to active tab first
-	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		var active = tabs[0].id;
-		console.log(active);
-		chrome.tabs.sendMessage(active, data);
+	var parser = document.createElement('a');
+	parser.href = url;
+	return parser.hostname;
+}
 
-		//then to all the rest
-		chrome.tabs.query({}, function(tabs) {
-			for (var i=0; i < tabs.length; ++i)
-				if (tabs[i].id != active)
-					chrome.tabs.sendMessage(tabs[i].id, data);
-		});
-	});
+function parseSiteKey(key)
+{
+	var match = key.match(/^site-(enable|filter)-?(.*)$/);
+	if (match)
+	{
+		if (activeHostname == match[2])
+			return "site-" + match[1];
+		else
+			return null;
+	}
+	return key;
 }
 
 function applyOption(key, value)
 {
+	key = parseSiteKey(key)
+	if (!key)
+		return;
+
 	var e = document.querySelector('*[name="' + key + '"]');
 	if (e.type == 'checkbox')
 		e.checked = value;
 	else
 		e.value = value;
+}
+
+function sendOption(key, value)
+{
+	if (key.match(/^site-.*$/))
+		key = key + "-" + activeHostname;
+
+	//if this is the active tab, we're in charge of saving the option
+	if (value !== null)
+		localStorage.setItem(key, value);
+	else
+		localStorage.removeItem(key);
+
+	//send to active tab first
+	var data = {key:key, value:value};
+	chrome.tabs.sendMessage(activeTab, data);
+
+	//then to all the rest
+	chrome.tabs.query({}, function(tabs) {
+		for (var i=0; i < tabs.length; ++i)
+			if (tabs[i].id != activeTab)
+				chrome.tabs.sendMessage(tabs[i].id, data);
+	});
+
+	//finally, make sure the option page is displaying the right thing
+	applyOption(key, value);
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
@@ -77,12 +112,32 @@ document.addEventListener('DOMContentLoaded', function(){
 	});
 });
 
-for (var i = 0; i < localStorage.length; i++){
-	var key = localStorage.key(i);
-	e = document.querySelector('*[name="' + key + '"]');
-	if (e)
-	{
-		var value = localStorage.getItem(key);
-		applyOption(key, value);
-	}
+function onLoad()
+{
+	var selects = document.getElementsByTagName('select');
+	for (var i = 0; i < selects.length; ++i)
+		selects[i].selectedIndex = -1;
+
+	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+		activeTab = tabs[0].id;
+		activeHostname = getHostname(tabs[0].url);
+		for (var i = 0; i < localStorage.length; i++){
+			var rawKey = localStorage.key(i);
+
+			//parseSiteKey is called in applyOption too
+			//checking to see if the element exists may save some processing,
+			//not sure though
+			var key = parseSiteKey(rawKey);
+			if (!key)
+				continue;
+			e = document.querySelector('*[name="' + key + '"]');
+			if (e)
+			{
+				var value = localStorage.getItem(rawKey);
+				applyOption(rawKey, value);
+			}
+		}
+	});
 }
+
+window.onload = onLoad;

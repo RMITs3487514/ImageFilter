@@ -2,13 +2,13 @@
 var filterer = new ImageFilterer();
 filterer.start();
 
-var thisTab = null;
 var optionCache = {};
-var thisHostname = null;
+var thisHostname = location.hostname;
 
 function getHostname(url)
 {
 	var parser = document.createElement('a');
+	parser.href = url;
 	return parser.hostname;
 }
 
@@ -45,7 +45,10 @@ function applyOption(key, value)
 		return;
 	}
 
-	function applySiteOption(option, value) {
+	var match = key.match(/^site-(enable|filter)-?(.*)$/);
+	if (match && match[2].length > 0 && thisHostname == match[2])
+	{
+		var option = match[1];
 		//if null, the global default replaces the site-specitic override
 		if (value === null)
 		{
@@ -61,28 +64,6 @@ function applyOption(key, value)
 		else if (option == "filter")
 			setCurrentFilter(value);
 	}
-
-	var match = key.match(/^site-(enable|filter)-?(.*)$/);
-	if (match && match[2].length === 0)
-	{
-		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-			//if this is the same site as the active tab, apply the option
-			if (thisHostname == getHostname(tabs[0].url))
-				applySiteOption(match[0], value);
-
-			//if this is the active tab, we're in charge of saving the option
-			if (thisTab.id == tabs[0].id)
-			{
-				if (value !== null)
-					localStorage.setItem(key + '-' + thisHostname, value);
-				else
-					localStorage.removeItem(key);
-			}
-		});
-		return;
-	}
-	else if (match && match[2].length > 0 && thisHostname == match[2])
-			applySiteOption(match[1], value);
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -102,6 +83,4 @@ function onLoad()
 	}
 }
 
-chrome.tabs.getCurrent(function(tab){
-	thisTab = tab;
-});
+onLoad();
