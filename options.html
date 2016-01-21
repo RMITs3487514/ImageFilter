@@ -2,12 +2,40 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>ImageFilter Popup</title>
+	<title>ImageFilter Options</title>
+	<script type="text/javascript" src="jquery-2.2.0.min.js"></script>
+	<script type="text/javascript" src="storage.js"></script>
 	<script type="text/javascript" src="options.js"></script>
 	<style>
+	.filter {
+		margin: 8px;
+		border-left: 4px solid #aaa;
+		padding-left: 12px;
+	}
+	.filter-name {
+		font-size: 24px;
+	}
+	textarea {
+		font-family: "Courier New", Courier, monospace;
+	}
 	</style>
 </head>
 <body>
-<h1>Image Filter Options</h1>
+	<h1>Image Filter Options</h1>
+	<label><input type="checkbox">Don't filter icons and images with text.</label>
+	<h1>Filters:</h1>
+	<ul id="filters">
+	</ul>
+	<button id="newfilter">New</button>
+	<div id="filter-template" style="visibility: hidden">
+		<li class="filter">
+			<div><input class="filter-name" type="text" /></div>
+			<div><textarea class="filter-source" cols="80" rows="5"></textarea></div>
+			<div><label>Fallback filter: <input class="filter-fallback" type="text" /></label></div>
+			<div><label>Global shortcut: <input class="filter-shortcut" type="text" /></label></div>
+			<div><button class="savefilter">Save</button></div>
+			<div><button class="deletefilter">Delete</button></div>
+		</li>
+	</div>
 </body>
 </html>

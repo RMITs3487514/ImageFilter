@@ -19,7 +19,7 @@ function getFilterSources(name)
 	var next = name;
 	do {
 		sources.push(optionCache['filter-' + name]);
-		next = optionCache['filter-fallback-' + name];
+		next = optionCache['filterfallback-' + name];
 	} while (next);
 	filterer.setFilterSources(sources);
 }
