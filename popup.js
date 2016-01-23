@@ -36,11 +36,28 @@ function applyOption(key, value)
 	if (!key)
 		return;
 
+	var filter = key.match(/^filter-(.*)$/);
+	if (filter)
+	{
+		var lists = document.querySelectorAll('.filterlist');
+		for (var i = 0; i < lists.length; ++i)
+		{
+			var e = document.createElement('option');
+			e.text = filter[1];
+			e.value = filter[1];
+			lists[i].appendChild(e);
+		}
+		return;
+	}
+
 	var e = document.querySelector('*[name="' + key + '"]');
-	if (e.type == 'checkbox')
-		e.checked = value;
-	else
-		e.value = value;
+	if (e)
+	{
+		if (e.type == 'checkbox')
+			e.checked = value;
+		else
+			e.value = value;
+	}
 }
 
 function sendOption(key, value)
@@ -50,9 +67,13 @@ function sendOption(key, value)
 
 	//if this is the active tab, we're in charge of saving the option
 	if (value !== null)
-		localStorage.setItem(key, value);
+	{
+		var data = {};
+		data[key] = value;
+		mystorage.set(data);
+	}
 	else
-		localStorage.removeItem(key);
+		mystorage.remove(key);
 
 	//send to active tab first
 	var data = {key:key, value:value};
@@ -114,29 +135,23 @@ document.addEventListener('DOMContentLoaded', function(){
 
 function onLoad()
 {
-	var selects = document.getElementsByTagName('select');
-	for (var i = 0; i < selects.length; ++i)
-		selects[i].selectedIndex = -1;
-
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 		activeTab = tabs[0].id;
 		activeHostname = getHostname(tabs[0].url);
-		for (var i = 0; i < localStorage.length; i++){
-			var rawKey = localStorage.key(i);
 
-			//parseSiteKey is called in applyOption too
-			//checking to see if the element exists may save some processing,
-			//not sure though
-			var key = parseSiteKey(rawKey);
-			if (!key)
-				continue;
-			e = document.querySelector('*[name="' + key + '"]');
-			if (e)
-			{
-				var value = localStorage.getItem(rawKey);
-				applyOption(rawKey, value);
-			}
-		}
+		mystorage.all(function(items){
+			for (var key in items)
+				if (key.match(/^filter.*$/))
+					applyOption(key, items[key]);
+
+			var selects = document.getElementsByTagName('select');
+			for (var i = 0; i < selects.length; ++i)
+				selects[i].selectedIndex = -1;
+
+			for (var key in items)
+				if (!key.match(/^filter.*$/))
+					applyOption(key, items[key]);
+		});
 	});
 }
 

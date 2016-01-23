@@ -119,7 +119,8 @@ ImageFinder.prototype.parseStyle = function(rules) {
 //catch loading of stylenodes and parse all new rules
 //see my post: http://stackoverflow.com/questions/20364687/mutationobserver-and-current-computed-css-styles
 ImageFinder.prototype.styleLoaded = function(event) {
-	this.parseStyle(event.target.sheet.cssRules);
+	if (event.target.sheet)
+		this.parseStyle(event.target.sheet.cssRules);
 };
 
 //every node on the document ever created will come through this function
@@ -180,7 +181,8 @@ ImageFinder.prototype.parseStyleMutations = function(mutations) {
 		if (mutation.target.nodeType == 3 && mutation.target.parentNode.nodeName == 'STYLE')
 		{
 			console.log(mutation.target.parentNode);
-			that.parseStyle(mutation.target.parentNode.sheet.cssRules);
+			if (mutation.target.parentNode.sheet)
+				that.parseStyle(mutation.target.parentNode.sheet.cssRules);
 		}
 		else
 			console.error("Shouldn't get here");

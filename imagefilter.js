@@ -34,21 +34,31 @@ ImageFilterer.debugInfo = null;
 
 ImageFilterer.prototype.setFilterSources = function(sources) {
 	this.filterSources = sources;
-	this.defaultFilter.update(source);
-	$(this.filters).each(function(){this.update(source);});
+	if (this.defaultFilter)
+		this.defaultFilter.update(sources);
+	for (var key in this.filters)
+		this.filters[key].update(sources);
+};
+
+ImageFilterer.prototype.enable = function(enabled) {
+	this.enabled = enabled;
+	if (this.defaultFilter)
+		this.defaultFilter.enable(enabled);
+	for (var key in this.filters)
+		this.filters[key].enable(enabled);
 };
 
 ImageFilterer.prototype.chooseFilter = function(img, histogram) {
 	if (histogram.success)
 	{
 		if (!(histogram.id in this.filters))
-			this.filters[histogram.id] = new ImageFilter(this.filterSources, histogram);
+			this.filters[histogram.id] = new ImageFilter(this.filterSources, this.enabled, histogram);
 		return this.filters[histogram.id];
 	}
 	else
 	{
 		if (!this.defaultFilter)
-			this.defaultFilter = new ImageFilter(this.filterSources);
+			this.defaultFilter = new ImageFilter(this.filterSources, this.enabled);
 		return this.defaultFilter;
 	}
 };

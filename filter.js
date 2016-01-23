@@ -1,6 +1,7 @@
 
 
-function ImageFilter(sources, histogram) {
+function ImageFilter(sources, enabled, histogram) {
+	this.enabled = enabled;
 	this.animatedHistogramRegex = /%([0-9]*)LH([RGBY])/g;
 	this.histogramRegex = /%([0-9]*)(L?)H([RGBY])/g;
 	this.sources = sources;
@@ -49,10 +50,11 @@ ImageFilter.prototype.update = function(sources) {
 	else
 		$(document.body).append($(svg));
 
-	this.enable(true);
+	this.enable(this.enabled);
 }
 
 ImageFilter.prototype.enable = function(enabled) {
+	this.enabled = enabled;
 	var filterURL = "url('#" + this.id + "')";
 	var styleString = enabled ? "-webkit-filter: "+filterURL+"; -moz-filter: "+filterURL+"; -ms-filter: "+filterURL+"; -o-filter: "+filterURL+"; filter: "+filterURL+";" : "";
 	var style = '<style id=' + this.styleid + '>\n.' + this.styleName + ' {' + styleString + '}\n</style>';

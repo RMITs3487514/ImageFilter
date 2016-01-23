@@ -16,11 +16,20 @@ function getHostname(url)
 function getFilterSources(name)
 {
 	var sources = [];
+	var names = [];
 	var next = name;
 	do {
-		sources.push(optionCache['filter-' + name]);
-		next = optionCache['filterfallback-' + name];
-	} while (next);
+		names.push(next);
+		sources.push(optionCache['filter-' + next]);
+		next = optionCache['filterfallback-' + next];
+	} while (next && names.indexOf(next) === -1);
+	console.log(names);
+	return sources;
+}
+
+function setCurrentFilter(name)
+{
+	var sources = getFilterSources(name);
 	filterer.setFilterSources(sources);
 }
 
@@ -53,7 +62,7 @@ function applyOption(key, value)
 		if (value === null)
 		{
 			delete optionCache["site-" + option];
-			applyOption("global-" + option, optionCacne["global-" + option]);
+			applyOption("global-" + option, optionCache["global-" + option]);
 			return;
 		}
 		else
@@ -76,11 +85,14 @@ function onLoad()
 	if (onLoadCalled)
 		return
 	onLoadCalled = true;
-	for (var i = 0; i < localStorage.length; i++){
-		var key = localStorage.key(i);
-		var value = localStorage.getItem(key);
-		applyOption(key, value);
-	}
+	mystorage.all(function(items){
+		for (var key in items)
+			if (key.match(/^filter.*$/))
+				applyOption(key, items[key]);
+		for (var key in items)
+			if (!key.match(/^filter.*$/))
+				applyOption(key, items[key]);
+	});
 }
 
 onLoad();
