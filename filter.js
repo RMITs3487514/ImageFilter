@@ -13,6 +13,11 @@ function ImageFilter(sources, enabled, histogram) {
 	this.update();
 }
 
+ImageFilter.prototype.getInfo = function() {
+	return "Enabled: " + this.enabled + "<br/>" +
+		"Fallback Index: " + this.sourceIndex + "<br/>";
+}
+
 ImageFilter.prototype.update = function(sources) {
 	var that = this;
 	if (sources)
@@ -72,6 +77,7 @@ ImageFilter.prototype.remove = function() {
 ImageFilter.prototype.chooseSource = function(sources) {
 	for (var i in sources)
 	{
+		this.sourceIndex = i;
 		var source = sources[i];
 		var requiresAnimatedHistogram = source.match(this.animatedHistogramRegex);
 		var requiresHistogram = source.match(this.histogramRegex);

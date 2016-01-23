@@ -5,6 +5,7 @@
 	<title>ImageFilter Options</title>
 	<script type="text/javascript" src="jquery-2.2.0.min.js"></script>
 	<script type="text/javascript" src="storage.js"></script>
+	<script type="text/javascript" src="defaults.js"></script>
 	<script type="text/javascript" src="options.js"></script>
 	<style>
 	.filter {
@@ -22,7 +23,8 @@
 </head>
 <body>
 	<h1>Image Filter Options</h1>
-	<label><input type="checkbox">Don't filter icons and images with text.</label>
+	<div><label><input type="checkbox" class="option" name="option-onlypictures">Don't filter icons and images with text.</label></div>
+	<div><label><input type="checkbox" class="option" name="option-debugpopup">Display debug popup on mouseover.</label></div>
 	<h1>Filters:</h1>
 	<ul id="filters">
 	</ul>

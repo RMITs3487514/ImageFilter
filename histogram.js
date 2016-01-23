@@ -16,6 +16,7 @@ function Histogram(source, element, updateInterval) {
 	this.onerror = null;
 	this.onupdate = null;
 	this.timer = null;
+	this.totalPixels = 0;
 	this.status = 'About to start';
 	this.id = Histogram.nextID++;
 
@@ -135,7 +136,8 @@ Histogram.prototype.getImagePixels = function(drawable) {
 
 Histogram.prototype.updateHistogram = function(drawable) {
 	var pixels = this.getImagePixels(drawable);
-	if (!pixels || pixels.width * pixels.heigh == 0)
+	this.totalPixels = pixels.width * pixels.height;
+	if (!pixels || this.totalPixels == 0)
 		return false;
 
 	var data = pixels.data;
@@ -178,6 +180,30 @@ Histogram.prototype.updateHistogram = function(drawable) {
 
 	this.status = 'Histogram success';
 	return true;
+};
+
+//computes golay merit for luminance channel
+//http://people.math.sfu.ca/~jed/Papers/Jedwab.%20Merit%20Factor%20Survey.%202005.pdf
+//http://www.cecm.sfu.ca/personal/pborwein/PAPERS/P218.pdf
+Histogram.prototype.getGolayMerit = function() {
+	var a = this.histogram;
+	var C = function(N, k){
+		var r = 0;
+		for (var j = 0; j < N - k - 2; ++j)
+			r += (a[j*4+3]*2-1) * (a[(j+k)*4+3]*2-1);
+		return r;
+	};
+	var E = function(N){
+		var r = 0;
+		for (var i = 1; i < N - 2; ++i)
+		{
+			var v = C(N, i);
+			r += v * v;
+		}
+		return r;
+	};
+	var N = 256;
+	return N * N / (2 * E(N));
 };
 
 Histogram.prototype.loadError = function(event) {

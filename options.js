@@ -85,16 +85,23 @@ function createFilter(name, source, fallback, shortcut)
 	filter.find('.filter-shortcut').val(shortcut);
 }
 
-$(function(){
-	$('#newfilter').click(function(){
-		findUniqueFilterName("NewFilter", function(name){
-			createFilter(name, "", "", "");
-		});
-	});
-
+function loadOptions(){
 	mystorage.all(function(items){
 		for (var key in items)
 		{
+			if (key.match(/^[a-z-]+$/))
+			{
+				var option = $('input[name="' + key + '"]');
+				if (option.length == 1)
+				{
+					if (option[0].type == 'checkbox')
+						option[0].checked = items[key];
+					else
+						option[0].value = items[key];
+					continue;
+				}
+			}
+
 			var filter = key.match(/^filter-(.*)$/);
 			if (filter)
 			{
@@ -105,6 +112,36 @@ $(function(){
 					items['filtershortcut-' + filter[1]]
 				);
 			}
+		}
+	});
+}
+
+$(function(){
+	$('#newfilter').click(function(){
+		findUniqueFilterName("NewFilter", function(name){
+			createFilter(name, "", "", "");
+		});
+	});
+
+	$('.option').on('change', function(event){
+		var value = this.type == 'checkbox' ? this.checked : this.value;
+		var data = {};
+		data[this.name] = value;
+		mystorage.set(data);
+		var message = {key:this.name, value:value};
+		chrome.tabs.query({}, function(tabs) {
+			for (var i=0; i < tabs.length; ++i)
+				chrome.tabs.sendMessage(tabs[i].id, message);
+		});
+	});
+
+	mystorage.get('hasdefaults', function(value){
+		if (value)
+			loadOptions();
+		else
+		{
+			defaultOptions['hasdefaults'] = true;
+			mystorage.set(defaultOptions, loadOptions);
 		}
 	});
 });

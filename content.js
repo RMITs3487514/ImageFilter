@@ -23,7 +23,6 @@ function getFilterSources(name)
 		sources.push(optionCache['filter-' + next]);
 		next = optionCache['filterfallback-' + next];
 	} while (next && names.indexOf(next) === -1);
-	console.log(names);
 	return sources;
 }
 
@@ -36,6 +35,18 @@ function setCurrentFilter(name)
 //all options come through here. not necessarily applicable or non-malicious
 function applyOption(key, value)
 {
+	if (key == 'option-debugpopup')
+	{
+		ImageFilterer.enableDebug = value;
+		return;
+	}
+
+	if (key == 'option-onlypictures')
+	{
+		filterer.setOnlyPictures(value);
+		return;
+	}
+
 	if (value === 'null')
 		delete optionCache[key];
 	else

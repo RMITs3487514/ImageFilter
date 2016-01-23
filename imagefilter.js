@@ -1,6 +1,9 @@
 
+//TODO: pause histogram generaiton when disabled
+
 function ImageFilterer() {
 	this.animationUpdateFrequency = 1000;
+	this.golayMeritThreshold = 0.08;
 
 	this.finder = new ImageFinder();
 	this.images = [];
@@ -8,6 +11,7 @@ function ImageFilterer() {
 	this.histograms = {};
 	this.animatedHistograms = {};
 	this.svgFilters = {};
+	this.onlyPictures = true;
 
 	var that = this;
 	this.start = this.finder.start.bind(this.finder);
@@ -31,6 +35,47 @@ function ImageFilterer() {
 
 //an element to put debug info into the document
 ImageFilterer.debugInfo = null;
+ImageFilterer.enableDebug = false;
+
+ImageFilterer.prototype.isPicture = function(image, histogram) {
+	if (histogram.success)
+	{
+		var merit = histogram.getGolayMerit();
+		var n = 256;
+		var m = histogram.histogram[histogram.histogram.length-1]; //should equal the number of pixels
+		if (merit < this.golayMeritThreshold)
+			return false;
+	}
+
+	var w = $(image).width();
+	var h = $(image).height();
+	if (w * h < 128 * 128)
+		return false;
+
+	return true;
+};
+
+ImageFilterer.prototype.setOnlyPictures = function(enabled) {
+	this.onlyPictures = enabled;
+	//update filter class for every image currently being filtered
+	for (var i in this.images)
+	{
+		var image = $(this.images[i]);
+		var filteredClass = image.data('imagefilter-class');
+		var apply = true;
+		if (this.onlyPictures)
+		{
+			var url = image.attr('data-imagefilter-src');
+			if (image.nodeName == 'VIDEO')
+				histogram = this.animatedHistograms[image.data('imagefilter-histogram-id')];
+			else
+				histogram = this.histograms[url];
+			if (!this.isPicture(image, histogram))
+				apply = false;
+		}
+		image.removeClass(filteredClass).toggleClass(filteredClass, apply);
+	}
+};
 
 ImageFilterer.prototype.setFilterSources = function(sources) {
 	this.filterSources = sources;
@@ -64,13 +109,16 @@ ImageFilterer.prototype.chooseFilter = function(img, histogram) {
 };
 
 ImageFilterer.prototype.applyFilterToImage = function(images, histogram) {
+	var filteredImages = [];
 	for (var i in images)
 	{
-		var filter = this.chooseFilter(images[i], histogram);
-		$(images[i]).data('imagefilter-class', filter.styleName);
-
-		if (!$(images[i]).data('imagefilter-haschild'))
+		var apply = true;
+		if ($(images[i]).data('imagefilter-haschild'))
+			apply = false;
+		if (apply)
 		{
+			var filter = this.chooseFilter(images[i], histogram);
+
 			//remove any filters applied to ancestors
 			var ancestors = $(images[i]).parents();
 			ancestors.each(function(){
@@ -82,10 +130,17 @@ ImageFilterer.prototype.applyFilterToImage = function(images, histogram) {
 				$(this).data('imagefilter-haschild', ($(this).data('imagefilter-haschild') || 0) + 1);
 			});
 
-			//apply the filter and store the class name
-			$(images[i]).addClass(filter.styleName);
+			//actually apply the filter by adding a class to the element
+			if (!this.onlyPictures || this.isPicture(images[i], histogram))
+				$(images[i]).addClass(filter.styleName);
+
+			//store the class name as a backup
+			$(images[i]).data('imagefilter-class', filter.styleName);
+
+			filteredImages.push(images[i]);
 		}
 	}
+	$.merge(this.images, filteredImages);
 };
 
 ImageFilterer.prototype.updateFilter = function(histogram) {
@@ -95,7 +150,10 @@ ImageFilterer.prototype.updateFilter = function(histogram) {
 
 		//update the debug histogram if it exists
 		if (ImageFilterer.debugInfo && ImageFilterer.debugInfo.data('imagefilter-src') == histogram.src)
+		{
 			ImageFilterer.debugInfo.find('#imagefilter-histogram').replaceWith($(histogram.createGraph()).attr('id', 'imagefilter-histogram').css('border', '1px solid black'));
+			ImageFilterer.debugInfo.find('#imagefilter-filterinfo').html(this.filters[histogram.id].getInfo());
+		}
 	}
 };
 
@@ -141,6 +199,9 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 
 	var that = this;
 	$(img).on('mouseover', function(){
+		if (!ImageFilterer.enableDebug)
+			return;
+
 		//shouldn't need ImageFilterer.debugInfo.id == 'imagefilter-debug' but something weird is making it point to random elements
 		if (ImageFilterer.debugInfo && ImageFilterer.debugInfo.data('imagefilter-stay'))
 		{
@@ -187,6 +248,15 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 		if (url && this.nodeName != 'VIDEO')
 			ImageFilterer.debugInfo.append($('<img data-imagefilter-haschild="1" style="border:1px solid black; max-height: 128px;" alt="debugimg" src="' + url + '"/>'));
 
+		var textInfo = $('<div style="display: inline-block" id="imagefilter-info"><div id="imagefilter-filterinfo"></div></div>');
+		ImageFilterer.debugInfo.append(textInfo);
+		if (this.nodeName != 'VIDEO')
+		{
+			var filteredClass = $(this).data('imagefilter-class');
+			textInfo.prepend('<div>Class Applied: ' + $(this).hasClass(filteredClass) + '</div>');
+			textInfo.find('#imagefilter-filterinfo').html(that.filters[histogram.id].getInfo());
+		}
+
 	}).on('mouseout', function(){
 		if (ImageFilterer.debugInfo && !ImageFilterer.debugInfo.data('imagefilter-stay'))
 		{
@@ -210,6 +280,11 @@ ImageFilterer.prototype.imageRemoved = function(img, url) {
 		delete this.animatedHistograms[id];
 	}
 
+	//remove image from list of filtered images if it exists
+	var index = $.inArray(img, this.images);
+	if (index)
+		this.images.splice(index, 1);
+
 	var ancestors = $(img).parents();
 
 	//remove data-imagefilter-haschild contributions
@@ -224,7 +299,7 @@ ImageFilterer.prototype.imageRemoved = function(img, url) {
 	//check if an ancestor can now be filtered, since this has been removed
 	var next = ancestors.filter('[data-imagefilter-class]').first().not('[data-imagefilter-haschild]');
 	if (next.length)
-		this.imageAdded(next, next.data('imagefilter-src'));
+		this.imageAdded(next, next.attr('data-imagefilter-src'));
 };
 
 ImageFilterer.prototype.histogramReady = function(histogram) {
