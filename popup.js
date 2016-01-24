@@ -19,10 +19,10 @@ function getHostname(url)
 
 function parseSiteKey(key)
 {
-	var match = key.match(/^site-(enable|filter)-?(.*)$/);
+	var match = key.match(/^site-(enable|filter)(-(.+))?$/);
 	if (match)
 	{
-		if (activeHostname == match[2])
+		if (activeHostname == match[3])
 			return "site-" + match[1];
 		else
 			return null;

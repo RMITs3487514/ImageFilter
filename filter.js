@@ -1,16 +1,34 @@
 
 
-function ImageFilter(sources, enabled, histogram) {
+function ImageFilter(sources, enabled, initialCustomValues, histogram) {
 	this.enabled = enabled;
 	this.animatedHistogramRegex = /%([0-9]*)LH([RGBY])/g;
 	this.histogramRegex = /%([0-9]*)(L?)H([RGBY])/g;
+	this.variableRegex = /%\(([^\)]*V[1-3][^\)]*)\)/g;
+	this.requiresAnimatedHistogram = false;
+	this.requiresHistogram = false;
+	this.requiresVariables = false;
 	this.sources = sources;
 	this.histogram = histogram;
 	this.source = this.chooseSource(this.sources);
 	this.id = this.createUniqueName();
 	this.styleid = this.id + '-style';
 	this.styleName = this.id;
+	this.customValue = {}; //e.g. {V1: 0.8, V2: 0.2}
+	for (var k in initialCustomValues)
+		this.customValue[k] = initialCustomValues[k];
 	this.update();
+}
+
+ImageFilter.prototype.setCustomValue = function(key, value) {
+	if (!(key in this.customValue) || this.customValue[key] !== value)
+	{
+		this.customValue[key] = value;
+
+		//update if variables are used
+		if (this.requiresVariables)
+			this.update();
+	}
 }
 
 ImageFilter.prototype.getInfo = function() {
@@ -36,6 +54,10 @@ ImageFilter.prototype.update = function(sources) {
 				return that.histogram.getData(channel, that.histogram.animated && last, blockSize);
 			else
 				return "0 1";
+		});
+		this.source = this.source.replace(this.variableRegex, function(m, equation){
+			equation = equation.replace(/(V[1-3])/g, function (m, i) {return that.customValue[i];});
+			return eval(equation);
 		});
 	}
 
@@ -79,11 +101,12 @@ ImageFilter.prototype.chooseSource = function(sources) {
 	{
 		this.sourceIndex = i;
 		var source = sources[i];
-		var requiresAnimatedHistogram = source.match(this.animatedHistogramRegex);
-		var requiresHistogram = source.match(this.histogramRegex);
-		if (requiresHistogram && (!this.histogram || !this.histogram.success))
+		this.requiresAnimatedHistogram = source.match(this.animatedHistogramRegex);
+		this.requiresHistogram = source.match(this.histogramRegex);
+		this.requiresVariables = source.match(this.variableRegex);
+		if (this.requiresHistogram && (!this.histogram || !this.histogram.success))
 			continue;
-		if (requiresAnimatedHistogram && !this.histogram.animated)
+		if (this.requiresAnimatedHistogram && !this.histogram.animated)
 			continue;
 		break;
 	}

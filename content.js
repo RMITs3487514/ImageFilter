@@ -1,4 +1,6 @@
 
+//TODO: get options loading before filters to avoid multiple updates
+
 var filterer = new ImageFilterer();
 filterer.start();
 
@@ -32,9 +34,53 @@ function setCurrentFilter(name)
 	filterer.setFilterSources(sources);
 }
 
+var activeShortcuts = {};
+function setShortcut(name, shortcut, callback)
+{
+	if (name in activeShortcuts)
+		Mousetrap.unbind(activeShortcuts[name]);
+	if (shortcut)
+	{
+		shortcut = shortcut.split(" ");
+		Mousetrap.bind(shortcut, function(e){callback(); e.preventDefault(); return false;});
+		activeShortcuts[name] = shortcut;
+	}
+}
+
+function sendOption(key, value)
+{
+	chrome.runtime.sendMessage({key:key, value:value});
+}
+
 //all options come through here. not necessarily applicable or non-malicious
 function applyOption(key, value)
 {
+	if (value === 'null')
+		delete optionCache[key];
+	else
+		optionCache[key] = value;
+
+	if (key == 'shortcut-site-enable') setShortcut(key, value, function(){
+		sendOption('site-enable' + thisHostname, !optionCache['site-enable' + thisHostname]);
+	});
+	else if (key == 'shortcut-global-enable') setShortcut(key, value, function(){
+		sendOption('global-enable', !optionCache['global-enable']);
+	});
+
+	var customValueShortcut = key.match(/^shortcut-v([1-3])-(inc|dec)$/);
+	if (customValueShortcut)
+	{
+		setShortcut(key, value, function(){
+			var change = customValueShortcut[2] == 'inc' ? 0.1 : -0.1;
+			var val = Math.max(0.0, Math.min(1.0, parseFloat(optionCache['option-value' + customValueShortcut[1]]) + change));
+			sendOption('option-value' + customValueShortcut[1], val);
+		});
+	}
+
+	var customValue = key.match(/^option-value([1-3])$/);
+	if (customValue)
+		filterer.setCustomValue('V' + customValue[1], value);
+
 	if (key == 'option-debugpopup')
 	{
 		ImageFilterer.enableDebug = value;
@@ -46,11 +92,6 @@ function applyOption(key, value)
 		filterer.setOnlyPictures(value);
 		return;
 	}
-
-	if (value === 'null')
-		delete optionCache[key];
-	else
-		optionCache[key] = value;
 
 	if (key == "global-enable")
 	{
@@ -65,8 +106,8 @@ function applyOption(key, value)
 		return;
 	}
 
-	var match = key.match(/^site-(enable|filter)-?(.*)$/);
-	if (match && match[2].length > 0 && thisHostname == match[2])
+	var match = key.match(/^site-(enable|filter)(-(.+))$/);
+	if (match && match[2].length > 0 && thisHostname == match[3])
 	{
 		var option = match[1];
 		//if null, the global default replaces the site-specitic override

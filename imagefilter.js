@@ -13,6 +13,8 @@ function ImageFilterer() {
 	this.svgFilters = {};
 	this.onlyPictures = true;
 
+	this.customValueCache = {V1:0.5, V2:0.5, V3:0.5};
+
 	var that = this;
 	this.start = this.finder.start.bind(this.finder);
 	this.finder.sourceAdded = this.sourceAdded.bind(this);
@@ -77,6 +79,14 @@ ImageFilterer.prototype.setOnlyPictures = function(enabled) {
 	}
 };
 
+ImageFilterer.prototype.setCustomValue = function(key, value) {
+	this.customValueCache[key] = value;
+	if (this.defaultFilter)
+		this.defaultFilter.setCustomValue(key, value);
+	for (var k in this.filters)
+		this.filters[k].setCustomValue(key, value);
+};
+
 ImageFilterer.prototype.setFilterSources = function(sources) {
 	this.filterSources = sources;
 	if (this.defaultFilter)
@@ -97,13 +107,13 @@ ImageFilterer.prototype.chooseFilter = function(img, histogram) {
 	if (histogram.success)
 	{
 		if (!(histogram.id in this.filters))
-			this.filters[histogram.id] = new ImageFilter(this.filterSources, this.enabled, histogram);
+			this.filters[histogram.id] = new ImageFilter(this.filterSources, this.enabled, this.customValueCache, histogram);
 		return this.filters[histogram.id];
 	}
 	else
 	{
 		if (!this.defaultFilter)
-			this.defaultFilter = new ImageFilter(this.filterSources, this.enabled);
+			this.defaultFilter = new ImageFilter(this.filterSources, this.enabled, this.customValueCache);
 		return this.defaultFilter;
 	}
 };
@@ -280,6 +290,9 @@ ImageFilterer.prototype.imageRemoved = function(img, url) {
 		this.animatedHistograms[id].stop();
 		delete this.animatedHistograms[id];
 	}
+
+	//remove css class that applies the filter
+	$(img).removeClass($(img).data('imagefilter-class'));
 
 	//remove image from list of filtered images if it exists
 	var index = $.inArray(img, this.images);

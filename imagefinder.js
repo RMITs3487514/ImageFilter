@@ -39,7 +39,10 @@ ImageFinder.prototype.addImages = function(elements, url) {
 		return $(this).attr('data-imagefilter-src') != eurl;
 	});
 	if (modifiedElements.length)
+	{
+		console.log(modifiedElements.length + " images have changed source.");
 		this.removeImages(modifiedElements);
+	}
 
 	//add everything not already added
 	elements = elements.not(this.images);
@@ -180,7 +183,6 @@ ImageFinder.prototype.parseStyleMutations = function(mutations) {
 	mutations.forEach(function(mutation) {
 		if (mutation.target.nodeType == 3 && mutation.target.parentNode.nodeName == 'STYLE')
 		{
-			console.log(mutation.target.parentNode);
 			if (mutation.target.parentNode.sheet)
 				that.parseStyle(mutation.target.parentNode.sheet.cssRules);
 		}
