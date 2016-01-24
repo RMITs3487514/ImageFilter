@@ -40,6 +40,11 @@ ImageFilterer.debugInfo = null;
 ImageFilterer.enableDebug = false;
 
 ImageFilterer.prototype.isPicture = function(image, histogram) {
+	var w = $(image).width();
+	var h = $(image).height();
+	if (w * h < 128 * 128)
+		return false;
+
 	if (histogram.success)
 	{
 		//var merit = histogram.getGolayMerit();
@@ -49,11 +54,6 @@ ImageFilterer.prototype.isPicture = function(image, histogram) {
 		if (peakArea > 0.1)
 			return false;
 	}
-
-	var w = $(image).width();
-	var h = $(image).height();
-	if (w * h < 128 * 128)
-		return false;
 
 	return true;
 };
