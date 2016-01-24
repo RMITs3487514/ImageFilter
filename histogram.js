@@ -136,8 +136,11 @@ Histogram.prototype.getImagePixels = function(drawable) {
 
 Histogram.prototype.updateHistogram = function(drawable) {
 	var pixels = this.getImagePixels(drawable);
+	if (!pixels)
+		return false;
+	
 	this.totalPixels = pixels.width * pixels.height;
-	if (!pixels || this.totalPixels == 0)
+	if (this.totalPixels == 0)
 		return false;
 
 	var data = pixels.data;

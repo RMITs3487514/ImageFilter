@@ -141,7 +141,7 @@ ImageFinder.prototype.processElements = function(elements) {
 		this.addImages(imageElements);
 
 	//find elements with style attriutes with images
-	var styledElements = elements.not(imageElements).filter('*[style]').not(imageElements);
+	var styledElements = elements.filter('*[style]').not(imageElements).not(imageElements);
 	styledElements.each(function(){
 		var computedStyle = this.currentStyle || getComputedStyle(this, null);
 		var url = that.getCSSBackgroundImage(computedStyle);

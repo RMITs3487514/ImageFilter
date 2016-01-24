@@ -254,7 +254,8 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 		{
 			var filteredClass = $(this).data('imagefilter-class');
 			textInfo.prepend('<div>Class Applied: ' + $(this).hasClass(filteredClass) + '</div>');
-			textInfo.find('#imagefilter-filterinfo').html(that.filters[histogram.id].getInfo());
+			if (histogram.id in that.filters)
+				textInfo.find('#imagefilter-filterinfo').html(that.filters[histogram.id].getInfo());
 		}
 
 	}).on('mouseout', function(){

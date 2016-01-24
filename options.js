@@ -1,5 +1,6 @@
 
 var filterKeys = ['filter-', 'filtershortcut-', 'filterfallback-'];
+var shortcutNone = '[none]';
 
 function camelize(str) {
 	return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
@@ -27,10 +28,13 @@ function saveFilter(filter)
 
 	function saveData(name)
 	{
+		var shortcut = filter.find('.filter-shortcut').val();
+		if (shortcut == shortcutNone)
+			shortcut = null;
 		var data = {};
 		data['filter-' + name] = filter.find('.filter-source').val();
 		data['filterfallback-' + name] = filter.find('.filter-fallback').val();
-		data['filtershortcut-' + name] = filter.find('.filter-shortcut').val();
+		data['filtershortcut-' + name] = shortcut;
 		mystorage.set(data);
 	}
 
@@ -67,6 +71,7 @@ function deleteFilter(name)
 
 function createFilter(name, source, fallback, shortcut)
 {
+	shortcut = shortcut || shortcutNone;
 	var filter = $($('#filter-template').html());
 	$('#filters').append(filter);
 	filter.find('.filter-name').val(name).attr('data-saved-name', name);
@@ -89,15 +94,18 @@ function loadOptions(){
 	mystorage.all(function(items){
 		for (var key in items)
 		{
-			if (key.match(/^[a-z-]+$/))
+			if (key.match(/^[a-z-0-9]+$/))
 			{
 				var option = $('input[name="' + key + '"]');
 				if (option.length == 1)
 				{
+					var val = items[key];
+					if (option.hasClass('shortcut') && !val)
+						val = shortcutNone;
 					if (option[0].type == 'checkbox')
-						option[0].checked = items[key];
+						option[0].checked = val;
 					else
-						option[0].value = items[key];
+						option[0].value = val;
 					continue;
 				}
 			}
@@ -125,8 +133,11 @@ $(function(){
 
 	$('.option').on('change', function(event){
 		var value = this.type == 'checkbox' ? this.checked : this.value;
+		if (value == shortcutNone) //handle shortcut "none"
+			value = null;
 		var data = {};
 		data[this.name] = value;
+		console.log(this.name, value);
 		mystorage.set(data);
 		var message = {key:this.name, value:value};
 		chrome.tabs.query({}, function(tabs) {
@@ -134,6 +145,24 @@ $(function(){
 				chrome.tabs.sendMessage(tabs[i].id, message);
 		});
 	});
+
+	$(document).on("click", ".shortcut", function() {
+		var button = $(this);
+		button.css('background-color', '#ec5151');
+		Mousetrap.record({partialCallback:function(sequence){
+			//partial sequence
+			button.val(sequence.join(' '));
+		}},	function(sequence) {
+			//final sequence
+			var str = sequence.join(' ');
+			if (!str || str == 'del' || str == 'esc')
+				str = shortcutNone;
+			button.val(str);
+			button.css('background-color', '');
+			button.trigger('change');
+		});
+	});
+	$(".shortcut").val(shortcutNone);
 
 	mystorage.get('hasdefaults', function(value){
 		if (value)

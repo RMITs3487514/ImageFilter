@@ -4,6 +4,9 @@
 	<meta charset="UTF-8">
 	<title>ImageFilter Options</title>
 	<script type="text/javascript" src="jquery-2.2.0.min.js"></script>
+	<script type="text/javascript" src="mousetrap.min.js"></script>
+	<!-- <script type="text/javascript" src="mousetrap-global-bind.min.js"></script> -->
+	<script type="text/javascript" src="mousetrap-record.js"></script>
 	<script type="text/javascript" src="storage.js"></script>
 	<script type="text/javascript" src="defaults.js"></script>
 	<script type="text/javascript" src="options.js"></script>
@@ -19,12 +22,32 @@
 	textarea {
 		font-family: "Courier New", Courier, monospace;
 	}
+	.shortcut {
+		min-width: 100px;
+	}
 	</style>
 </head>
 <body>
 	<h1>Image Filter Options</h1>
 	<div><label><input type="checkbox" class="option" name="option-onlypictures">Don't filter icons and images with text.</label></div>
 	<div><label><input type="checkbox" class="option" name="option-debugpopup">Display debug popup on mouseover.</label></div>
+	<div><label>Enable site shortcut: <input class="shortcut option" name="shortcut-site-enable" type="button" /></label></div>
+	<div><label>Enable default shortcut: <input class="shortcut option" name="shortcut-global-enable" type="button" /></label></div>
+	<div>
+		V1
+		<label>dec <input class="shortcut option" name="shortcut-v1-dec" type="button" /></label>
+		<label>inc <input class="shortcut option" name="shortcut-v1-inc" type="button" /></label>
+	</div>
+	<div>
+		V2
+		<label>dec <input class="shortcut option" name="shortcut-v2-dec" type="button" /></label>
+		<label>inc <input class="shortcut option" name="shortcut-v2-inc" type="button" /></label>
+	</div>
+	<div>
+		V3
+		<label>dec <input class="shortcut option" name="shortcut-v3-dec" type="button" /></label>
+		<label>inc <input class="shortcut option" name="shortcut-v3-inc" type="button" /></label>
+	</div>
 	<h1>Filters:</h1>
 	<ul id="filters">
 	</ul>
@@ -34,7 +57,7 @@
 			<div><input class="filter-name" type="text" /></div>
 			<div><textarea class="filter-source" cols="80" rows="5"></textarea></div>
 			<div><label>Fallback filter: <input class="filter-fallback" type="text" /></label></div>
-			<div><label>Global shortcut: <input class="filter-shortcut" type="text" /></label></div>
+			<div><label>Global shortcut: <input class="shortcut filter-shortcut" type="button" /></label></div>
 			<div><button class="savefilter">Save</button></div>
 			<div><button class="deletefilter">Delete</button></div>
 		</li>
