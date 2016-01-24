@@ -3,7 +3,7 @@
 
 function ImageFilterer() {
 	this.animationUpdateFrequency = 1000;
-	this.golayMeritThreshold = 0.08;
+	//this.golayMeritThreshold = 0.08;
 
 	this.finder = new ImageFinder();
 	this.images = [];
@@ -42,10 +42,11 @@ ImageFilterer.enableDebug = false;
 ImageFilterer.prototype.isPicture = function(image, histogram) {
 	if (histogram.success)
 	{
-		var merit = histogram.getGolayMerit();
-		var n = 256;
-		var m = histogram.histogram[histogram.histogram.length-1]; //should equal the number of pixels
-		if (merit < this.golayMeritThreshold)
+		//var merit = histogram.getGolayMerit();
+		//if (merit < this.golayMeritThreshold)
+		//	return false;
+		var peakArea = histogram.getPeakArea(0.02);
+		if (peakArea > 0.1)
 			return false;
 	}
 
@@ -65,13 +66,13 @@ ImageFilterer.prototype.setOnlyPictures = function(enabled) {
 		var image = $(this.images[i]);
 		var filteredClass = image.data('imagefilter-class');
 		var apply = true;
-		if (this.onlyPictures)
+		if (this.onlyPictures && image.nodeName !== 'VIDEO')
 		{
 			var url = image.attr('data-imagefilter-src');
-			if (image.nodeName == 'VIDEO')
-				histogram = this.animatedHistograms[image.data('imagefilter-histogram-id')];
-			else
-				histogram = this.histograms[url];
+			//if (image.nodeName == 'VIDEO') //not a video, so don't need to check
+			//	histogram = this.animatedHistograms[image.data('imagefilter-histogram-id')];
+			//else
+			histogram = this.histograms[url];
 			if (!this.isPicture(image, histogram))
 				apply = false;
 		}
@@ -141,7 +142,7 @@ ImageFilterer.prototype.applyFilterToImage = function(images, histogram) {
 			});
 
 			//actually apply the filter by adding a class to the element
-			if (!this.onlyPictures || this.isPicture(images[i], histogram))
+			if (!this.onlyPictures || images[i].nodeName == 'VIDEO' || this.isPicture(images[i], histogram))
 				$(images[i]).addClass(filter.styleName);
 
 			//store the class name as a backup

@@ -51,7 +51,7 @@ Histogram.prototype.createGraph = function() {
 
 	ctx.fillStyle="rgba(0,0,0,0.5)";
 	ctx.fillRect(0, 0, w, h);
-	ctx.lineWidth = 3;
+	ctx.lineWidth = 1;
 
 	var stroke = ['rgba(255,0,0,1)', 'rgba(0,255,0,1)', 'rgba(0,0,255,1)', 'rgba(255,255,255,1)'];
 	var fill = ['rgba(255,0,0,1)', 'rgba(0,255,0,0.5)', 'rgba(0,0,255,0.25)', 'rgba(220,220,220,0.125)'];
@@ -138,7 +138,7 @@ Histogram.prototype.updateHistogram = function(drawable) {
 	var pixels = this.getImagePixels(drawable);
 	if (!pixels)
 		return false;
-	
+
 	this.totalPixels = pixels.width * pixels.height;
 	if (this.totalPixels == 0)
 		return false;
@@ -185,15 +185,32 @@ Histogram.prototype.updateHistogram = function(drawable) {
 	return true;
 };
 
+//find the area of the top % peaks
+//http://sujitpal.blogspot.com.au/2012/04/image-classification-photo-or-drawing.html
+//https://stackoverflow.com/questions/9354744/how-to-detect-if-an-image-is-a-photo-clip-art-or-a-line-drawing
+Histogram.prototype.getPeakArea = function(peak) {
+	var lum = [];
+	var last = 0.0;
+	for (var i = 256*3; i < 256*4; ++i)
+	{
+		lum.push(this.histogram[i]-last);
+		last = this.histogram[i];
+	}
+	var sorted = lum.sort();
+	var top = sorted.slice(sorted.length - Math.floor(peak * sorted.length));
+	return top.reduce(function(a, b) {return a + b;});
+};
+
 //computes golay merit for luminance channel
 //http://people.math.sfu.ca/~jed/Papers/Jedwab.%20Merit%20Factor%20Survey.%202005.pdf
 //http://www.cecm.sfu.ca/personal/pborwein/PAPERS/P218.pdf
+//FIXME: not sure this is giving useful values
 Histogram.prototype.getGolayMerit = function() {
 	var a = this.histogram;
 	var C = function(N, k){
 		var r = 0;
 		for (var j = 0; j < N - k - 2; ++j)
-			r += (a[j*4+3]*2-1) * (a[(j+k)*4+3]*2-1);
+			r += (a[256*3+j]*2-1) * (a[256*3+(j+k)]*2-1);
 		return r;
 	};
 	var E = function(N){

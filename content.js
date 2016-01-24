@@ -1,5 +1,6 @@
 
 //TODO: get options loading before filters to avoid multiple updates
+//TODO: I think duplicate histograms per src are being created
 
 var filterer = new ImageFilterer();
 filterer.start();
@@ -74,6 +75,14 @@ function applyOption(key, value)
 			var change = customValueShortcut[2] == 'inc' ? 0.1 : -0.1;
 			var val = Math.max(0.0, Math.min(1.0, parseFloat(optionCache['option-value' + customValueShortcut[1]]) + change));
 			sendOption('option-value' + customValueShortcut[1], val);
+		});
+	}
+
+	var filterShortcut = key.match(/^filtershortcut-(.*)$/);
+	if (filterShortcut)
+	{
+		setShortcut(key, value, function(){
+			sendOption('global-filter', filterShortcut[1]);
 		});
 	}
 
