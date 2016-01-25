@@ -163,6 +163,8 @@ function applyOption(key, value)
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.contextMenuClick == 'filter')
 		filterer.applyManually(contextMenuElement, getFilterSources(request.name));
+	else if (request.contextMenuClick == 'clearfilter')
+		filterer.applyManually(contextMenuElement, null);
 	else if (request.contextMenuClick == 'zoom')
 		zoomElement(contextMenuElement, request.ratio);
 	else

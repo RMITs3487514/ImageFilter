@@ -153,17 +153,25 @@ ImageFilterer.prototype.applyManually = function(image, sources) {
 		image.data('imagefilter-override', filterID);
 	}
 
-	var filter = new ImageFilter(sources, true, this.customValueCache, histogram);
-	this.filterOverrides[filterID] = filter;
+	if (sources === null)
+	{
+		image.removeData('imagefilter-override');
+		this.applyFilterToImage([image], histogram);
+	}
+	else
+	{
+		var filter = new ImageFilter(sources, true, this.customValueCache, histogram);
+		this.filterOverrides[filterID] = filter;
 
-	//remove old css class
-	image.removeClass(image.data('imagefilter-class'));
+		//remove old css class
+		image.removeClass(image.data('imagefilter-class'));
 
-	//add the new one
-	image.addClass(filter.styleName);
+		//add the new one
+		image.addClass(filter.styleName);
 
-	//store the class name as a backup
-	image.data('imagefilter-class', filter.styleName);
+		//store the class name as a backup
+		image.data('imagefilter-class', filter.styleName);
+	}
 };
 
 ImageFilterer.prototype.applyFilterToImage = function(images, histogram) {
