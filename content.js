@@ -8,6 +8,30 @@ filterer.start();
 var optionCache = {};
 var thisHostname = location.hostname;
 
+var contextMenuElement = null;
+window.addEventListener('contextmenu', function(e){
+	contextMenuElement = e.target;
+});
+
+function zoomElement(element, ratio) {
+	var e = $(element);
+	var original = e.data('imagefilter-zoom');
+	if (!original)
+	{
+		original = {w: e.width(), h: e.height(), bak: e.css(['width', 'height', 'background-size'])};
+		e.data('imagefilter-zoom', original);
+	}
+
+	if (ratio == 1.0)
+		e.css(original.bak);
+	else
+	{
+		e.css('width', Math.floor(original.w * ratio) + ".px");
+		e.css('height', Math.floor(original.h * ratio) + ".px");
+		e.css('background-size', '100% 100%');
+	}
+};
+
 function getHostname(url)
 {
 	var parser = document.createElement('a');
@@ -137,7 +161,12 @@ function applyOption(key, value)
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	applyOption(request.key, request.value);
+	if (request.contextMenuClick == 'filter')
+		filterer.applyManually(contextMenuElement, getFilterSources(request.name));
+	else if (request.contextMenuClick == 'zoom')
+		zoomElement(contextMenuElement, request.ratio);
+	else
+		applyOption(request.key, request.value);
 });
 
 var onLoadCalled = false;

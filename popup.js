@@ -1,4 +1,6 @@
 
+//TODO: handle filter removal
+
 var activeTab = null;
 var activeHostname = null;
 

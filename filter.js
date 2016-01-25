@@ -20,6 +20,10 @@ function ImageFilter(sources, enabled, initialCustomValues, histogram) {
 	this.update();
 }
 
+ImageFilter.prototype.release = function() {
+	console.log("Haven't implemented ImageFilter.release()");
+};
+
 ImageFilter.prototype.setCustomValue = function(key, value) {
 	if (!(key in this.customValue) || this.customValue[key] !== value)
 	{

@@ -1,5 +1,6 @@
 
 //TODO: pause histogram generaiton when disabled
+//TODO: clean up filters when they're not needed
 
 function ImageFilterer() {
 	this.animationUpdateFrequency = 1000;
@@ -22,8 +23,10 @@ function ImageFilterer() {
 	this.finder.imageAdded = this.imageAdded.bind(this);
 	this.finder.imageRemoved = this.imageRemoved.bind(this);
 
+	this.nextOverrideID = 0;
 	this.defaultFilter = null;
 	this.filters = {};
+	this.filterOverrides = {};
 	this.filterSources = [
 		'<feComponentTransfer in="SourceGraphic" result="Current"><feFuncR type="table" tableValues="%HR"/> <feFuncG type="table" tableValues="%HG"/> <feFuncB type="table" tableValues="%HB"/></feComponentTransfer>'
 		+ '<feComponentTransfer in="SourceGraphic" result="Last"><feFuncR type="table" tableValues="%LHR"/> <feFuncG type="table" tableValues="%LHG"/> <feFuncB type="table" tableValues="%LHB"/> </feComponentTransfer>'
@@ -117,6 +120,50 @@ ImageFilterer.prototype.chooseFilter = function(img, histogram) {
 			this.defaultFilter = new ImageFilter(this.filterSources, this.enabled, this.customValueCache);
 		return this.defaultFilter;
 	}
+};
+
+//override a filter already applied to an image
+ImageFilterer.prototype.applyManually = function(image, sources) {
+	image = $(image);
+
+	if (!$.inArray(image, this.images))
+	{
+		console.log('Cannot apply filter, image ' + image + " hasn\'t been added yet.");
+		return;
+	}
+
+	var url = image.attr('data-imagefilter-src');
+
+	var histogram;
+	if (this.nodeName == 'VIDEO')
+		histogram = this.animatedHistograms[$(image).data('imagefilter-histogram-id')];
+	else
+		histogram = this.histograms[url];
+
+	var filterID = image.data('imagefilter-override');
+	if (filterID)
+	{
+		filter = this.filterOverrides[filterID];
+		filter.release();
+		delete this.filterOverrides[filterID];
+	}
+	else
+	{
+		filterID = this.nextOverrideID++;
+		image.data('imagefilter-override', filterID);
+	}
+
+	var filter = new ImageFilter(sources, true, this.customValueCache, histogram);
+	this.filterOverrides[filterID] = filter;
+
+	//remove old css class
+	image.removeClass(image.data('imagefilter-class'));
+
+	//add the new one
+	image.addClass(filter.styleName);
+
+	//store the class name as a backup
+	image.data('imagefilter-class', filter.styleName);
 };
 
 ImageFilterer.prototype.applyFilterToImage = function(images, histogram) {
