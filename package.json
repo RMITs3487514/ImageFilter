@@ -1,0 +1,16 @@
+{
+  "title": "ImageFilter",
+  "name": "imagefilter",
+  "version": "0.0.1",
+  "description": "Applies customizable high contrast filters to all images and videos on web pages",
+  "main": "index.js",
+  "author": "Pyarelal Knowles",
+  "engines": {
+    "firefox": ">=38.0a1",
+    "fennec": ">=38.0a1"
+  },
+  "license": "None",
+  "keywords": [
+    "jetpack"
+  ]
+}

@@ -1,4 +1,5 @@
 
+//FIXME: video filters are being added with the same id
 
 function ImageFilter(sources, enabled, initialCustomValues, histogram) {
 	this.enabled = enabled;
