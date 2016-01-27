@@ -139,11 +139,7 @@ $(function(){
 		data[this.name] = value;
 		console.log(this.name, value);
 		mystorage.set(data);
-		var message = {key:this.name, value:value};
-		chrome.tabs.query({}, function(tabs) {
-			for (var i=0; i < tabs.length; ++i)
-				chrome.tabs.sendMessage(tabs[i].id, message);
-		});
+		mymessages.sendTabs({key:this.name, value:value});
 	});
 
 	$(document).on("click", ".shortcut", function() {
@@ -163,14 +159,4 @@ $(function(){
 		});
 	});
 	$(".shortcut").val(shortcutNone);
-
-	mystorage.get('hasdefaults', function(value){
-		if (value)
-			loadOptions();
-		else
-		{
-			defaultOptions['hasdefaults'] = true;
-			mystorage.set(defaultOptions, loadOptions);
-		}
-	});
 });

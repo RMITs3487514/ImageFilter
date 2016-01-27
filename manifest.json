@@ -29,7 +29,9 @@
 			"js": [
 				"jquery-2.2.0.min.js",
 				"mousetrap.min.js",
+				"defaults.js",
 				"storage.js",
+				"messaging.js",
 				"imagefinder.js",
 				"histogram.js",
 				"filter.js",
@@ -40,6 +42,6 @@
 		}
 	],
 	"background": {
-		"scripts": ["storage.js", "background.js"]
+		"scripts": ["storage.js", "messaging.js", "background.js"]
 	}
 }

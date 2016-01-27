@@ -12,5 +12,5 @@ var defaultOptions = {
 	"global-enable":true,
 	"global-filter":"EquilizeVideo",
 	"option-onlypictures":true,
-	"option-debugpopup":false
+	"option-debugpopup":true
 }

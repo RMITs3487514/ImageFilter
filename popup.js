@@ -1,7 +1,6 @@
 
 //TODO: handle filter removal
 
-var activeTab = null;
 var activeHostname = null;
 
 //helper function to catch events given a selector (avoid pulling in jquery)
@@ -77,22 +76,15 @@ function sendOption(key, value)
 	else
 		mystorage.remove(key);
 
-	//send to active tab first
+	//send to all tabs
 	var data = {key:key, value:value};
-	chrome.tabs.sendMessage(activeTab, data);
-
-	//then to all the rest
-	chrome.tabs.query({}, function(tabs) {
-		for (var i=0; i < tabs.length; ++i)
-			if (tabs[i].id != activeTab)
-				chrome.tabs.sendMessage(tabs[i].id, data);
-	});
+	mymessages.sendTabs(data);
 
 	//finally, make sure the option page is displaying the right thing
 	applyOption(key, value);
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+mymessages.listen(function(request){
 	var re = /^[a-z-]+$/;
 	if (re.test(request.key))
 		applyOption(request.key, request.value);
@@ -112,24 +104,7 @@ document.addEventListener('DOMContentLoaded', function(){
 			sendOption(elements[i].name, null);
 	});
 	ev('#open-options', 'click', function(e){
-		//PLATFORM-SPECIFIC
-		if (typeof chrome.runtime.openOptionsPage == 'function')
-		{
-			chrome.runtime.openOptionsPage();
-			console.log(chrome.runtime.lastError);
-		}
-		else
-		{
-			var optionsUrl = chrome.extension.getURL('options.html');
-			chrome.tabs.query({url: optionsUrl}, function(tabs) {
-				if (tabs.length) {
-					chrome.tabs.update(tabs[0].id, {active: true});
-				} else {
-					chrome.tabs.create({url: optionsUrl});
-				}
-			});
-		}
-
+		openOptions();
 		e.preventDefault();
 		return false;
 	});
@@ -137,9 +112,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
 function onLoad()
 {
-	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		activeTab = tabs[0].id;
-		activeHostname = getHostname(tabs[0].url);
+	getActiveTabURL(function(url) {
+		activeHostname = getHostname(url);
 
 		mystorage.all(function(items){
 			for (var key in items)

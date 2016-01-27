@@ -74,7 +74,7 @@ function setShortcut(name, shortcut, callback)
 
 function sendOption(key, value)
 {
-	chrome.runtime.sendMessage({key:key, value:value});
+	mymessages.sendBacgkround({key:key, value:value});
 }
 
 //all options come through here. not necessarily applicable or non-malicious
@@ -160,7 +160,7 @@ function applyOption(key, value)
 	}
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+mymessages.listen(function(request) {
 	if (request.contextMenuClick == 'filter')
 		filterer.applyManually(contextMenuElement, getFilterSources(request.name));
 	else if (request.contextMenuClick == 'clearfilter')
@@ -187,4 +187,12 @@ function onLoad()
 	});
 }
 
-onLoad();
+mystorage.get('hasdefaults', function(value){
+	if (value)
+		onLoad();
+	else
+	{
+		defaultOptions['hasdefaults'] = true;
+		mystorage.set(defaultOptions, onLoad);
+	}
+});

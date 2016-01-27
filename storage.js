@@ -17,19 +17,51 @@ if (typeof chrome !== 'undefined')
 }
 else
 {
-	mystorage.all = function(callback) {callback(mystorage.ss.storage);};
+	var self = self || addon;
+	mystorage.lastID = 0;
+	mystorage.replycallbacks = {};
+	self.port.on('storage-reply', function(reply){
+		mystorage.replycallbacks[reply.id](reply.data);
+		delete mystorage.replycallbacks[reply.id];
+	});
+
+	//mystorage.ss = require("sdk/simple-storage");
+
+	mystorage.all = function(callback) {
+		var id = mystorage.lastID++;
+		mystorage.replycallbacks[id] = callback;
+		self.port.emit('storage', {get:null, id:id});
+		//callback(mystorage.ss.storage);
+	};
 	mystorage.get = function(key, callback) {
+		var id = mystorage.lastID++;
+		mystorage.replycallbacks[id] = function(reply){
+			callback(reply[key]);
+		};
+		self.port.emit('storage', {get:key, id:id});
+		/*
+		mystorage.replycallback
 		if (key in mystorage.ss.storage)
 			callback(mystorage.ss.storage[key]);
 		else
 			callback();
+		*/
 	};
 	mystorage.set = function (data, callback) {
+		var id = mystorage.lastID++;
+		mystorage.replycallbacks[id] = callback;
+		self.port.emit('storage', {set:data, id:id});
+		/*
 		for (var k in data)
 			mystorage.ss.storage[k] = data[k];
 		callback();
+		*/
 	};
 	mystorage.remove = function (key, callback) {
+		var id = mystorage.lastID++;
+		mystorage.replycallbacks[id] = callback;
+		self.port.emit('storage', {remove:key, id:id});
+		/*
 		if (key instanceof Array)
 		{
 			for (var k in key)
@@ -38,5 +70,6 @@ else
 		else
 			delete mystorage.ss.storage[key];
 		callback();
+		*/
 	};
 }
