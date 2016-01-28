@@ -14,3 +14,16 @@ var defaultOptions = {
 	"option-onlypictures":true,
 	"option-debugpopup":true
 }
+
+function assertDefaultsAreLoaded(callback)
+{
+	mystorage.get('hasdefaults', function(value){
+		if (value)
+			callback();
+		else
+		{
+			defaultOptions['hasdefaults'] = true;
+			mystorage.set(defaultOptions, callback);
+		}
+	});
+}

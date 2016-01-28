@@ -159,4 +159,6 @@ $(function(){
 		});
 	});
 	$(".shortcut").val(shortcutNone);
+	
+	assertDefaultsAreLoaded(loadOptions);
 });

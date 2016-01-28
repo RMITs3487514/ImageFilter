@@ -12,8 +12,8 @@ if (typeof chrome !== 'undefined')
 				callback();
 		});
 	};
-	mystorage.set = chrome.storage.sync.set;
-	mystorage.remove = chrome.storage.sync.remove;
+	mystorage.set = function(data, callback) {chrome.storage.sync.set(data, callback);};
+	mystorage.remove = function(data, callback) {chrome.storage.sync.remove(data, callback);};
 }
 else
 {

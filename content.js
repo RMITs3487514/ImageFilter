@@ -80,6 +80,9 @@ function sendOption(key, value)
 //all options come through here. not necessarily applicable or non-malicious
 function applyOption(key, value)
 {
+	if (key.match(/^site-(enable|filter)/))
+		return;
+
 	if (value === 'null')
 		delete optionCache[key];
 	else
@@ -187,12 +190,4 @@ function onLoad()
 	});
 }
 
-mystorage.get('hasdefaults', function(value){
-	if (value)
-		onLoad();
-	else
-	{
-		defaultOptions['hasdefaults'] = true;
-		mystorage.set(defaultOptions, onLoad);
-	}
-});
+assertDefaultsAreLoaded(onLoad);
