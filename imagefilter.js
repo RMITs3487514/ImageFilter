@@ -1,6 +1,8 @@
 
+//FIXME: bug when changing image source of a parent node filtered after removing a child
 //TODO: pause histogram generaiton when disabled
 //TODO: clean up filters when they're not needed
+//TODO: faster isPicture choice with css?: https://stackoverflow.com/questions/2481414/how-do-i-select-a-div-with-class-a-but-not-with-class-b
 
 function ImageFilterer() {
 	this.animationUpdateFrequency = 1000;
@@ -13,6 +15,7 @@ function ImageFilterer() {
 	this.animatedHistograms = {};
 	this.svgFilters = {};
 	this.onlyPictures = true;
+	this.inverted = true;
 
 	this.customValueCache = {V1:0.5, V2:0.5, V3:0.5};
 
@@ -61,10 +64,27 @@ ImageFilterer.prototype.isPicture = function(image, histogram) {
 	return true;
 };
 
+ImageFilterer.prototype.invertAll = function(enabled) {
+	/*
+	var style = $('#imagefilter-invertall');
+	if (!style.length)
+	{
+		style = $('<style id="imagefilter-invertall"></style>');
+		$(document.body).append(style);
+	}
+	style.html(enable ? '.imagefilter-all {-moz-filter: invert(100%); -webkit-filter: invert(100%); filter: invert(100%);}' : '');
+	*/
+	this.inverted = enabled;
+	if (this.defaultFilter)
+		this.defaultFilter.invert(enabled);
+	for (var k in this.filters)
+		this.filters[k].invert(enabled);
+};
+
 ImageFilterer.prototype.setOnlyPictures = function(enabled) {
 	this.onlyPictures = enabled;
 	//update filter class for every image currently being filtered
-	for (var i in this.images)
+	for (var i = 0; i < this.images.length; ++i)
 	{
 		var image = $(this.images[i]);
 
@@ -116,13 +136,13 @@ ImageFilterer.prototype.chooseFilter = function(img, histogram) {
 	if (histogram.success)
 	{
 		if (!(histogram.id in this.filters))
-			this.filters[histogram.id] = new ImageFilter(this.filterSources, this.enabled, this.customValueCache, histogram);
+			this.filters[histogram.id] = new ImageFilter(this.filterSources, this.enabled, this.customValueCache, this.inverted, histogram);
 		return this.filters[histogram.id];
 	}
 	else
 	{
 		if (!this.defaultFilter)
-			this.defaultFilter = new ImageFilter(this.filterSources, this.enabled, this.customValueCache);
+			this.defaultFilter = new ImageFilter(this.filterSources, this.enabled, this.customValueCache, this.inverted);
 		return this.defaultFilter;
 	}
 };
@@ -209,6 +229,10 @@ ImageFilterer.prototype.applyFilterToImage = function(images, histogram) {
 
 			//store the class name as a backup, even if it wasn't applied
 			$(images[i]).attr('data-imagefilter-class', filter.styleName);
+
+			//NOTE: not used
+			//apply the global class to mass allow filtering everything
+			//$(images[i]).addClass('imagefilter-all');
 
 			filteredImages.push(images[i]);
 		}

@@ -160,14 +160,17 @@
     function _normalizeSequence(sequence) {
         var i;
 
+        var mods = {'ctrl': 0, 'alt': 1, 'shift': 2};
+
         for (i = 0; i < sequence.length; ++i) {
             sequence[i].sort(function(x, y) {
                 // modifier keys always come first, in alphabetical order
-                if (x.length > 1 && y.length === 1) {
+                if (x in mods && !(y in mods))
                     return -1;
-                } else if (x.length === 1 && y.length > 1) {
+                else if (!(x in mods) && y in mods)
                     return 1;
-                }
+                else if (x in mods && y in mods)
+                    return mods[x] > mods[y] ? 1 : -1;
 
                 // character keys come next (list should contain no duplicates,
                 // so no need for equality check)

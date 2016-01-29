@@ -181,13 +181,16 @@ ImageFinder.prototype.parseMutations = function(mutations) {
 ImageFinder.prototype.parseStyleMutations = function(mutations) {
 	var that = this;
 	mutations.forEach(function(mutation) {
-		if (mutation.target.nodeType == 3 && mutation.target.parentNode.nodeName == 'STYLE')
+		var target = mutation.target;
+		if (target.nodeType == 3 && target.parentNode.nodeName == 'STYLE')
+			target = target.parentNode;
+		if (target.nodeName == 'STYLE')
 		{
-			if (mutation.target.parentNode.sheet)
-				that.parseStyle(mutation.target.parentNode.sheet.cssRules);
+			if (target.parentNode.sheet)
+				that.parseStyle(target.parentNode.sheet.cssRules);
 		}
 		else
-			console.error("Shouldn't get here");
+			console.error("ImageFilter: Failed assertion when handling dynamic CSS.");
 	});
 };
 

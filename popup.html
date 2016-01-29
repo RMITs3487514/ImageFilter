@@ -32,9 +32,6 @@
 	label {
 		white-space: nowrap;
 	}
-	.override {
-		color: #adf49f;
-	}
 	.select-wrap {
 		flex: 1;
 		background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%) url("data:image/png;base64,R0lGODlhDwAUAIABAAAAAP///yH5BAEAAAEALAAAAAAPABQAAAIXjI+py+0Po5wH2HsXzmw//lHiSJZmUAAAOw==") no-repeat right center;
@@ -85,6 +82,10 @@
 	}
 	.input-group >*:last-child {
 		border-radius: 0px 4px 4px 0px;
+	}
+
+	.override {
+		border-color: #6cbc7c !important;
 	}
 
 	.bigcheck {
@@ -176,6 +177,10 @@
 	<div class="slider"><label for="v1" title="Custom value for filters. See Options.">V1: </label><input id="v1" class="option" name="option-value1" type="range" min="0" max="1" value="0" step="0.1" /></div>
 	<div class="slider"><label for="v2" title="Custom value for filters. See Options.">V2: </label><input id="v2" class="option" name="option-value2" type="range" min="0" max="1" value="0" step="0.1" /></div>
 	<div class="slider"><label for="v3" title="Custom value for filters. See Options.">V3: </label><input id="v3" class="option" name="option-value3" type="range" min="0" max="1" value="0" step="0.1" /></div>
+</div>
+
+<div style="margin-top: 12px;">
+	<label><input class="option" name="option-invert" type="checkbox" />Invert All</label>
 </div>
 
 <div style="margin-top: 12px;">

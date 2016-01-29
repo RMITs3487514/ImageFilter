@@ -58,6 +58,14 @@ function applyOption(key, value)
 			e.checked = value;
 		else
 			e.value = value;
+
+		if (key.match(/^site-/))
+		{
+			if (value === null)
+				e.parentNode.className = e.parentNode.className.replace(/\b.override\b/,'');
+			else if (e.parentNode.className.indexOf('override') === -1)
+				e.parentNode.className += ' override';
+		}
 	}
 }
 

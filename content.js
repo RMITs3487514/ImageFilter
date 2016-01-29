@@ -2,10 +2,13 @@
 //TODO: get options loading before filters to avoid multiple updates
 //TODO: I think duplicate histograms per src are being created
 
+var customValueDelta = 0.025;
+
 var filterer = new ImageFilterer();
 filterer.start();
 
 var optionCache = {};
+var filterNameCache = [];
 var thisHostname = location.hostname;
 
 var contextMenuElement = null;
@@ -56,6 +59,20 @@ function getFilterSources(name)
 function setCurrentFilter(name)
 {
 	var sources = getFilterSources(name);
+
+	//extract any initial custom values from the filter
+	var customValues = {};
+	for (var i = 0; i < sources.length; ++i)
+	{
+		sources[i].replace(/V([1-3])=([0-9.]+)/g, function(m, k, v){
+			if (!(k in customValues))
+			{
+				customValues[k] = v;
+				sendOption('option-value' + k, v);
+			}
+		});
+	}
+
 	filterer.setFilterSources(sources);
 }
 
@@ -77,32 +94,61 @@ function sendOption(key, value)
 	mymessages.sendBacgkround({key:key, value:value});
 }
 
-//all options come through here. not necessarily applicable or non-malicious
-function applyOption(key, value)
+function handleShortcut(key, value)
 {
-	if (key.match(/^site-(enable|filter)/))
-		return;
+	if (key == 'shortcut-invert')
+	{
+		setShortcut(key, value, function(){
+			sendOption('option-invert', !optionCache['option-invert']);
+		});
+		return true;
+	}
 
-	if (value === 'null')
-		delete optionCache[key];
-	else
-		optionCache[key] = value;
+	if (key == 'shortcut-onlypictures')
+	{
+		setShortcut(key, value, function(){
+			sendOption('option-onlypictures', !optionCache['option-onlypictures']);
+		});
+		return true;
+	}
 
-	if (key == 'shortcut-site-enable') setShortcut(key, value, function(){
-		sendOption('site-enable' + thisHostname, !optionCache['site-enable' + thisHostname]);
-	});
-	else if (key == 'shortcut-global-enable') setShortcut(key, value, function(){
-		sendOption('global-enable', !optionCache['global-enable']);
-	});
+	if (key == 'shortcut-debugpopup')
+	{
+		setShortcut(key, value, function(){
+			sendOption('option-debugpopup', !optionCache['option-debugpopup']);
+		});
+		return true;
+	}
+
+	var filterShortcuts = key.match(/^shortcut-(global|site)-(enable|previous|next)$/);
+	if (filterShortcuts)
+	{
+		setShortcut(key, value, function(){
+			var sendKey = filterShortcuts[1] + '-' + (filterShortcuts[2] == 'enable' ? 'enable' : 'filter');
+			var sendValue = optionCache[sendKey];
+			if (filterShortcuts[2] == 'enable')
+				sendValue = !sendValue;
+			else
+			{
+				var dir = (filterShortcuts[2] == 'previous' ? -1 : 1);
+				sendValue = filterNameCache[(filterNameCache.indexOf(sendValue) + dir + filterNameCache.length) % filterNameCache.length];
+			}
+			if (filterShortcuts[1] == 'site')
+				sendKey += '-' + thisHostname;
+			sendOption(sendKey, sendValue);
+		});
+		return true;
+	}
 
 	var customValueShortcut = key.match(/^shortcut-v([1-3])-(inc|dec)$/);
 	if (customValueShortcut)
 	{
 		setShortcut(key, value, function(){
-			var change = customValueShortcut[2] == 'inc' ? 0.1 : -0.1;
+			var change = customValueShortcut[2] == 'inc' ? customValueDelta : -customValueDelta;
 			var val = Math.max(0.0, Math.min(1.0, parseFloat(optionCache['option-value' + customValueShortcut[1]]) + change));
 			sendOption('option-value' + customValueShortcut[1], val);
 		});
+		return true;
 	}
 
 	var filterShortcut = key.match(/^filtershortcut-(.*)$/);
@@ -111,11 +157,51 @@ function applyOption(key, value)
 		setShortcut(key, value, function(){
 			sendOption('global-filter', filterShortcut[1]);
 		});
+		return true;
+	}
+	return false;
+}
+
+//all options come through here. not necessarily applicable or non-malicious
+function applyOption(key, value)
+{
+	//filters out invlid options, although shouldn't be needed. needed during dev
+	if (key.match(/^site-(enable|filter)$/))
+		return;
+
+	//remember the last option state
+	if (value === 'null')
+		delete optionCache[key];
+	else
+		optionCache[key] = value;
+
+	//keep a list of currently used filters
+	var filterName = key.match(/^filter-(.*)$/);
+	if (filterName)
+	{
+		if (value === 'null')
+			filterNameCache.splice(filterNameCache.indexOf(filterName[1]), 1);
+		else
+			filterNameCache.push(filterName[1]);
 	}
 
+	//listen for shortcut events and update event triggers when they change
+	if (handleShortcut(key, value))
+		return;
+
+	//update custom values in filters
 	var customValue = key.match(/^option-value([1-3])$/);
 	if (customValue)
+	{
 		filterer.setCustomValue('V' + customValue[1], value);
+		return;
+	}
+
+	if (key == 'option-invert')
+	{
+		filterer.invertAll(value);
+		return;
+	}
 
 	if (key == 'option-debugpopup')
 	{

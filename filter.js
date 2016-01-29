@@ -1,16 +1,17 @@
 
 //FIXME: video filters are being added with the same id
 
-function ImageFilter(sources, enabled, initialCustomValues, histogram) {
+function ImageFilter(sources, enabled, initialCustomValues, inverted, histogram) {
 	this.enabled = enabled;
 	this.animatedHistogramRegex = /%([0-9]*)LH([RGBY])/g;
 	this.histogramRegex = /%([0-9]*)(L?)H([RGBY])/g;
-	this.variableRegex = /%\(([^\)]*V[1-3][^\)]*)\)/g;
+	this.variableRegex = /\{\{([^\}]*V[1-3][^\}]*)\}\}/g;
 	this.requiresAnimatedHistogram = false;
 	this.requiresHistogram = false;
 	this.requiresVariables = false;
 	this.sources = sources;
 	this.histogram = histogram;
+	this.inverted = inverted;
 	this.source = this.chooseSource(this.sources);
 	this.id = this.createUniqueName();
 	this.styleid = this.id + '-style';
@@ -24,6 +25,14 @@ function ImageFilter(sources, enabled, initialCustomValues, histogram) {
 ImageFilter.prototype.release = function() {
 	console.log("Haven't implemented ImageFilter.release()");
 };
+
+ImageFilter.prototype.invert = function(enable) {
+	if (this.inverted != enable)
+	{
+		this.inverted = enable;
+		this.update();
+	}
+}
 
 ImageFilter.prototype.setCustomValue = function(key, value) {
 	if (!(key in this.customValue) || this.customValue[key] !== value)
@@ -73,8 +82,10 @@ ImageFilter.prototype.update = function(sources) {
 	});
 	*/
 
+	var invertSource = this.inverted ? '\n<feColorMatrix type="matrix" values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0"/>\n' : '';
+
 	var svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0"><filter id="' + this.id +
-		'" color-interpolation-filters="sRGB">' + this.source +
+		'" color-interpolation-filters="sRGB">' + this.source + invertSource +
 		'</filter></svg>';
 	var existing = $('#' + this.id);
 	if (existing.length)

@@ -36,6 +36,8 @@ function saveFilter(filter)
 		data['filterfallback-' + name] = filter.find('.filter-fallback').val();
 		data['filtershortcut-' + name] = shortcut;
 		mystorage.set(data);
+		for (var k in data)
+			mymessages.sendTabs({key:k, value:data[k]});
 	}
 
 	if (savedName != newName)
@@ -150,6 +152,24 @@ $(function(){
 			button.val(sequence.join(' '));
 		}},	function(sequence) {
 			//final sequence
+
+			//FIXME: stupid hack because of broken library
+			if (sequence.indexOf('shift') >= 0)
+			{
+				sequence.splice(sequence.indexOf('shift'), 1);
+				sequence.unshift('shift');
+			}
+			if (sequence.indexOf('alt') >= 0)
+			{
+				sequence.splice(sequence.indexOf('alt'), 1);
+				sequence.unshift('alt');
+			}
+			if (sequence.indexOf('ctrl') >= 0)
+			{
+				sequence.splice(sequence.indexOf('ctrl'), 1);
+				sequence.unshift('ctrl');
+			}
+
 			var str = sequence.join(' ');
 			if (!str || str == 'del' || str == 'esc')
 				str = shortcutNone;
@@ -159,6 +179,6 @@ $(function(){
 		});
 	});
 	$(".shortcut").val(shortcutNone);
-	
+
 	assertDefaultsAreLoaded(loadOptions);
 });

@@ -30,10 +30,21 @@
 </head>
 <body>
 	<h1>Image Filter Options</h1>
-	<div><label><input type="checkbox" class="option" name="option-onlypictures">Don't filter icons and images with text.</label></div>
-	<div><label><input type="checkbox" class="option" name="option-debugpopup">Display debug popup on mouseover.</label></div>
-	<div><label>Enable site shortcut: <input class="shortcut option" name="shortcut-site-enable" type="button" /></label></div>
-	<div><label>Enable default shortcut: <input class="shortcut option" name="shortcut-global-enable" type="button" /></label></div>
+	<div>
+		<label><input type="checkbox" class="option" name="option-onlypictures">Don't filter icons and images with text.</label>
+		<label>Shortcut: <input class="shortcut option" name="shortcut-onlypictures" type="button" /></label>
+	</div>
+	<div>
+		<label><input type="checkbox" class="option" name="option-debugpopup">Display debug popup on mouseover.</label>
+		<label>Shortcut: <input class="shortcut option" name="shortcut-debugpopup" type="button" /></label>
+	</div>
+	<div><label>Toggle Invert: <input class="shortcut option" name="shortcut-invert" type="button" /></label></div>
+	<div><label>Enable site: <input class="shortcut option" name="shortcut-site-enable" type="button" /></label></div>
+	<div><label>Next site filter: <input class="shortcut option" name="shortcut-site-next" type="button" /></label></div>
+	<div><label>Previous site filter: <input class="shortcut option" name="shortcut-site-previous" type="button" /></label></div>
+	<div><label>Enable default: <input class="shortcut option" name="shortcut-global-enable" type="button" /></label></div>
+	<div><label>Next default filter: <input class="shortcut option" name="shortcut-global-next" type="button" /></label></div>
+	<div><label>Previous default filter: <input class="shortcut option" name="shortcut-global-previous" type="button" /></label></div>
 	<div>
 		V1
 		<label>dec <input class="shortcut option" name="shortcut-v1-dec" type="button" /></label>
