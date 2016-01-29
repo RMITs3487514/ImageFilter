@@ -64,7 +64,7 @@ ImageFinder.prototype.addImages = function(elements, url) {
 	$.merge(this.images, elements);
 }
 
-ImageFinder.prototype.removeImages = function(elements) {
+ImageFinder.prototype.removeImages = function(elements, removedFrom) {
 	var that = this;
 	var removed = this.images.filter(elements);
 	if (!removed.length)
@@ -73,7 +73,7 @@ ImageFinder.prototype.removeImages = function(elements) {
 		var eurl = $(this).attr('data-imagefilter-src');
 		that.sources[eurl].splice(that.sources[eurl].indexOf(this), 1);
 		if (that.imageRemoved)
-			that.imageRemoved(this, eurl)
+			that.imageRemoved(this, eurl, removedFrom);
 		if (that.sources[eurl].length == 0 && that.sourceRemoved)
 		{
 			delete that.sources[eurl];
@@ -160,7 +160,7 @@ ImageFinder.prototype.parseMutations = function(mutations) {
 		if (mutation.addedNodes.length)
 			that.processElements($(mutation.addedNodes).find('*').addBack())
 		if (mutation.removedNodes.length)
-			that.removeImages($(mutation.removedNodes).find('*').addBack())
+			that.removeImages($(mutation.removedNodes).find('*').addBack(), mutation.target)
 		if (mutation.attributeName == "style")
 			that.processElements([mutation.target]);
 		if (mutation.attributeName == "src")

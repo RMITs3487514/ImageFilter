@@ -72,7 +72,7 @@ ImageFilterer.prototype.setOnlyPictures = function(enabled) {
 		if (image.data('imagefilter-haschild'))
 			continue;
 
-		var filteredClass = image.data('imagefilter-class');
+		var filteredClass = image.attr('data-imagefilter-class');
 		var apply = true;
 		if (this.onlyPictures && image.nodeName !== 'VIDEO')
 		{
@@ -127,6 +127,14 @@ ImageFilterer.prototype.chooseFilter = function(img, histogram) {
 	}
 };
 
+ImageFilterer.prototype.findHistogram = function(image) {
+	var url = $(image).attr('data-imagefilter-src');
+	if (this.nodeName == 'VIDEO')
+		return this.animatedHistograms[$(image).data('imagefilter-histogram-id')];
+	else
+		return this.histograms[url];
+}
+
 //override a filter already applied to an image
 ImageFilterer.prototype.applyManually = function(image, sources) {
 	image = $(image);
@@ -137,13 +145,7 @@ ImageFilterer.prototype.applyManually = function(image, sources) {
 		return;
 	}
 
-	var url = image.attr('data-imagefilter-src');
-
-	var histogram;
-	if (this.nodeName == 'VIDEO')
-		histogram = this.animatedHistograms[$(image).data('imagefilter-histogram-id')];
-	else
-		histogram = this.histograms[url];
+	var histogram = this.findHistogram(image);
 
 	var filterID = image.data('imagefilter-override');
 	if (filterID)
@@ -169,19 +171,19 @@ ImageFilterer.prototype.applyManually = function(image, sources) {
 		this.filterOverrides[filterID] = filter;
 
 		//remove old css class
-		image.removeClass(image.data('imagefilter-class'));
+		image.removeClass(image.attr('data-imagefilter-class'));
 
 		//add the new one
 		image.addClass(filter.styleName);
 
 		//store the class name as a backup
-		image.data('imagefilter-class', filter.styleName);
+		image.attr('data-imagefilter-class', filter.styleName);
 	}
 };
 
 ImageFilterer.prototype.applyFilterToImage = function(images, histogram) {
 	var filteredImages = [];
-	for (var i in images)
+	for (var i = 0; i < images.length; ++i)
 	{
 		var apply = true;
 		if ($(images[i]).data('imagefilter-haschild'))
@@ -193,7 +195,7 @@ ImageFilterer.prototype.applyFilterToImage = function(images, histogram) {
 			var ancestors = $(images[i]).parents();
 			ancestors.each(function(){
 				//remove any filters applied to ancestors
-				var filtered = $(this).data('imagefilter-class');
+				var filtered = $(this).attr('data-imagefilter-class');
 				if (filtered)
 					$(this).removeClass(filtered);
 
@@ -206,7 +208,7 @@ ImageFilterer.prototype.applyFilterToImage = function(images, histogram) {
 				$(images[i]).addClass(filter.styleName);
 
 			//store the class name as a backup, even if it wasn't applied
-			$(images[i]).data('imagefilter-class', filter.styleName);
+			$(images[i]).attr('data-imagefilter-class', filter.styleName);
 
 			filteredImages.push(images[i]);
 		}
@@ -325,7 +327,7 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 		ImageFilterer.debugInfo.append(textInfo);
 		if (this.nodeName != 'VIDEO')
 		{
-			var filteredClass = $(this).data('imagefilter-class');
+			var filteredClass = $(this).attr('data-imagefilter-class');
 			textInfo.prepend('<div>Class Applied: ' + $(this).hasClass(filteredClass) + '</div>');
 			textInfo.prepend('<div>Child Counter: ' + $(this).data('imagefilter-haschild') + '</div>');
 			if (histogram.id in that.filters)
@@ -346,7 +348,7 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 	});
 };
 
-ImageFilterer.prototype.imageRemoved = function(img, url) {
+ImageFilterer.prototype.imageRemoved = function(img, url, removedFrom) {
 	if (img.nodeName == 'VIDEO')
 	{
 		var id = $(img).data('imagefilter-histogram-id');
@@ -356,15 +358,15 @@ ImageFilterer.prototype.imageRemoved = function(img, url) {
 	}
 
 	//remove css class that applies the filter
-	$(img).removeClass($(img).data('imagefilter-class'));
-	$(img).removeData('imagefilter-class');
+	$(img).removeClass($(img).attr('data-imagefilter-class'));
+	$(img).removeAttr('data-imagefilter-class');
 
 	//remove image from list of filtered images if it exists
 	var index = $.inArray(img, this.images);
 	if (index)
 		this.images.splice(index, 1);
 
-	var ancestors = $(img).parents();
+	var ancestors = $(removedFrom).parents().addBack();
 
 	//remove data-imagefilter-haschild contributions
 	ancestors.each(function(){
@@ -377,9 +379,12 @@ ImageFilterer.prototype.imageRemoved = function(img, url) {
 
 	//check if an ancestor can now be filtered, since this has been removed
 	//FIXME: not sure if this works as it's jquery data
-	var next = ancestors.filter('[data-imagefilter-class]').first().not('[data-imagefilter-haschild]');
-	if (next.length)
-		this.imageAdded(next, next.attr('data-imagefilter-src'));
+	var next = $(removedFrom).closest('[data-imagefilter-class]');
+	if (next.length && !next.data('imagefilter-haschild'))
+	{
+		var histogram = this.findHistogram(next);
+		this.applyFilterToImage(next, histogram);
+	}
 };
 
 ImageFilterer.prototype.histogramReady = function(histogram) {
