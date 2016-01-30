@@ -85,7 +85,7 @@ ImageFilter.prototype.update = function(sources) {
 	var invertSource = this.inverted ? '\n<feColorMatrix type="matrix" values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0"/>\n' : '';
 
 	var svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0"><filter id="' + this.id +
-		'" color-interpolation-filters="sRGB">' + this.source + invertSource +
+		'" color-interpolation-filters="sRGB" x="0%" y="0%" width="100%" height="100%">' + this.source + invertSource +
 		'</filter></svg>';
 	var existing = $('#' + this.id);
 	if (existing.length)

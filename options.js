@@ -1,4 +1,7 @@
 
+
+//FIXME: replace filter on delete
+
 var filterKeys = ['filter-', 'filtershortcut-', 'filterfallback-'];
 var shortcutNone = '[none]';
 

@@ -7,6 +7,7 @@ var customValueDelta = 0.025;
 var filterer = new ImageFilterer();
 filterer.start();
 
+var currentFilterChain = [];
 var optionCache = {};
 var filterNameCache = [];
 var thisHostname = location.hostname;
@@ -42,23 +43,29 @@ function getHostname(url)
 	return parser.hostname;
 }
 
-//builds a chain of fallback filters to update the current default
-function getFilterSources(name)
+function getFilterFallbackChain(name)
 {
-	var sources = [];
 	var names = [];
 	var next = name;
 	do {
 		names.push(next);
-		sources.push(optionCache['filter-' + next]);
 		next = optionCache['filterfallback-' + next];
 	} while (next && names.indexOf(next) === -1);
-	return sources;
+	return names;
+}
+
+//builds a chain of fallback filters to update the current default
+function getFilterSources(chain)
+{
+	return chain.map(function(name){
+		return optionCache['filter-' + name];
+	});
 }
 
 function setCurrentFilter(name)
 {
-	var sources = getFilterSources(name);
+	currentFilterChain = getFilterFallbackChain(name);
+	var sources = getFilterSources(currentFilterChain);
 
 	//extract any initial custom values from the filter
 	var customValues = {};
@@ -91,6 +98,9 @@ function setShortcut(name, shortcut, callback)
 
 function sendOption(key, value)
 {
+	//HACK: if this isn't chrome, the messaging system probably doesn't work. just apply the option
+	if (typeof chrome === 'undefined')
+		applyOption(key, value);
 	mymessages.sendBacgkround({key:key, value:value});
 }
 
@@ -183,6 +193,15 @@ function applyOption(key, value)
 			filterNameCache.splice(filterNameCache.indexOf(filterName[1]), 1);
 		else
 			filterNameCache.push(filterName[1]);
+
+		//re-filter everything if a filter's source is updated
+		if ($.inArray(filterName[1], currentFilterChain) >= 0)
+		{
+			if ('site-filter' in optionCache)
+				sendOption('site-filter', currentFilterChain[0]);
+			else
+				sendOption('global-filter', currentFilterChain[0]);
+		}
 	}
 
 	//listen for shortcut events and update event triggers when they change
@@ -251,7 +270,7 @@ function applyOption(key, value)
 
 mymessages.listen(function(request) {
 	if (request.contextMenuClick == 'filter')
-		filterer.applyManually(contextMenuElement, getFilterSources(request.name));
+		filterer.applyManually(contextMenuElement, getFilterSources(getFilterFallbackChain(request.name)));
 	else if (request.contextMenuClick == 'clearfilter')
 		filterer.applyManually(contextMenuElement, null);
 	else if (request.contextMenuClick == 'zoom')

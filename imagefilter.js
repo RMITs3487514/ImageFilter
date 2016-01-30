@@ -57,7 +57,7 @@ ImageFilterer.prototype.isPicture = function(image, histogram) {
 		//if (merit < this.golayMeritThreshold)
 		//	return false;
 		var peakArea = histogram.getPeakArea(0.02);
-		if (peakArea > 0.1)
+		if (peakArea > 0.3)
 			return false;
 	}
 
