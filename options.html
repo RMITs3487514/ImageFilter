@@ -12,6 +12,14 @@
 	<script type="text/javascript" src="defaults.js"></script>
 	<script type="text/javascript" src="options.js"></script>
 	<style>
+	body {
+		font-size: 17.5px;
+	}
+	p {
+		margin-left: 12px;
+		font-size: 14px;
+		max-width: 40em;
+	}
 	.filter {
 		margin: 8px;
 		border-left: 4px solid #aaa;
@@ -22,29 +30,130 @@
 	}
 	textarea {
 		font-family: "Courier New", Courier, monospace;
+		font-size: 17.5px;
+	}
+	input[type=text] {
+		font-size: 17.5px;
 	}
 	.shortcut {
 		min-width: 100px;
+	}
+	button, input[type=button] {
+		margin: 3px;
+		padding: 5px 9px;
+		font-size: 17.5px;
+		-webkit-border-radius: 6px;
+		-moz-border-radius: 6px;
+		border-radius: 6px;
+		color: #fff;
+		text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+		background-color: #006dcc;
+		background-image: -moz-linear-gradient(top,#08c,#04c);
+		background-image: -webkit-gradient(linear,0 0,0 100%,from(#08c),to(#04c));
+		background-image: -webkit-linear-gradient(top,#08c,#04c);
+		background-image: -o-linear-gradient(top,#08c,#04c);
+		background-image: linear-gradient(to bottom,#08c,#04c);
+		background-repeat: repeat-x;
+		border-color: #04c #04c #002a80;
+		border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+	}
+	button:hover, input[type=button]:hover {
+		background-color: #04c;
+		background-position: 0 -15px;
+		transition: background-position .1s linear;
+	}
+	button:active, input[type=button]:active {
+		background-image: none;
+		outline: 0;
+		box-shadow: inset 0 2px 4px rgba(0,0,0,0.15),0 1px 2px rgba(0,0,0,0.05);
+	}
+	input[type=button].recording {
+		background-color: #ec5151;
+		background-image: none;
+		outline: 0;
+		box-shadow: inset 0 2px 4px rgba(0,0,0,0.15),0 1px 2px rgba(0,0,0,0.05);
+	}
+	.code {
+		border: 1px dotted #aaa;
+		font-family: "Courier New", Courier, monospace;
+		background: #ddd;
+		padding: 1.5px 3px;
+	}
+	.icon {
+		margin: -4px 0px;
+		border: 2px solid #ddd;
+		border-radius: 3px;
+		display: inline-block;
+		width: 16px;
+		height: 16px;
+		background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AEYCi4BA8pbjgAAAq9JREFUOMulk02I1WUUxp/3ff//e+/cuXObjyajZtIbVAyiOyHDFlH2Qa0UgiCIAgUXEULQ7IIgcOFCEFy5UcSWLVy5EEIkCFqUhGEz4Ki3vPNx7537/34/zjnurjnoyrM7zzn8znMWD/CMpZ42+Oqnbz+da7z2UX9474/NjTvnrixf9k/ai3YKRy580Zg1e448KH478/fKtfnRWpLGpnURwPBJALNT2HV48jNbJZfKIpkkR/D9ifre5nKysPtdhNDc2u7fesyJ/n/z89FTz+/feONAVq5zlefQEmMmO4r+f4Mft3p3rhsTv7nz4Bhw/uTZ1qq9+UPzz60TRhlNliEAyFfY6t3HYPNeyZAWJqD17rcjAFCLh6IIAJY//ETdXb3+ZUx0IqQJhBXYMyQKgPJQSkMgcL5oInphiskHLB5qiVJ1AwA3Vv/Bwc6rMyG4z03q0V1SsHkJFROktweUKZgoNp3XD3/Q6bz3vnj713a2nkMojF8w9fp9EhmwAFGuwCxg8WB2EGHUai1ti+32v2u/HgxZfwlUZvClHQMaRd6dMdFxE5urptBOgoIQIPBgYRA52HIEV6Vg9jmIpiAyNwZsDIfS0vr20tTs940J/Z1WelMYYDgADKYA4QBA4EMVQQIU+d4jQJbyZp7m1rDrmNqN2X3THwvJLwTrRBgiBGaCMCHW8RrIpSLhpTEgDdYPiqIcsbXKk4pZ8SvvtI81sfgNoG4LMBAJEDCKajgNpgVw4DHAE3FSlXZdsqpg7zUJym5jetdb6tpUe/7rxsT0aQoOIrIt4rsAdaFCd5wF7yEjskGZ3IZQdxxMXbTRZeZaz80vdNs2fZBnyc0QqiSOzcro1u/pY1lYmGtC6pHxM4jdrDa+qTRUw6jiRSBpcw01tCbbIyLp+Sp3Zv5ll22s4CHN346+OVdceQAAAABJRU5ErkJggg==');
 	}
 	</style>
 </head>
 <body>
 	<h1>Image Filter Options</h1>
+	<p>
+		This extension filters images on webpages you visit to improve visibility and detail.
+		It can be controlled via the popup button <span class="icon"></span>
+		or using shortcuts.
+		You can toggle it on and off and choose between different filters and adjust their parameters.
+		You can also add completely new filters by entering svg filter code below.
+	</p>
+	<p>
+		Set keyboard shortcuts by clicking the button and pressing the desired keys.
+		You may press a sequence of keys too. To remove a shortcut, enter <span class="code">Esc</span>
+		or <span class="code">Del</span>.
 	<div>
-		<label><input type="checkbox" class="option" name="option-onlypictures">Don't filter icons and images with text.</label>
+		<label title="Attempts to classify images as either pictures or more monochrome diagrams and text which shouldn't be filtered.">
+			<input type="checkbox" class="option" name="option-onlypictures">Don't filter icons and images with text.
+		</label>
 		<label>Shortcut: <input class="shortcut option" name="shortcut-onlypictures" type="button" /></label>
 	</div>
 	<div>
-		<label><input type="checkbox" class="option" name="option-debugpopup">Display debug popup on mouseover.</label>
+		<label title="Displays an overlay with filter information when you mouse over images. Meant for developers.">
+			<input type="checkbox" class="option" name="option-debugpopup">Display debug overlay on mouseover.
+		</label>
 		<label>Shortcut: <input class="shortcut option" name="shortcut-debugpopup" type="button" /></label>
 	</div>
-	<div><label>Toggle Invert: <input class="shortcut option" name="shortcut-invert" type="button" /></label></div>
-	<div><label>Enable site: <input class="shortcut option" name="shortcut-site-enable" type="button" /></label></div>
-	<div><label>Next site filter: <input class="shortcut option" name="shortcut-site-next" type="button" /></label></div>
-	<div><label>Previous site filter: <input class="shortcut option" name="shortcut-site-previous" type="button" /></label></div>
-	<div><label>Enable default: <input class="shortcut option" name="shortcut-global-enable" type="button" /></label></div>
-	<div><label>Next default filter: <input class="shortcut option" name="shortcut-global-next" type="button" /></label></div>
-	<div><label>Previous default filter: <input class="shortcut option" name="shortcut-global-previous" type="button" /></label></div>
+	<div><label title="A global invert in addition to the current filter">Toggle Invert: <input class="shortcut option" name="shortcut-invert" type="button" /></label></div>
+	<div><label title="Toggles whether to filter for just the website you're currently visiting">Enable site: <input class="shortcut option" name="shortcut-site-enable" type="button" /></label></div>
+	<div><label title="Change to the next filter for just the website you're currently visiting">Next site filter: <input class="shortcut option" name="shortcut-site-next" type="button" /></label></div>
+	<div><label title="Change to the previous filter for just the website you're currently visiting">Previous site filter: <input class="shortcut option" name="shortcut-site-previous" type="button" /></label></div>
+	<div><label title="Toggles whether to filter websites by default">Enable default: <input class="shortcut option" name="shortcut-global-enable" type="button" /></label></div>
+	<div><label title="Change to the next filter for websites by default">Next default filter: <input class="shortcut option" name="shortcut-global-next" type="button" /></label></div>
+	<div><label title="Change to the previous filter for websites by default">Previous default filter: <input class="shortcut option" name="shortcut-global-previous" type="button" /></label></div>
+
+	<h1>Filters:</h1>
+	<p>
+		Below is a list of svg filter source code (normally the contents of
+		a <span class="code">&lt;filter&gt;</span> tag),
+		which is applied to images on websites you visit.
+		The popup button <span class="icon"></span> contains options to enable/disable filtering and select which filter you want applied.
+		Shortcuts above make this more convenient if changed often.
+		You can add new filters with the <b>New</b> button, edit and <b>Save</b> filters or <b>Delete</b> them
+		if you don't want them in the list of available filters.
+		Filter documentation can be found at the <a href="https://www.w3.org/TR/SVG/filters.html">W3C SVG Filter Effects page</a>.
+	</p>
+	<p>
+		Filters may use custom values to allow parameters to be adjusted dynamically.
+		They are controlled from the popup <span class="icon"></span> sliders or with the following shortcuts.
+		Use <span class="code">{{ V1 }}</span>,
+		<span class="code">{{ V2 }}</span> and
+		<span class="code">{{ V3 }}</span> to have it substituted with their value between zero and one.
+		Javascript equations within the braces are also evaluated, for example
+		<span class="code">{{ (V1 + 1) / 2 }}</span>.
+		Initial values can be set by include xml comments with V= assignments, for example
+		<span class="code">&lt;!-- V1=0.5 --&gt;</span>.
+	</p>
+	<p>
+		Histograms are generated for all images, although sometimes this isn't possible.
+		If one is available, its values can be injected into a filter with
+		<span class="code">%HR</span>, <span class="code">%HG</span> and <span class="code">%HB</span>
+		for red, green and blue channels respectively. <span class="code">%HY</span> inserts luminance.
+		These values are the cumulative sum of the raw histogram, 255 values separated by spaces.
+		For efficiency, the number of values can be reduced, for <span class="code">%16HY</span> enters
+		just 16 values from the cumulative sum of the luminance histogram.
+	</p>
 	<div>
 		V1
 		<label>dec <input class="shortcut option" name="shortcut-v1-dec" type="button" /></label>
@@ -60,14 +169,15 @@
 		<label>dec <input class="shortcut option" name="shortcut-v3-dec" type="button" /></label>
 		<label>inc <input class="shortcut option" name="shortcut-v3-inc" type="button" /></label>
 	</div>
-	<h1>Filters:</h1>
+
+
 	<ul id="filters">
 	</ul>
-	<button id="newfilter">New</button>
-	<div id="filter-template" style="visibility: hidden">
+	<div><button id="newfilter">New</button></div>
+	<div id="filter-template" style="display: none">
 		<li class="filter">
 			<div><input class="filter-name" type="text" /></div>
-			<div><textarea class="filter-source" cols="80" rows="5"></textarea></div>
+			<div><textarea class="filter-source" cols="80" rows="12"></textarea></div>
 			<div><label>Fallback filter: <input class="filter-fallback" type="text" /></label></div>
 			<div><label>Global shortcut: <input class="shortcut filter-shortcut" type="button" /></label></div>
 			<div><button class="savefilter">Save</button></div>
@@ -75,6 +185,6 @@
 		</li>
 	</div>
 
-	<button id="export">Export Options</button>
+	<div><button id="export">Export Options</button></div>
 </body>
 </html>

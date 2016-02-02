@@ -90,7 +90,8 @@ function createFilter(name, source, fallback, shortcut)
 	filter.find('.savefilter').click(function(){
 		saveFilter(filter);
 	});
-	filter.find('.filter-source').val(source);
+	var sourceLen = (source.match(/\n/g)||[]).length + 3;
+	filter.find('.filter-source').val(source).attr('rows', Math.min(Math.max(sourceLen, 6), 30));
 	filter.find('.filter-fallback').val(fallback);
 	filter.find('.filter-shortcut').val(shortcut);
 }
@@ -166,7 +167,7 @@ $(function(){
 
 	$(document).on("click", ".shortcut", function() {
 		var button = $(this);
-		button.css('background-color', '#ec5151');
+		button.addClass('recording');
 		Mousetrap.record({partialCallback:function(sequence){
 			//partial sequence
 			button.val(sequence.join(' '));
@@ -194,7 +195,7 @@ $(function(){
 			if (!str || str == 'del' || str == 'esc')
 				str = shortcutNone;
 			button.val(str);
-			button.css('background-color', '');
+			button.removeClass('recording');
 			button.trigger('change');
 		});
 	});
