@@ -42,14 +42,9 @@ var url = function(path) {
 	return self.data.url('../' + path); //this is retarded. I hate ff!
 };
 
-var popup = panels.Panel({
-	contentURL: url(manifest.browser_action.default_popup)
-});
-popup.port.on('storage', stupidStorageHandler.bind(popup));
-
 var popupButton = buttons.ActionButton({
 	id: "show-popup",
-	label: manifest.browser_action.default_title + "2312385432",
+	label: manifest.browser_action.default_title,
 	icon: {
 	"16": url("icon16.png"),
 	"32": url("icon32.png"),
@@ -62,6 +57,12 @@ var popupButton = buttons.ActionButton({
 		popup.show();
 	}
 });
+
+var popup = panels.Panel({
+	contentURL: url(manifest.browser_action.default_popup),
+	position: popupButton
+});
+popup.port.on('storage', stupidStorageHandler.bind(popup));
 
 var background = pageWorker.Page({
 	//contentURL: "http://en.wikipedia.org/wiki/Internet",

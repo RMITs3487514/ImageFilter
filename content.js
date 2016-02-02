@@ -98,10 +98,11 @@ function setShortcut(name, shortcut, callback)
 
 function sendOption(key, value)
 {
-	//HACK: if this isn't chrome, the messaging system probably doesn't work. just apply the option
+	var success = mymessages.sendBacgkround({key:key, value:value});
+	
+	//if the messaging system doesn't work just apply the option
 	if (typeof chrome === 'undefined')
 		applyOption(key, value);
-	mymessages.sendBacgkround({key:key, value:value});
 }
 
 function handleShortcut(key, value)

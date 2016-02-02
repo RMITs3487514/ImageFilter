@@ -39,8 +39,10 @@ function openOptions()
 	}
 	else
 	{
+		console.error("1");
 		//firefox... :(
 		//FIXME: hard coded, but don't have access to require() so wahtever
-		tabs.open('resource://imagefilter/options.html');
+		window.open('resource://imagefilter/options.html', '_newtab');
+		//tabs.open('resource://imagefilter/options.html');
 	}
 }
