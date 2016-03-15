@@ -1,0 +1,139 @@
+
+<!-- Fairly effective local contrast enhancement with just two unsharp masks -->
+	<feGaussianBlur in="SourceGraphic" result="BigBlur" stdDeviation="13" edgeMode="duplicate" />
+	<feComposite operator="arithmetic" k1="0" k2="2" k3="-1" k4="0.0" in="SourceGraphic" in2="BigBlur" result="Contrast" />
+	<feGaussianBlur in="SourceGraphic" result="SmallBlur" stdDeviation="5" edgeMode="duplicate" />
+	<feComposite operator="arithmetic" k1="0" k2="1" k3="-1" k4="0.5" in="SourceGraphic" in2="SmallBlur" result="Detail" />
+	<feComposite operator="arithmetic" k1="0" k2="1" k3="1" k4="-0.5" in="Contrast" in2="Detail" result="Combined" />
+
+<!-- Retinex attempt. Don't think this is possible with clamped values. -->
+	<feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="16" />
+	<feComponentTransfer in="blur" result="log-blur">
+	  <feFuncR type="table" tableValues="0	0	0.12508829	0.25017658	0.37526487	0.500353159	0.573525118	0.625441449	0.698613408	0.750529739	0.823701698	0.875618029	0.948789988	1"/>
+	  <feFuncG type="table" tableValues="0	0	0.12508829	0.25017658	0.37526487	0.500353159	0.573525118	0.625441449	0.698613408	0.750529739	0.823701698	0.875618029	0.948789988	1"/>
+	  <feFuncB type="table" tableValues="0	0	0.12508829	0.25017658	0.37526487	0.500353159	0.573525118	0.625441449	0.698613408	0.750529739	0.823701698	0.875618029	0.948789988	1"/>
+	  <feFuncA type="discrete" tableValues="1 1">
+	</feComponentTransfer>
+
+	<feComponentTransfer in="SourceGraphic" result="log-src">
+	  <feFuncR type="table" tableValues="0	0	0.12508829	0.25017658	0.37526487	0.500353159	0.573525118	0.625441449	0.698613408	0.750529739	0.823701698	0.875618029	0.948789988	1"/>
+	  <feFuncG type="table" tableValues="0	0	0.12508829	0.25017658	0.37526487	0.500353159	0.573525118	0.625441449	0.698613408	0.750529739	0.823701698	0.875618029	0.948789988	1"/>
+	  <feFuncB type="table" tableValues="0	0	0.12508829	0.25017658	0.37526487	0.500353159	0.573525118	0.625441449	0.698613408	0.750529739	0.823701698	0.875618029	0.948789988	1"/>
+	</feComponentTransfer>
+	<feComposite operator="arithmetic" k1="0" k2="2" k3="-1" k4="0" in="log-src" in2="log-blur" result="diff" />
+
+
+	<feColorMatrix type="matrix" in="diff" result="average"
+	       values=".33 .33 .33 0 0
+	               .33 .33 .33 0 0
+	               .33 .33 .33 0 0
+	               0 0 0 0 1"/>
+
+	<!-- FIXME: should be 'log(average) + 3' but missing the 3 -->
+	<feComponentTransfer in="average" result="log-average">
+	  <feFuncR type="table" tableValues="0	0	0.12508829	0.25017658	0.37526487	0.500353159	0.573525118	0.625441449	0.698613408	0.750529739	0.823701698	0.875618029	0.948789988	1"/>
+	  <feFuncG type="table" tableValues="0	0	0.12508829	0.25017658	0.37526487	0.500353159	0.573525118	0.625441449	0.698613408	0.750529739	0.823701698	0.875618029	0.948789988	1"/>
+	  <feFuncB type="table" tableValues="0	0	0.12508829	0.25017658	0.37526487	0.500353159	0.573525118	0.625441449	0.698613408	0.750529739	0.823701698	0.875618029	0.948789988	1"/>
+	</feComponentTransfer>
+
+	<!-- 'Math.log(alpha * (SourceGraphic + 1.0f))' -->
+	<feComponentTransfer in="SourceGraphic" result="alpha-src">
+	  <feFuncR type="linear" slope="0.5" intercept="0.5"/>
+	  <feFuncG type="linear" slope="0.5" intercept="0.5"/>
+	  <feFuncB type="linear" slope="0.5" intercept="0.5"/>
+	</feComponentTransfer>
+	<feComponentTransfer in="alpha-src" result="log-alpha-src">
+	  <feFuncR type="table" tableValues="0	0	0.12508829	0.25017658	0.37526487	0.500353159	0.573525118	0.625441449	0.698613408	0.750529739	0.823701698	0.875618029	0.948789988	1"/>
+	  <feFuncG type="table" tableValues="0	0	0.12508829	0.25017658	0.37526487	0.500353159	0.573525118	0.625441449	0.698613408	0.750529739	0.823701698	0.875618029	0.948789988	1"/>
+	  <feFuncB type="table" tableValues="0	0	0.12508829	0.25017658	0.37526487	0.500353159	0.573525118	0.625441449	0.698613408	0.750529739	0.823701698	0.875618029	0.948789988	1"/>
+	</feComponentTransfer>
+
+	<!-- 'gain * ((  log-alpha-src - log-average  ) * diff) + offset' -->
+	<feComposite operator="arithmetic" k1="0" k2="2" k3="-1" k4="0" in="log-alpha-src" in2="log-average" result="src-average-diff" />
+	<feComposite operator="arithmetic" k1="1" k2="0" k3="0" k4="0" in="src-average-diff" in2="diff" result="retinex" />
+
+	<!-- scale into the range of 1.2 * variance away from mean -->
+	<feComponentTransfer in="retinex" result="dynamic-retinex">
+	  <feFuncR type="linear" slope="1" intercept="0.0"/>
+	  <feFuncG type="linear" slope="1" intercept="0.0"/>
+	  <feFuncB type="linear" slope="1" intercept="0.0"/>
+	</feComponentTransfer>
+
+
+
+<!-- Rather expensive set of unsharp masks for local contrast enhancement I was messing around with -->
+	<feGaussianBlur in="SourceGraphic" result="blur1r" stdDeviation="24"/>
+	<feGaussianBlur in="SourceGraphic" result="blur2r" stdDeviation="8"/>
+	<feGaussianBlur in="SourceGraphic" result="blur3r" stdDeviation="2"/>
+
+	<feComponentTransfer in="SourceGraphic" result="GI">
+	<feFuncR type="linear" intercept="0.05" />
+	<feFuncG type="linear" intercept="0.05" />
+	<feFuncB type="linear" intercept="0.05" />
+	</feComponentTransfer>
+
+	<feComponentTransfer in="GI" result="G">
+	<feFuncB type="gamma" exponent="{{V3}}" />
+	<feFuncR type="gamma" exponent="{{V3}}" />
+	<feFuncG type="gamma" exponent="{{V3}}" />
+	</feComponentTransfer>
+
+	<feComponentTransfer in="blur1r" result="blur1">
+	<feFuncB type="gamma" exponent="{{V3}}" />
+	<feFuncR type="gamma" exponent="{{V3}}" />
+	<feFuncG type="gamma" exponent="{{V3}}" />
+	</feComponentTransfer>
+	<feComponentTransfer in="blur2r" result="blur2">
+	<feFuncB type="gamma" exponent="{{V3}}" />
+	<feFuncR type="gamma" exponent="{{V3}}" />
+	<feFuncG type="gamma" exponent="{{V3}}" />
+	</feComponentTransfer>
+	<feComponentTransfer in="blur3r" result="blur3">
+	<feFuncB type="gamma" exponent="{{V3}}" />
+	<feFuncR type="gamma" exponent="{{V3}}" />
+	<feFuncG type="gamma" exponent="{{V3}}" />
+	</feComponentTransfer>
+
+	<feComponentTransfer in="blur1" result="blur1op">
+	<feFuncA type="discrete" tableValues="1 1"/>
+	</feComponentTransfer>
+	<feComponentTransfer in="blur2" result="blur2op">
+	<feFuncA type="discrete" tableValues="1 1"/>
+	</feComponentTransfer>
+	<feComponentTransfer in="blur3" result="blur3op">
+	<feFuncA type="discrete" tableValues="1 1"/>
+	</feComponentTransfer>
+
+	<feComposite operator="arithmetic" k2="1" k3="-0.9" in="G" in2="blur1op" result="unsharp1" />
+	<feComponentTransfer in="unsharp1" result="unsharp1op">
+	<feFuncR type="linear" intercept="-0.5" />
+	<feFuncG type="linear" intercept="-0.5" />
+	<feFuncB type="linear" intercept="-0.5" />
+	<feFuncA type="linear" slope="100"/>
+	</feComponentTransfer>
+
+	<feComposite operator="arithmetic" k2="1" k3="-0.9" in="G" in2="blur2op" result="unsharp2" />
+	<feComponentTransfer in="unsharp2" result="unsharp2op">
+	<feFuncR type="linear" intercept="-0.5" />
+	<feFuncG type="linear" intercept="-0.5" />
+	<feFuncB type="linear" intercept="-0.5" />
+	<feFuncA type="linear" slope="100"/>
+	</feComponentTransfer>
+
+	<feComposite operator="arithmetic" k2="1" k3="-0.9" in="G" in2="blur3op" result="unsharp3" />
+	<feComponentTransfer in="unsharp3" result="unsharp3op">
+	<feFuncR type="linear" intercept="-0.5" />
+	<feFuncG type="linear" intercept="-0.5" />
+	<feFuncB type="linear" intercept="-0.5" />
+	<feFuncA type="linear" slope="100"/>
+	</feComponentTransfer>
+
+	<feComposite operator="arithmetic" k2="0.8" k3="0.1" in="SourceGraphic" in2="unsharp1op" result="merge1" />
+	<feComposite operator="arithmetic" k2="1" k3="0.1" in="merge1" in2="unsharp2op" result="merge2" />
+	<feComposite operator="arithmetic" k2="1" k3="0.1" in="merge2" in2="unsharp3op" />
+
+
+
+<!-- custom gaussian blur -->
+	<feConvolveMatrix in="SourceGraphic" result="BigBlurX" order="31 1" edgeMode="duplicate" preserveAlpha="true" kernelMatrix="0.026807 0.027796 0.02875 0.029662 0.030527 0.031339 0.032092 0.032781 0.033402 0.033949 0.034419 0.034808 0.035114 0.035334 0.035466 0.035511 0.035466 0.035334 0.035114 0.034808 0.034419 0.033949 0.033402 0.032781 0.032092 0.031339 0.030527 0.029662 0.02875 0.027796 0.026807" />
+	<feConvolveMatrix in="BigBlurX" result="BigBlur" order="1 31" edgeMode="duplicate" preserveAlpha="true" kernelMatrix="0.026807 0.027796 0.02875 0.029662 0.030527 0.031339 0.032092 0.032781 0.033402 0.033949 0.034419 0.034808 0.035114 0.035334 0.035466 0.035511 0.035466 0.035334 0.035114 0.034808 0.034419 0.033949 0.033402 0.032781 0.032092 0.031339 0.030527 0.029662 0.02875 0.027796 0.026807" />

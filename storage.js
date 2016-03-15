@@ -15,6 +15,7 @@ var mystorage = {};
 		};
 		mystorage.set = function(data, callback) {chrome.storage.sync.set(data, callback);};
 		mystorage.remove = function(data, callback) {chrome.storage.sync.remove(data, callback);};
+		mystorage.clear = function(callback) {chrome.storage.sync.clear(callback);};
 	}
 	else
 	{
@@ -91,6 +92,9 @@ var mystorage = {};
 				delete mystorage.ss.storage[key];
 			callback();
 			*/
+		};
+		mystorage.clear = function(callback) {
+			console.error("Clearing storage not implemented");
 		};
 	}
 })();

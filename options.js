@@ -144,7 +144,34 @@ function download(filename, text) {
 $(function(){
 	$('#export').click(function(){
 		mystorage.all(function(items){
-			download('imagefilter_options.json', JSON.stringify(items));
+			download('imagefilter_options.json', JSON.stringify(items,null,2));
+		});
+	});
+
+	$('#importfile').on('change', function(){
+		if (!this.files.length)
+			return;
+		var file = this.files[0];
+		fr = new FileReader();
+		fr.onload = function(){
+			var options = JSON.parse(fr.result);
+			mystorage.set(options);
+			for (var key in options)
+			{
+				mymessages.sendTabs({key:key, value:options[key]});
+			}
+		};
+		fr.readAsText(file);
+	});
+
+	$('#import').click(function(){
+		$('#importfile').trigger('click');
+	});
+
+	$('#clearoptions').click(function(){
+		if (confirm("This will remove all options, including custom filters, and restore the defaults. Are you sure?"))
+		mystorage.clear(function(){
+			location.reload();
 		});
 	});
 

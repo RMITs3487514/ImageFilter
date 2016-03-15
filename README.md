@@ -31,7 +31,7 @@ ImageFilter has four components.
 
 2. `imagefilter.js` is the main controlling component which handles callbacks from `imagefinder.js`, decides whether to filter and keeps a record of what is actually filtered.
 
-3. `histogram.js` build histograms from images to be used in image classification and in the actual SVG filters.
+3. `histogram.js` builds histograms from images to be used in image classification and in the actual SVG filters.
 
 4. `filter.js` does the actual filtering. It takes a histogram object, creates an SVG object with a `<filter>` tag and a CSS class to apply the SVG filter. Images can be filtered by appending the CSS class.
 
