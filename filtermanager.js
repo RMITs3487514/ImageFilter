@@ -4,7 +4,7 @@
 //TODO: clean up filters when they're not needed
 //TODO: faster isPicture choice with css?: https://stackoverflow.com/questions/2481414/how-do-i-select-a-div-with-class-a-but-not-with-class-b
 
-function ImageFilterer() {
+function  FilterManager() {
 	this.animationUpdateFrequency = 1000;
 	//this.golayMeritThreshold = 0.08;
 
@@ -42,10 +42,10 @@ function ImageFilterer() {
 }
 
 //an element to put debug info into the document
-ImageFilterer.debugInfo = null;
-ImageFilterer.enableDebug = false;
+ FilterManager.debugInfo = null;
+ FilterManager.enableDebug = false;
 
-ImageFilterer.prototype.isPicture = function(image, histogram) {
+ FilterManager.prototype.isPicture = function(image, histogram) {
 	var w = $(image).width();
 	var h = $(image).height();
 	if (w * h < 128 * 128)
@@ -64,7 +64,7 @@ ImageFilterer.prototype.isPicture = function(image, histogram) {
 	return true;
 };
 
-ImageFilterer.prototype.invertAll = function(enabled) {
+ FilterManager.prototype.invertAll = function(enabled) {
 	/*
 	var style = $('#imagefilter-invertall');
 	if (!style.length)
@@ -81,7 +81,7 @@ ImageFilterer.prototype.invertAll = function(enabled) {
 		this.filters[k].invert(enabled);
 };
 
-ImageFilterer.prototype.setOnlyPictures = function(enabled) {
+ FilterManager.prototype.setOnlyPictures = function(enabled) {
 	this.onlyPictures = enabled;
 	//update filter class for every image currently being filtered
 	for (var i = 0; i < this.images.length; ++i)
@@ -108,7 +108,7 @@ ImageFilterer.prototype.setOnlyPictures = function(enabled) {
 	}
 };
 
-ImageFilterer.prototype.setCustomValue = function(key, value) {
+ FilterManager.prototype.setCustomValue = function(key, value) {
 	this.customValueCache[key] = value;
 	if (this.defaultFilter)
 		this.defaultFilter.setCustomValue(key, value);
@@ -116,7 +116,7 @@ ImageFilterer.prototype.setCustomValue = function(key, value) {
 		this.filters[k].setCustomValue(key, value);
 };
 
-ImageFilterer.prototype.setFilterSources = function(sources) {
+ FilterManager.prototype.setFilterSources = function(sources) {
 	this.filterSources = sources;
 	if (this.defaultFilter)
 		this.defaultFilter.update(sources);
@@ -124,7 +124,7 @@ ImageFilterer.prototype.setFilterSources = function(sources) {
 		this.filters[key].update(sources);
 };
 
-ImageFilterer.prototype.enable = function(enabled) {
+ FilterManager.prototype.enable = function(enabled) {
 	this.enabled = enabled;
 	if (this.defaultFilter)
 		this.defaultFilter.enable(enabled);
@@ -132,7 +132,7 @@ ImageFilterer.prototype.enable = function(enabled) {
 		this.filters[key].enable(enabled);
 };
 
-ImageFilterer.prototype.chooseFilter = function(img, histogram) {
+ FilterManager.prototype.chooseFilter = function(img, histogram) {
 	if (histogram.success)
 	{
 		if (!(histogram.id in this.filters))
@@ -147,7 +147,7 @@ ImageFilterer.prototype.chooseFilter = function(img, histogram) {
 	}
 };
 
-ImageFilterer.prototype.findHistogram = function(image) {
+ FilterManager.prototype.findHistogram = function(image) {
 	var url = $(image).attr('data-imagefilter-src');
 	if (this.nodeName == 'VIDEO')
 		return this.animatedHistograms[$(image).data('imagefilter-histogram-id')];
@@ -156,7 +156,7 @@ ImageFilterer.prototype.findHistogram = function(image) {
 }
 
 //override a filter already applied to an image
-ImageFilterer.prototype.applyManually = function(image, sources) {
+ FilterManager.prototype.applyManually = function(image, sources) {
 	image = $(image);
 
 	if (!$.inArray(image, this.images))
@@ -201,7 +201,7 @@ ImageFilterer.prototype.applyManually = function(image, sources) {
 	}
 };
 
-ImageFilterer.prototype.applyFilterToImage = function(images, histogram) {
+ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 	var filteredImages = [];
 	for (var i = 0; i < images.length; ++i)
 	{
@@ -240,26 +240,26 @@ ImageFilterer.prototype.applyFilterToImage = function(images, histogram) {
 	$.merge(this.images, filteredImages);
 };
 
-ImageFilterer.prototype.updateFilter = function(histogram) {
+ FilterManager.prototype.updateFilter = function(histogram) {
 	if (histogram.success)
 	{
 		this.filters[histogram.id].update();
 
 		//update the debug histogram if it exists
-		if (ImageFilterer.debugInfo && ImageFilterer.debugInfo.data('imagefilter-src') == histogram.src)
+		if ( FilterManager.debugInfo &&  FilterManager.debugInfo.data('imagefilter-src') == histogram.src)
 		{
-			ImageFilterer.debugInfo.find('#imagefilter-histogram').replaceWith($(histogram.createGraph()).attr('id', 'imagefilter-histogram').css('border', '1px solid black'));
-			ImageFilterer.debugInfo.find('#imagefilter-filterinfo').html(this.filters[histogram.id].getInfo());
+			 FilterManager.debugInfo.find('#imagefilter-histogram').replaceWith($(histogram.createGraph()).attr('id', 'imagefilter-histogram').css('border', '1px solid black'));
+			 FilterManager.debugInfo.find('#imagefilter-filterinfo').html(this.filters[histogram.id].getInfo());
 		}
 	}
 };
 
-ImageFilterer.prototype.removeFilter = function(histogram) {
+ FilterManager.prototype.removeFilter = function(histogram) {
 	if (histogram.success)
 		this.filters[histogram.id].remove();
 };
 
-ImageFilterer.prototype.sourceAdded = function(src, firstElement) {
+ FilterManager.prototype.sourceAdded = function(src, firstElement) {
 	if (src && firstElement.nodeName != 'VIDEO')
 	{
 		console.log("Added " + src);
@@ -269,7 +269,7 @@ ImageFilterer.prototype.sourceAdded = function(src, firstElement) {
 	}
 };
 
-ImageFilterer.prototype.sourceRemoved = function(src) {
+ FilterManager.prototype.sourceRemoved = function(src) {
 	if (src in this.histograms)
 	{
 		console.log("Removed " + src);
@@ -279,7 +279,7 @@ ImageFilterer.prototype.sourceRemoved = function(src) {
 	}
 };
 
-ImageFilterer.prototype.imageAdded = function(img, url) {
+ FilterManager.prototype.imageAdded = function(img, url) {
 	if (img.nodeName == 'VIDEO')
 	{
 		var id = this.uidNext++;
@@ -298,29 +298,29 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 	$(img).on('mouseover', function(e){
 		e.stopPropagation();
 
-		if (!ImageFilterer.enableDebug)
+		if (! FilterManager.enableDebug)
 			return;
 
-		//shouldn't need ImageFilterer.debugInfo.id == 'imagefilter-debug' but something weird is making it point to random elements
-		if (ImageFilterer.debugInfo && ImageFilterer.debugInfo.data('imagefilter-stay'))
+		//shouldn't need  FilterManager.debugInfo.id == 'imagefilter-debug' but something weird is making it point to random elements
+		if ( FilterManager.debugInfo &&  FilterManager.debugInfo.data('imagefilter-stay'))
 		{
-			if (ImageFilterer.debugInfo.attr('id') == 'imagefilter-debug')
+			if ( FilterManager.debugInfo.attr('id') == 'imagefilter-debug')
 				return;
 			else
 				debugger;
 		}
-		if (ImageFilterer.timeout)
-			window.clearTimeout(ImageFilterer.timeout);
-		ImageFilterer.timeout = window.setTimeout(function(){
-			$(ImageFilterer.debugInfo).css('pointer-events', 'auto').css('opacity', '1').data('imagefilter-stay', true)
+		if ( FilterManager.timeout)
+			window.clearTimeout( FilterManager.timeout);
+		 FilterManager.timeout = window.setTimeout(function(){
+			$( FilterManager.debugInfo).css('pointer-events', 'auto').css('opacity', '1').data('imagefilter-stay', true)
 		}, 2000);
-		if (ImageFilterer.debugInfo)
-			ImageFilterer.debugInfo.remove();
-		ImageFilterer.debugInfo = $('<div id="imagefilter-debug" style="opacity: 0.5; pointer-events: none; z-index: 19999999999; position:fixed; top:0px; left:0px; right:0px; background: white; font-size: 14px; border-bottom: 2px solid black;" data-imagefilter-haschild="1"></div>');
-		$(document.body).append(ImageFilterer.debugInfo);
-		ImageFilterer.debugInfo.on('click', function(){
-			ImageFilterer.debugInfo.remove();
-			ImageFilterer.debugInfo = null;
+		if ( FilterManager.debugInfo)
+			 FilterManager.debugInfo.remove();
+		 FilterManager.debugInfo = $('<div id="imagefilter-debug" style="opacity: 0.5; pointer-events: none; z-index: 19999999999; position:fixed; top:0px; left:0px; right:0px; background: white; font-size: 14px; border-bottom: 2px solid black;" data-imagefilter-haschild="1"></div>');
+		$(document.body).append( FilterManager.debugInfo);
+		 FilterManager.debugInfo.on('click', function(){
+			 FilterManager.debugInfo.remove();
+			 FilterManager.debugInfo = null;
 		});
 
 		var histogram;
@@ -330,14 +330,14 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 			histogram = that.histograms[url];
 
 		var info = $('<div><div style="background:rgba(255,255,255,0.5);">URL: <a href="' + url + '">' + url + '</a></div></div>');
-		ImageFilterer.debugInfo.append(info);
+		 FilterManager.debugInfo.append(info);
 
 		if (histogram)
 		{
-			ImageFilterer.debugInfo.data('imagefilter-src', histogram.src);
+			 FilterManager.debugInfo.data('imagefilter-src', histogram.src);
 			if (histogram.success)
 			{
-				ImageFilterer.debugInfo.append($(histogram.createGraph()).attr('id', 'imagefilter-histogram').css('border', '1px solid black'));
+				 FilterManager.debugInfo.append($(histogram.createGraph()).attr('id', 'imagefilter-histogram').css('border', '1px solid black'));
 				info.css('position', 'absolute');
 			}
 			else
@@ -345,10 +345,10 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 		}
 
 		if (url && this.nodeName != 'VIDEO')
-			ImageFilterer.debugInfo.append($('<img data-imagefilter-haschild="1" style="border:1px solid black; max-height: 128px;" alt="debugimg" src="' + url + '"/>'));
+			 FilterManager.debugInfo.append($('<img data-imagefilter-haschild="1" style="border:1px solid black; max-height: 128px;" alt="debugimg" src="' + url + '"/>'));
 
 		var textInfo = $('<div style="display: inline-block" id="imagefilter-info"><div id="imagefilter-filterinfo"></div></div>');
-		ImageFilterer.debugInfo.append(textInfo);
+		 FilterManager.debugInfo.append(textInfo);
 		if (this.nodeName != 'VIDEO')
 		{
 			var filteredClass = $(this).attr('data-imagefilter-class');
@@ -359,20 +359,20 @@ ImageFilterer.prototype.imageAdded = function(img, url) {
 		}
 
 	}).on('mouseout', function(){
-		if (ImageFilterer.debugInfo && !ImageFilterer.debugInfo.data('imagefilter-stay'))
+		if ( FilterManager.debugInfo && ! FilterManager.debugInfo.data('imagefilter-stay'))
 		{
-			ImageFilterer.debugInfo.remove();
-			ImageFilterer.debugInfo = null;
+			 FilterManager.debugInfo.remove();
+			 FilterManager.debugInfo = null;
 		}
-		if (typeof ImageFilterer.timeout !== 'undefined')
+		if (typeof  FilterManager.timeout !== 'undefined')
 		{
-			window.clearTimeout(ImageFilterer.timeout);
-			ImageFilterer.timeout = null;
+			window.clearTimeout( FilterManager.timeout);
+			 FilterManager.timeout = null;
 		}
 	});
 };
 
-ImageFilterer.prototype.imageRemoved = function(img, url, removedFrom) {
+ FilterManager.prototype.imageRemoved = function(img, url, removedFrom) {
 	if (img.nodeName == 'VIDEO')
 	{
 		var id = $(img).data('imagefilter-histogram-id');
@@ -411,7 +411,7 @@ ImageFilterer.prototype.imageRemoved = function(img, url, removedFrom) {
 	}
 };
 
-ImageFilterer.prototype.histogramReady = function(histogram) {
+ FilterManager.prototype.histogramReady = function(histogram) {
 	var images = this.finder.sources[histogram.src];
 	this.applyFilterToImage(images, histogram);
 };

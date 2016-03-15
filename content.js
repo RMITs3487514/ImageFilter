@@ -4,7 +4,7 @@
 
 var customValueDelta = 0.025;
 
-var filterer = new ImageFilterer();
+var filterer = new  FilterManager();
 filterer.start();
 
 var currentFilterChain = [];
@@ -99,7 +99,7 @@ function setShortcut(name, shortcut, callback)
 function sendOption(key, value)
 {
 	var success = mymessages.sendBacgkround({key:key, value:value});
-	
+
 	//if the messaging system doesn't work just apply the option
 	if (typeof chrome === 'undefined')
 		applyOption(key, value);
@@ -225,7 +225,7 @@ function applyOption(key, value)
 
 	if (key == 'option-debugpopup')
 	{
-		ImageFilterer.enableDebug = value;
+		 FilterManager.enableDebug = value;
 		return;
 	}
 

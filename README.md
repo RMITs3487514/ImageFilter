@@ -30,7 +30,7 @@ ImageFilter has four components.
 
 	It also detects images added via CSS, including inline `style` attributes `style` tags and linked `style` files. Again these are supported dynamically and even changes to image `src` attributes and `background-image` properties are handled.
 
-2. `imagefilter.js` is the main controlling component which handles callbacks from `imagefinder.js`, decides whether to filter and keeps a record of what is actually filtered.
+2. `filtermanager.js` is the main controlling component which handles callbacks from `imagefinder.js`, decides whether to filter and keeps a record of what is actually filtered.
 
 3. `histogram.js` builds histograms from images to be used in image classification and in the actual SVG filters.
 
@@ -38,7 +38,7 @@ ImageFilter has four components.
 
 The following files handle user input and options.
 
-- `content.js` is the entry point, which creates an `ImageFilterer` from `imagefilter.js`.
+- `content.js` is the entry point, which creates an `FilterManager` from `filtermanager.js`.
 - `popup.html/js` is the ![popup img][popup] popup which provide quick access to changing default and per-site enabled/disable and filter choice options. It includes sliders for custom variables and a link to the options page.
 - `options.html/js` the less common options are found here, including shortcuts and filter source code. It includes examples of the syntax for integrating histogram and custom variables with the SVG filters, which for convenience is duplicated below.
 
