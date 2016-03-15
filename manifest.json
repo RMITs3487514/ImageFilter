@@ -35,7 +35,7 @@
 				"imagefinder.js",
 				"histogram.js",
 				"filter.js",
-				"imagefilter.js",
+				"filtermanager.js",
 				"content.js"
 			],
 			"run_at": "document_idle"
