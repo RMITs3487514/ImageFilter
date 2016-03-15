@@ -82,3 +82,12 @@ filtering images by luminance.
 	</feComponentTransfer>
 
 [popup]:https://raw.githubusercontent.com/pknowles/ImageFilter/master/icon16.png
+
+# License
+
+GPL3. See LICENSE.txt.
+
+Dependencies:
+
+- JQuery (MIT)
+- Mousetrap.js (Apache 2.0)
