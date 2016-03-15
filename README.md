@@ -1,7 +1,8 @@
+**Pre-alpha.** This project is still under development and not ready to be used yet. Currently under GPL3. See LICENSE.txt.
 
 # ImageFilter
 
-This extension filters images on webpages you visit to improve visibility and detail. It uses SVG filters and allows users to edit their source directly. Features include histogram generation for equalization, dynamically adjustable values with keyboard shortcuts and persistent per-site settings. Images which are classified as having text content or having relatively few colours can be ignored.
+This browser extension filters images on webpages you visit to improve visibility and detail. It uses SVG filters and allows users to edit their source directly. Features include histogram generation for equalization, dynamically adjustable values with keyboard shortcuts and persistent per-site settings. Images which are classified as having text content or having relatively few colours can be ignored.
 
 ## Browser Support
 
@@ -80,4 +81,4 @@ filtering images by luminance.
 	  <feFuncB type="table" tableValues="%16HY"/>
 	</feComponentTransfer>
 
-[popup]: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AEYCi4BA8pbjgAAAq9JREFUOMulk02I1WUUxp/3ff//e+/cuXObjyajZtIbVAyiOyHDFlH2Qa0UgiCIAgUXEULQ7IIgcOFCEFy5UcSWLVy5EEIkCFqUhGEz4Ki3vPNx7537/34/zjnurjnoyrM7zzn8znMWD/CMpZ42+Oqnbz+da7z2UX9474/NjTvnrixf9k/ai3YKRy580Zg1e448KH478/fKtfnRWpLGpnURwPBJALNT2HV48jNbJZfKIpkkR/D9ifre5nKysPtdhNDc2u7fesyJ/n/z89FTz+/feONAVq5zlefQEmMmO4r+f4Mft3p3rhsTv7nz4Bhw/uTZ1qq9+UPzz60TRhlNliEAyFfY6t3HYPNeyZAWJqD17rcjAFCLh6IIAJY//ETdXb3+ZUx0IqQJhBXYMyQKgPJQSkMgcL5oInphiskHLB5qiVJ1AwA3Vv/Bwc6rMyG4z03q0V1SsHkJFROktweUKZgoNp3XD3/Q6bz3vnj713a2nkMojF8w9fp9EhmwAFGuwCxg8WB2EGHUai1ti+32v2u/HgxZfwlUZvClHQMaRd6dMdFxE5urptBOgoIQIPBgYRA52HIEV6Vg9jmIpiAyNwZsDIfS0vr20tTs940J/Z1WelMYYDgADKYA4QBA4EMVQQIU+d4jQJbyZp7m1rDrmNqN2X3THwvJLwTrRBgiBGaCMCHW8RrIpSLhpTEgDdYPiqIcsbXKk4pZ8SvvtI81sfgNoG4LMBAJEDCKajgNpgVw4DHAE3FSlXZdsqpg7zUJym5jetdb6tpUe/7rxsT0aQoOIrIt4rsAdaFCd5wF7yEjskGZ3IZQdxxMXbTRZeZaz80vdNs2fZBnyc0QqiSOzcro1u/pY1lYmGtC6pHxM4jdrDa+qTRUw6jiRSBpcw01tCbbIyLp+Sp3Zv5ll22s4CHN346+OVdceQAAAABJRU5ErkJggg=='
+[popup]:https://raw.githubusercontent.com/pknowles/ImageFilter/master/icon16.png
