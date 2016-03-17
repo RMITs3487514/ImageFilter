@@ -134,7 +134,7 @@ function loadOptions(){
 				var list = items[key];
 				for (var i in list)
 				{
-					$('#logs').append('<li>' + log[1] + ': ' + list[i] + '</li>');
+					$('#logs').append('<li>' + log[1] + ': ' + list[i] + '<br/></li>');
 				}
 			}
 		}
@@ -163,6 +163,12 @@ $(function(){
 		mystorage.all(function(items){
 			download('imagefilter_options.json', JSON.stringify(items,null,2));
 		});
+	});
+
+	$('#downloadlog').click(function(){
+		var logs = $('#logs');
+		logs = logs[0].innerText || logs[0].textContent;
+		download('imagefilter_log.txt', logs);
 	});
 
 	$('#importfile').on('change', function(){
