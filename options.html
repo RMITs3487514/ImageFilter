@@ -9,6 +9,7 @@
 	<script type="text/javascript" src="mousetrap-record.js"></script>
 	<script type="text/javascript" src="storage.js"></script>
 	<script type="text/javascript" src="messaging.js"></script>
+	<script type="text/javascript" src="logging.js"></script>
 	<script type="text/javascript" src="defaults.js"></script>
 	<script type="text/javascript" src="options.js"></script>
 	<style>
@@ -31,6 +32,18 @@
 	textarea {
 		font-family: "Courier New", Courier, monospace;
 		font-size: 17.5px;
+	}
+	#logs {
+		font-family: "Courier New", Courier, monospace;
+		font-size: 17.5px;
+		height: 800px;
+		max-height: 800px;
+		max-width: 800px;
+		border: 1px solid black;
+		padding-top: 12px;
+		padding-bottom: 12px;
+		white-space: nowrap;
+		overflow: scroll;
 	}
 	input[type=text] {
 		font-size: 17.5px;
@@ -190,6 +203,15 @@
 		<button id="import">Import Options</button>
 		<button id="clearoptions">Clear Options</button>
 		<input style="display:none" type="file" id="importfile" />
+	</div>
+
+	<div style="margin-top:24px">
+		<label title="Logs your usage of this extension, such as visited sites and enabled filters.">
+			<input type="checkbox" class="option" name="option-usagelog">Log Usage
+		</label>
+		<div><button id="show-logs">Show Logs</button></div>
+		<ul id="logs">
+		</ul>
 	</div>
 </body>
 </html>

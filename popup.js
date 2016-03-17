@@ -1,6 +1,7 @@
 
 //TODO: handle filter removal
 
+var activeURL = null;
 var activeHostname = null;
 
 //helper function to catch events given a selector (avoid pulling in jquery)
@@ -74,7 +75,9 @@ function sendOption(key, value)
 	if (key.match(/^site-.*$/))
 		key = key + "-" + activeHostname;
 
-	//if this is the active tab, we're in charge of saving the option
+	mylogger.log('popup sets ' + key + '=' + value + ' - ' + encodeURI(activeURL));
+
+	//saving the option
 	if (value !== null)
 	{
 		var data = {};
@@ -121,6 +124,7 @@ document.addEventListener('DOMContentLoaded', function(){
 function onLoad()
 {
 	getActiveTabURL(function(url) {
+		activeURL = url;
 		activeHostname = getHostname(url);
 
 		mystorage.all(function(items){

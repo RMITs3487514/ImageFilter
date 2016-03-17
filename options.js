@@ -39,6 +39,7 @@ function saveFilter(filter)
 		data['filterfallback-' + name] = filter.find('.filter-fallback').val();
 		data['filtershortcut-' + name] = shortcut;
 		mystorage.set(data);
+		mylogger.log('saved filter source for "' + name + '"');
 		for (var k in data)
 			mymessages.sendTabs({key:k, value:data[k]});
 	}
@@ -126,6 +127,16 @@ function loadOptions(){
 					items['filtershortcut-' + filter[1]]
 				);
 			}
+
+			var log = key.match(/^log-(.*)$/);
+			if (log)
+			{
+				var list = items[key];
+				for (var i in list)
+				{
+					$('#logs').append('<li>' + log[1] + ': ' + list[i] + '</li>');
+				}
+			}
 		}
 	});
 }
@@ -142,6 +153,12 @@ function download(filename, text) {
 }
 
 $(function(){
+	$('#logs').hide();
+	$('#show-logs').click(function(){
+		$(this).hide();
+		$('#logs').show();
+	});
+
 	$('#export').click(function(){
 		mystorage.all(function(items){
 			download('imagefilter_options.json', JSON.stringify(items,null,2));
@@ -156,6 +173,7 @@ $(function(){
 		fr.onload = function(){
 			var options = JSON.parse(fr.result);
 			mystorage.set(options);
+			mylogger.log('imported ' + options.length + ' options from file');
 			for (var key in options)
 			{
 				mymessages.sendTabs({key:key, value:options[key]});
@@ -189,6 +207,7 @@ $(function(){
 		data[this.name] = value;
 		console.log(this.name, value);
 		mystorage.set(data);
+		mylogger.log('options sets ' + this.name + '=' + value);
 		mymessages.sendTabs({key:this.name, value:value});
 	});
 

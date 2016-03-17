@@ -12,7 +12,7 @@ var mymessages = {};
 		};
 		mymessages.listen = function(callback){
 			chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-				callback(request);
+				callback(request, sender);
 			});
 		};
 	}

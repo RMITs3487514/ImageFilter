@@ -2,10 +2,15 @@
 //TODO: dynamically disable context menu when it's not applicable. the API is terrible
 //TODO: handle filter addition and removal
 
-mymessages.listen(function(request){
+mymessages.listen(function(request, sender){
 	//content scripts can't update filters. security risk?
 	if (request.key.match(/^filter.*$/))
 		return;
+
+	if (sender)
+	{
+		mylogger.log('shortcut sets ' + request.key + '=' + request.value + ' - ' + encodeURI(sender.tab.url));
+	}
 
 	//save the option
 	var data = {};
@@ -18,6 +23,7 @@ mymessages.listen(function(request){
 
 if (typeof chrome !== 'undefined')
 {
+	//FIXME: need to clear all menus first in case of background script reload
 	var filterList = chrome.contextMenus.create({title: 'Override Filter', contexts: ['all']});
 	var filterListNames = {};
 	var zoomList = chrome.contextMenus.create({title: 'Zoom', contexts: ['all']});
