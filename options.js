@@ -161,7 +161,11 @@ $(function(){
 
 	$('#export').click(function(){
 		mystorage.all(function(items){
-			download('imagefilter_options.json', JSON.stringify(items,null,2));
+			var saveItems = {};
+			for (var k in items)
+				if (!k.match(/^log/))
+					saveItems[k] = items[k];
+			download('imagefilter_options.json', JSON.stringify(saveItems, null, 2));
 		});
 	});
 
