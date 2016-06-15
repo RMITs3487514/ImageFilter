@@ -79,6 +79,8 @@ function  FilterManager() {
 		this.defaultFilter.invert(enabled);
 	for (var k in this.filters)
 		this.filters[k].invert(enabled);
+	for (var k in this.filterOverrides)
+		this.filterOverrides[k].invert(enabled);
 };
 
  FilterManager.prototype.setOnlyPictures = function(enabled) {
@@ -114,6 +116,8 @@ function  FilterManager() {
 		this.defaultFilter.setCustomValue(key, value);
 	for (var k in this.filters)
 		this.filters[k].setCustomValue(key, value);
+	for (var k in this.filterOverrides)
+		this.filterOverrides[k].setCustomValue(key, value);
 };
 
  FilterManager.prototype.setFilterSources = function(sources) {
@@ -149,7 +153,7 @@ function  FilterManager() {
 
  FilterManager.prototype.findHistogram = function(image) {
 	var url = $(image).attr('data-imagefilter-src');
-	if (this.nodeName == 'VIDEO')
+	if ($(image)[0].nodeName == 'VIDEO')
 		return this.animatedHistograms[$(image).data('imagefilter-histogram-id')];
 	else
 		return this.histograms[url];
@@ -180,6 +184,9 @@ function  FilterManager() {
 		image.data('imagefilter-override', filterID);
 	}
 
+	//remove old css class
+	image.removeClass(image.attr('data-imagefilter-class'));
+
 	if (sources === null)
 	{
 		image.removeData('imagefilter-override');
@@ -187,11 +194,8 @@ function  FilterManager() {
 	}
 	else
 	{
-		var filter = new ImageFilter(sources, true, this.customValueCache, histogram);
+		var filter = new ImageFilter(sources, true, this.customValueCache, this.inverted, histogram);
 		this.filterOverrides[filterID] = filter;
-
-		//remove old css class
-		image.removeClass(image.attr('data-imagefilter-class'));
 
 		//add the new one
 		image.addClass(filter.styleName);
