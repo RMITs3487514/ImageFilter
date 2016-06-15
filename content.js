@@ -96,6 +96,78 @@ function setShortcut(name, shortcut, callback)
 	}
 }
 
+function createPopup()
+{
+	//TODO: add more complete options here
+	var p = $('<div>' +
+		'<div>V1 <input id="imagefilter-popup-v1" class="option" name="option-value1" type="range" min="0" max="1" value="0" step="0.1"></div>' +
+		'<div>V2 <input id="imagefilter-popup-v2" class="option" name="option-value2" type="range" min="0" max="1" value="0" step="0.1"></div>' +
+		'<div>V3 <input id="imagefilter-popup-v3" class="option" name="option-value3" type="range" min="0" max="1" value="0" step="0.1"></div>' +
+		'</div>');
+	p.attr('style',
+		'position: absolute;' +
+		'z-index: 19999999999;' +
+		'color: black;' +
+		'text-decoration: none !important;' +
+		'font-size: 16px;' +
+		'padding: 2px 4px;' +
+		'background-color: white;' +
+		'border: 2px solid #aaa;'
+	);
+	return p;
+}
+
+
+// the in-page options opens when clicking a filterable object.
+// might be useful to control the extension from mobile devices.
+var inPageOptions = null;
+function enableInPageOptions(enabled)
+{
+	// return if unchanged
+	if ((!inPageOptions) == (!enabled))
+		return;
+		
+	var events = "mousedown mouseup mousemove touchstart touchend touchmove";
+	
+	// create or destroy options panel
+	if (enabled)
+	{
+		inPageOptions = {
+			popup: null,
+			dragHandler: function(e){
+				//TODO: adjust options with mouse drag events, or use HTML range inputs
+				//console.log(e.pageX, e.pageY);
+				//e.preventDefault();
+				
+				//use sendOption() to apply the result. see handleShortcut() for an example
+			},
+			openHandler: function(e){
+				if (inPageOptions.popup)
+				{
+					inPageOptions.popup.remove();
+					inPageOptions.popup = null;
+				}
+				else
+				{
+					inPageOptions.popup = createPopup();
+					$(document.body).parent().append(inPageOptions.popup);
+					var pos = $(this).offset();
+					inPageOptions.popup.css({top:pos.top + $(this).height(), left:pos.left});
+					
+					//TODO: for custom sliders, capture move events
+					//inPageOptions.popup.on("mousemove touchmove", inPageOptions.dragHandler);
+				}
+			}
+		};
+		$(document).on("click", "*[data-imagefilter-class]", inPageOptions.openHandler);
+	}
+	else
+	{
+		$(document).off("click", "*[data-imagefilter-class]", inPageOptions.openHandler);
+		inPageOptions = null;
+	}
+}
+
 function sendOption(key, value)
 {
 	var success = mymessages.sendBacgkround({key:key, value:value});
@@ -216,6 +288,9 @@ function applyOption(key, value)
 		filterer.setCustomValue('V' + customValue[1], value);
 		return;
 	}
+	
+	if (key == 'option-inpageoptions')
+		enableInPageOptions(value);
 
 	if (key == 'option-invert')
 	{
