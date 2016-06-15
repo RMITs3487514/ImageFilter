@@ -61,13 +61,15 @@ if (typeof chrome !== 'undefined')
 
 	var clearFilter = chrome.contextMenus.create({title: 'Clear Override', contexts: ['all'], onclick: contextMenuClearFilter});
 
-	mystorage.all(function(items){
-		for (var key in items)
-		{
-			var match = key.match(/^filter-(.*)$/);
-			if (match)
-				createFilterMenuItem(match[1]);
-		}
+	assertDefaultsAreLoaded(function(){
+		mystorage.all(function(items){
+			for (var key in items)
+			{
+				var match = key.match(/^filter-(.*)$/);
+				if (match)
+					createFilterMenuItem(match[1]);
+			}
+		});
 	});
 }
 else

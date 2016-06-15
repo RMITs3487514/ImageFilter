@@ -42,6 +42,6 @@
 		}
 	],
 	"background": {
-		"scripts": ["storage.js", "messaging.js", "logging.js", "background.js"]
+		"scripts": ["defaults.js", "storage.js", "messaging.js", "logging.js", "background.js"]
 	}
 }
