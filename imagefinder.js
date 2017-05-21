@@ -6,7 +6,7 @@ function ImageFinder() {
 	this.sources = {};
 
 	//the things to find
-	this.selectorImages = "img, object, video, embed";
+	this.selectorImages = "img, object, video, embed[type^='application/x-google-chrome-pdf']";
 
 	//style tags and CSS in links can add images to other tags. watch the "load" events on these tags
 	this.selectorStyles = "style, link";
