@@ -4,6 +4,8 @@ function Histogram(source, element, updateInterval) {
 	this.maxHistogramSampleDimension = 128; //if image is bigger than this, scale down before generating the histogram
 	this.attemptsLeft = 4; //try this many times to generate a histogram and then give up
 
+	this.references = [];
+	this.isLoaded = false;
 	this.histogram = [];
 	this.lastHistogram = [];
 	this.src = source;
@@ -19,25 +21,6 @@ function Histogram(source, element, updateInterval) {
 	this.totalPixels = 0;
 	this.status = 'About to start';
 	this.id = Histogram.nextID++;
-
-	if (this.animated)
-	{
-		this.status = 'Waiting for video';
-		this.drawObject = element;
-		window.setTimeout(this.loaded.bind(this), 100);
-	}
-	else
-	{
-		this.status = 'Loading Image';
-		this.drawObject = new Image();
-		var that = this;
-		this.drawObject.crossOrigin = "Anonymous";
-		this.drawObject.onload = this.loaded.bind(this);
-		this.drawObject.onerror = this.loadError.bind(this);
-		this.drawObject.src = this.src;
-	}
-
-	console.log("Histogram for " + this.src + ", " + (this.animated ? "animated" : "still"));
 }
 Histogram.nextID = 0;
 
@@ -148,6 +131,8 @@ Histogram.prototype.updateHistogram = function(drawable) {
 	this.lastHistogram = this.histogram;
 	this.histogram = [];
 
+	console.log("Generating histogram for", drawable);
+
 	//initialize arrays
 	var channels = 4;
 	var h = [];
@@ -233,8 +218,57 @@ Histogram.prototype.loadError = function(event) {
 		this.onerror(this);
 };
 
+Histogram.prototype.addReference = function(obj) {
+	var needUpdate = this.references.length == 0;
+	if (!(obj.id in this.references)) {
+		this.references[obj.id] = obj;
+		this.references.length++;
+	}
+	if (needUpdate) {
+		console.log("Loading histogram for " + this.src + ", " + (this.animated ? "animated" : "still"));
+		if (this.isLoaded) {
+			this.onFirstLoadWithReference();
+		}
+		else
+		{
+			if (this.animated)
+			{
+				this.status = 'Waiting for video';
+				this.drawObject = element;
+				window.setTimeout(this.loaded.bind(this), 100);
+			}
+			else
+			{
+				this.status = 'Loading Image';
+				this.drawObject = new Image();
+				var that = this;
+				this.drawObject.crossOrigin = "Anonymous";
+				this.drawObject.onload = this.loaded.bind(this);
+				this.drawObject.onerror = this.loadError.bind(this);
+				this.drawObject.src = this.src;
+			}
+		}
+	}
+}
+
+Histogram.prototype.removeReference = function(obj) {
+	if (obj.id in this.references) {
+		//console.error("Histogram.removeReference without addReference");
+		return false;
+	}
+	delete this.references[obj.id];
+	this.references.length--;
+	return true;
+}
+
 Histogram.prototype.loaded = function() {
-	this.status = 'Loaded';
+	this.isLoaded = true;
+	if (this.references.length > 0) {
+		this.onFirstLoadWithReference();
+	}
+}
+
+Histogram.prototype.onFirstLoadWithReference = function() {
 	this.success = this.updateHistogram(this.drawObject);
 	this.attemptsLeft -= 1;
 	if (!this.success)
@@ -248,6 +282,7 @@ Histogram.prototype.loaded = function() {
 			console.error("Failed to compute histogram for " + this.src);
 	}
 
+	this.status = 'Loaded';
 	this.ready = true;
 
 	var callback = this.success ? this.onload : this.onerror;
@@ -256,6 +291,10 @@ Histogram.prototype.loaded = function() {
 
 	if (this.animated)
 		this.timer = window.setInterval(this.update.bind(this), this.updateInterval);
+
+	for (var ref in this.references) {
+		this.references[ref].update();
+	}
 };
 
 Histogram.prototype.update = function() {

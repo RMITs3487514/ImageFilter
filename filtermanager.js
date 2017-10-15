@@ -134,7 +134,7 @@ function  FilterManager() {
 };
 
  FilterManager.prototype.chooseFilter = function(img, histogram) {
-	if (histogram && histogram.success)
+	if (histogram)
 	{
 		if (!(histogram.id in this.filters))
 			this.filters[histogram.id] = new ImageFilter(this.filterSources, this.enabled, this.customValueCache, this.inverted, histogram);
@@ -318,8 +318,7 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 	}
 	else
 	{
-		if (url in this.histograms && this.histograms[url].ready)
-			this.applyFilterToImage([img], this.histograms[url]);
+		this.applyFilterToImage([img], this.histograms[url]);
 	}
 
 	var that = this;
@@ -441,5 +440,4 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 
  FilterManager.prototype.histogramReady = function(histogram) {
 	var images = this.finder.sources[histogram.src];
-	this.applyFilterToImage(images, histogram);
 };

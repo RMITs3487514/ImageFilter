@@ -9,21 +9,24 @@ function ImageFilter(sources, enabled, initialCustomValues, inverted, histogram)
 	this.requiresAnimatedHistogram = false;
 	this.requiresHistogram = false;
 	this.requiresVariables = false;
-	this.sources = sources;
 	this.histogram = histogram;
 	this.inverted = inverted;
-	this.source = this.chooseSource(this.sources);
 	this.id = this.createUniqueName();
 	this.styleid = this.id + '-style';
 	this.styleName = this.id;
 	this.customValue = {}; //e.g. {V1: 0.8, V2: 0.2}
 	for (var k in initialCustomValues)
 		this.customValue[k] = initialCustomValues[k];
-	this.update();
+
+	this.update(sources);
 }
 
 ImageFilter.prototype.release = function() {
 	console.log("Haven't implemented ImageFilter.release()");
+	if (this.histogram) {
+		//NOTE: may not actually have added the ref
+		this.histogram.removeReference(this);
+	}
 };
 
 ImageFilter.prototype.invert = function(enable) {
@@ -56,23 +59,31 @@ ImageFilter.prototype.update = function(sources) {
 		this.sources = sources;
 	this.source = this.chooseSource(this.sources);
 
-	if (this.histogram && this.histogram.success)
-	{
-		var lh = this.histogram.lastHistogram;
-		var h = this.histogram.histogram;
-		this.source = this.source.replace(this.histogramRegex, function(matches, blockSize, last, channelChar) {
-			last = last.length > 0;
-			var channel = "RGBY".indexOf(channelChar);
-			blockSize = Math.max(1, blockSize.length ? parseFloat(blockSize) : 1);
-			if (blockSize > 0 && channel >= 0)
-				return that.histogram.getData(channel, that.histogram.animated && last, blockSize);
-			else
-				return "0 1";
-		});
-		this.source = this.source.replace(this.variableRegex, function(m, equation){
-			equation = equation.replace(/(V[1-3])/g, function (m, i) {return that.customValue[i];});
-			return eval(equation);
-		});
+	if (this.histogram && (this.requiresHistogram || this.requiresAnimatedHistogram)) {
+		this.histogram.addReference(this);
+		if (this.histogram.success)
+		{
+			var lh = this.histogram.lastHistogram;
+			var h = this.histogram.histogram;
+			this.source = this.source.replace(this.histogramRegex, function(matches, blockSize, last, channelChar) {
+				last = last.length > 0;
+				var channel = "RGBY".indexOf(channelChar);
+				blockSize = Math.max(1, blockSize.length ? parseFloat(blockSize) : 1);
+				if (blockSize > 0 && channel >= 0)
+					return that.histogram.getData(channel, that.histogram.animated && last, blockSize);
+				else
+					return "0 1";
+			});
+			this.source = this.source.replace(this.variableRegex, function(m, equation){
+				equation = equation.replace(/(V[1-3])/g, function (m, i) {return that.customValue[i];});
+				return eval(equation);
+			});
+		}
+		else
+		{
+			// Histogram not ready yet.
+			return false;
+		}
 	}
 
 	/*
@@ -94,6 +105,7 @@ ImageFilter.prototype.update = function(sources) {
 		$(document.body).append($(svg));
 
 	this.enable(this.enabled);
+	return true;
 }
 
 ImageFilter.prototype.enable = function(enabled) {
