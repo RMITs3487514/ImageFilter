@@ -126,9 +126,9 @@ function enableInPageOptions(enabled)
 	// return if unchanged
 	if ((!inPageOptions) == (!enabled))
 		return;
-		
+
 	var events = "mousedown mouseup mousemove touchstart touchend touchmove";
-	
+
 	// create or destroy options panel
 	if (enabled)
 	{
@@ -138,7 +138,7 @@ function enableInPageOptions(enabled)
 				//TODO: adjust options with mouse drag events, or use HTML range inputs
 				//console.log(e.pageX, e.pageY);
 				//e.preventDefault();
-				
+
 				//use sendOption() to apply the result. see handleShortcut() for an example
 			},
 			openHandler: function(e){
@@ -153,7 +153,7 @@ function enableInPageOptions(enabled)
 					$(document.body).parent().append(inPageOptions.popup);
 					var pos = $(this).offset();
 					inPageOptions.popup.css({top:pos.top + $(this).height(), left:pos.left});
-					
+
 					//TODO: for custom sliders, capture move events
 					//inPageOptions.popup.on("mousemove touchmove", inPageOptions.dragHandler);
 				}
@@ -288,9 +288,16 @@ function applyOption(key, value)
 		filterer.setCustomValue('V' + customValue[1], value);
 		return;
 	}
-	
+
 	if (key == 'option-inpageoptions')
 		enableInPageOptions(value);
+
+	if (key == 'option-maxsize')
+	{
+		filterer.maxSize = value;
+		filterer.updateEnabled();
+		return;
+	}
 
 	if (key == 'option-invert')
 	{
@@ -306,7 +313,8 @@ function applyOption(key, value)
 
 	if (key == 'option-onlypictures')
 	{
-		filterer.setOnlyPictures(value);
+		filterer.onlyPictures = value;
+		filterer.updateEnabled();
 		return;
 	}
 

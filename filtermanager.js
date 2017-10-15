@@ -17,6 +17,8 @@ function  FilterManager() {
 	this.onlyPictures = true;
 	this.inverted = true;
 
+	this.maxSize = 999999;
+
 	this.customValueCache = {V1:0.5, V2:0.5, V3:0.5};
 
 	var that = this;
@@ -83,8 +85,8 @@ function  FilterManager() {
 		this.filterOverrides[k].invert(enabled);
 };
 
- FilterManager.prototype.setOnlyPictures = function(enabled) {
-	this.onlyPictures = enabled;
+ FilterManager.prototype.updateEnabled = function() {
+
 	//update filter class for every image currently being filtered
 	for (var i = 0; i < this.images.length; ++i)
 	{
@@ -95,17 +97,12 @@ function  FilterManager() {
 			continue;
 
 		var filteredClass = image.attr('data-imagefilter-class');
-		var apply = true;
-		if (this.onlyPictures && image.nodeName !== 'VIDEO')
-		{
-			var url = image.attr('data-imagefilter-src');
-			//if (image.nodeName == 'VIDEO') //not a video, so don't need to check
-			//	histogram = this.animatedHistograms[image.data('imagefilter-histogram-id')];
-			//else
-			histogram = this.histograms[url];
-			if (!this.isPicture(image, histogram))
-				apply = false;
-		}
+		var url = image.attr('data-imagefilter-src');
+		//if (image.nodeName == 'VIDEO') //not a video, so don't need to check
+		//	histogram = this.animatedHistograms[image.data('imagefilter-histogram-id')];
+		//else
+		histogram = this.histograms[url];
+		var apply = this.shouldFilter(image, histogram);
 		image.toggleClass(filteredClass, apply);
 	}
 };
@@ -205,7 +202,26 @@ function  FilterManager() {
 	}
 };
 
- FilterManager.prototype.applyFilterToImage = function(images, histogram) {
+FilterManager.prototype.shouldFilter = function(image, histogram) {
+	//ignore images that are too big
+	if (this.maxSize > 0 && ($(image).width() > this.maxSize || $(image).height() > this.maxSize)) {
+		return false;
+	}
+
+	//always filter video
+	if (image.nodeName == 'VIDEO') {
+		return true;
+	}
+
+	//handle the only-filter-pictures option
+	if (this.onlyPictures && !this.isPicture(image, histogram)) {
+		return false;
+	}
+
+	return true;
+};
+
+FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 	var filteredImages = [];
 	for (var i = 0; i < images.length; ++i)
 	{
@@ -228,7 +244,7 @@ function  FilterManager() {
 			});
 
 			//actually apply the filter by adding a class to the element
-			if (!this.onlyPictures || images[i].nodeName == 'VIDEO' || this.isPicture(images[i], histogram))
+			if (this.shouldFilter(images[i], histogram))
 				$(images[i]).addClass(filter.styleName);
 
 			//store the class name as a backup, even if it wasn't applied

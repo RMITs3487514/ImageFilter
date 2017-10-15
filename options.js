@@ -209,7 +209,7 @@ $(function(){
 		});
 	});
 
-	$('.option').on('change', function(event){
+	$('.option').on('change paste keydown input', function(event){
 		var value = this.type == 'checkbox' ? this.checked : this.value;
 		if (value == shortcutNone) //handle shortcut "none"
 			value = null;
