@@ -83,6 +83,29 @@ function setCurrentFilter(name)
 	filterer.setFilterSources(sources);
 }
 
+function setShiftClickToggle(enable)
+{
+	if (enable)
+	{
+		$(document).on("click.shiftclicktoggle", function(e) {
+			if (e.shiftKey) {
+				// toggle filter on this element by creating an empty filter
+				var enabled = filterer.isFiltered(e.target) && !$(e.target).data('imagefilter-disabletoggle');
+				enabled = !enabled;
+				$(e.target).data('imagefilter-disabletoggle', !enabled)
+				filterer.applyManually(e.target, enabled ? filterer.filterSources : [""]);
+				e.stopPropagation();
+				return false;
+			}
+			return true;
+		});
+	}
+	else
+	{
+		$(document).off("click.shiftclicktoggle");
+	}
+}
+
 var activeShortcuts = {};
 function setShortcut(name, shortcut, callback)
 {
@@ -291,6 +314,12 @@ function applyOption(key, value)
 
 	if (key == 'option-inpageoptions')
 		enableInPageOptions(value);
+
+	if (key == 'option-shiftclicktoggle')
+	{
+		setShiftClickToggle(value);
+		return;
+	}
 
 	if (key == 'option-maxsize')
 	{

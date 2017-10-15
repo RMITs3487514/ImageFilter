@@ -134,7 +134,7 @@ function  FilterManager() {
 };
 
  FilterManager.prototype.chooseFilter = function(img, histogram) {
-	if (histogram.success)
+	if (histogram && histogram.success)
 	{
 		if (!(histogram.id in this.filters))
 			this.filters[histogram.id] = new ImageFilter(this.filterSources, this.enabled, this.customValueCache, this.inverted, histogram);
@@ -156,9 +156,17 @@ function  FilterManager() {
 		return this.histograms[url];
 }
 
+FilterManager.prototype.isFiltered = function(image) {
+	var image = $(image);
+	if (!image.attr('data-imagefilter-class')) {
+		return null;
+	}
+	return image.hasClass(image.attr('data-imagefilter-class'));
+};
+
 //override a filter already applied to an image
  FilterManager.prototype.applyManually = function(image, sources) {
-	image = $(image);
+	var image = $(image);
 
 	if (!$.inArray(image, this.images))
 	{
