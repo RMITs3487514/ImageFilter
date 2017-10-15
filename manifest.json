@@ -3,11 +3,6 @@
 	"name": "Image Filter",
 	"description": "Applies filters to images on web-pages to improve contrast.",
 	"version": "1.0",
-	"applications": {
-		"gecko": {
-			"id": "dontknowwhatgoeshere@mozilla.org"
-		}
-	},
 	"browser_action": {
 		"default_title": "Image Filter",
 		"default_icon": "icon.png",
@@ -19,6 +14,9 @@
 		"128": "icon.png"
 	},
 	"options_page": "options.html",
+	"options_ui": {
+		"page": "options.html"
+	},
 	"permissions": ["tabs", "storage", "contextMenus", "<all_urls>"],
 	"content_scripts": [
 		{
