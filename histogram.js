@@ -123,7 +123,12 @@ Histogram.prototype.getImagePixels = function(drawable) {
 
 		var canvasContext = Histogram.prototype.getImagePixels.tempCanvas.getContext("2d");
 		canvasContext.drawImage(drawable, 0, 0, w, h, 0, 0, Histogram.prototype.getImagePixels.tempCanvas.width, Histogram.prototype.getImagePixels.tempCanvas.height);
-		var pixels = canvasContext.getImageData(0, 0, canvasContext.canvas.width, canvasContext.canvas.height);
+		
+		//var pixels = canvasContext.getImageData(0, 0, canvasContext.canvas.width, canvasContext.canvas.height);
+		var pixelWidth = canvasContext.canvas.width || canvasContext.canvas.naturalWidth;
+		var pixelHeight = canvasContext.canvas.height || canvasContext.canvas.naturalHeight;
+		
+		var pixels = canvasContext.getImageData(0, 0, pixelWidth, pixelHeight);
 		return pixels;
 	}
 	catch (e) {
@@ -241,7 +246,7 @@ Histogram.prototype.loaded = function() {
 	{
 		if (this.attemptsLeft > 0)
 		{
-			window.setTimeout(this.loaded.bind(this), 1000);
+			window.setTimeout(this.loaded.bind(this), 3000);
 			return;
 		}
 		else

@@ -137,8 +137,20 @@
 	<div><label title="Toggles whether to filter websites by default">Enable default: <input class="shortcut option" name="shortcut-global-enable" type="button" /></label></div>
 	<div><label title="Change to the next filter for websites by default">Next default filter: <input class="shortcut option" name="shortcut-global-next" type="button" /></label></div>
 	<div><label title="Change to the previous filter for websites by default">Previous default filter: <input class="shortcut option" name="shortcut-global-previous" type="button" /></label></div>
+	
+	<p>
+		You can edit the parameter range of the images to be filtered. All values are measured in pixels.
+	</p>
+	
 	<div><label title="Enter a size in pixels. If either the width or height of a filtered element is above this, it will be ignored.">
-		Maximum element size to filter: <input type="text" class="option" name="option-maxsize"></label></div>
+		Minimum element width to filter: <input type="number" class="option" name="option-minwidth" value = "128"></label></div>
+	<div><label title="Enter a size in pixels. If either the width or height of a filtered element is above this, it will be ignored.">
+		Maximum element width to filter: <input type="number" class="option" name="option-maxwidth" value = "99999"></label></div>
+	<div><label title="Enter a size in pixels. If either the width or height of a filtered element is above this, it will be ignored.">
+		Minimum element height to filter: <input type="number" class="option" name="option-minheight" value = "128"></label></div>
+	<div><label title="Enter a size in pixels. If either the width or height of a filtered element is above this, it will be ignored.">
+		Maximum element height to filter: <input type="number" class="option" name="option-maxheight" value = "99999"></label></div>
+	
 
 	<!--
 	TODO: provide this option once the feature is properly implemented

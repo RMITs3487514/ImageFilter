@@ -321,9 +321,52 @@ function applyOption(key, value)
 		return;
 	}
 
-	if (key == 'option-maxsize')
+	
+	if (key == 'option-maxwidth')
 	{
-		filterer.maxSize = value;
+		
+		// set defaults if the value retrieved was empty
+		if (!value)
+			value = filterer.DEFAULT_MAX_WIDTH;
+		
+		//filterer.maxWidth = (value ? value : filterer.DEFAULT_MAX_WIDTH);
+		filterer.maxWidth = value;
+		filterer.updateEnabled();
+		return;
+	}
+	
+	if (key == 'option-maxheight')
+	{
+		
+		if (!value)
+			value = filterer.DEFAULT_MAX_HEIGHT;
+		
+		filterer.maxHeight = value;
+		//filterer.maxHeight = (value ? value : filterer.DEFAULT_MAX_HEIGHT);
+		filterer.updateEnabled();
+		return;
+	}
+	
+	if (key == 'option-minwidth')
+	{
+		
+		if (!value)
+			value = filterer.DEFAULT_MIN_WIDTH;
+		
+		filterer.minWidth = value;
+		//filterer.minWidth = (value ? value : filterer.DEFAULT_MIN_WIDTH);
+		filterer.updateEnabled();
+		return;
+	}
+	
+	if (key == 'option-minheight')
+	{
+		
+		if (!value)
+			value = filterer.DEFAULT_MIN_HEIGHT;
+		
+		filterer.minHeight = value;
+		//filterer.minHeight = (value ? value : filterer.DEFAULT_MIN_HEIGHT);
 		filterer.updateEnabled();
 		return;
 	}
