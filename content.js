@@ -4,7 +4,7 @@
 
 var customValueDelta = 0.025;
 
-var filterer = new  FilterManager();
+var filterer = new FilterManager();
 filterer.start();
 
 var currentFilterChain = [];
@@ -322,6 +322,7 @@ function applyOption(key, value)
 	}
 
 	
+	/*
 	if (key == 'option-maxwidth')
 	{
 		
@@ -333,8 +334,9 @@ function applyOption(key, value)
 		filterer.maxWidth = value;
 		filterer.updateEnabled();
 		return;
-	}
+	}&*/
 	
+	/*
 	if (key == 'option-maxheight')
 	{
 		
@@ -346,6 +348,7 @@ function applyOption(key, value)
 		filterer.updateEnabled();
 		return;
 	}
+	*/
 	
 	if (key == 'option-minwidth')
 	{

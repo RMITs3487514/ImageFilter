@@ -24,8 +24,8 @@ function  FilterManager() {
 		
 	this.minWidth = this.DEFAULT_MIN_WIDTH;
 	this.minHeight = this.DEFAULT_MIN_HEIGHT;
-	this.maxWidth = this.DEFAULT_MAX_WIDTH;
-	this.maxHeight = this.DEFAULT_MAX_HEIGHT;
+	//this.maxWidth = this.DEFAULT_MAX_WIDTH;
+	//this.maxHeight = this.DEFAULT_MAX_HEIGHT;
 
 	this.customValueCache = {V1:0.5, V2:0.5, V3:0.5};
 
@@ -220,23 +220,31 @@ FilterManager.prototype.isFiltered = function(image) {
 
 FilterManager.prototype.shouldFilter = function(image, histogram) {
 	
-	console.log(this.minWidth)
-	console.log(this.maxWidth);
+	console.log(this.minWidth);
+	console.log($(image).width());
+	console.log($(image).width() < this.minWidth );
+	
+	//console.log(this.maxWidth);
 	console.log(this.minHeight);
-	console.log(this.maxHeight);
+	console.log($(image).height());
+	console.log($(image).height() < this.minHeight);
+	
+	//console.log(this.maxHeight);
+	
 	console.log("min width check: " + ($(image).width() >= this.minWidth));
-	console.log("max width check: " + ($(image).width() <= this.maxWidth));
+	//console.log("max width check: " + ($(image).width() <= this.maxWidth));
 	console.log("min height check: " + ($(image).height() >= this.minHeight));
-	console.log("max height check: " + ($(image).height() <= this.maxHeight));
+	//console.log("max height check: " + ($(image).height() <= this.maxHeight));
 	
 	//ignore images that are too big
+	/*
 	if ((this.maxWidth > 0 && this.maxHeight > 0) && ($(image).width() >= this.maxWidth && $(image).height() >= this.maxHeight)) {
 		
 		return false;
-	}
+	}*/
 	
-	//ignore images that are too small as well
-	if ((this.minWidth > 0 && this.minHeight > 0) && ($(image).width() <= this.minWidth && $(image).height() <= this.minHeight)) {
+	//ignore images that are too small
+	if ((this.minWidth > 0 && this.minHeight > 0) && ($(image).width() < this.minWidth) && ($(image).height() < this.minHeight)) {
 		
 		return false;
 	}
