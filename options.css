@@ -1,0 +1,93 @@
+body {
+	font-size: 17.5px;
+	font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+p {
+	
+	margin-left: 12px;
+	font-size: 14px;
+	max-width: 40em;
+}
+label{
+	font-size: 16px;
+}
+.filter {
+	margin: 8px;
+	border-left: 4px solid #aaa;
+	padding-left: 12px;
+}
+.filter-name {
+	font-size: 24px;
+}
+textarea {
+	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+	font-size: 17.5px;
+}
+#logs {
+	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+	font-size: 17.5px;
+	height: 800px;
+	max-height: 800px;
+	max-width: 800px;
+	border: 1px solid black;
+	padding-top: 12px;
+	padding-bottom: 12px;
+	white-space: nowrap;
+	overflow: scroll;
+}
+input[type=text] {
+	font-size: 17.5px;
+}
+.shortcut {
+	min-width: 100px;
+}
+button, input[type=button] {
+	margin: 3px;
+	padding: 5px 9px;
+	font-size: 17.5px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	color: #fff;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+	background-color: #006dcc;
+	background-image: -moz-linear-gradient(top,#08c,#04c);
+	background-image: -webkit-gradient(linear,0 0,0 100%,from(#08c),to(#04c));
+	background-image: -webkit-linear-gradient(top,#08c,#04c);
+	background-image: -o-linear-gradient(top,#08c,#04c);
+	background-image: linear-gradient(to bottom,#08c,#04c);
+	background-repeat: repeat-x;
+	border-color: #04c #04c #002a80;
+	border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+}
+button:hover, input[type=button]:hover {
+	background-color: #04c;
+	background-position: 0 -15px;
+	transition: background-position .1s linear;
+}
+button:active, input[type=button]:active {
+	background-image: none;
+	outline: 0;
+	box-shadow: inset 0 2px 4px rgba(0,0,0,0.15),0 1px 2px rgba(0,0,0,0.05);
+}
+input[type=button].recording {
+	background-color: #ec5151;
+	background-image: none;
+	outline: 0;
+	box-shadow: inset 0 2px 4px rgba(0,0,0,0.15),0 1px 2px rgba(0,0,0,0.05);
+}
+.code {
+	border: 1px dotted #aaa;
+	font-family: "Courier New", Courier, monospace;
+	background: #ddd;
+	padding: 1.5px 3px;
+}
+.icon {
+	margin: -4px 0px;
+	border: 2px solid #ddd;
+	border-radius: 3px;
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AEYCi4BA8pbjgAAAq9JREFUOMulk02I1WUUxp/3ff//e+/cuXObjyajZtIbVAyiOyHDFlH2Qa0UgiCIAgUXEULQ7IIgcOFCEFy5UcSWLVy5EEIkCFqUhGEz4Ki3vPNx7537/34/zjnurjnoyrM7zzn8znMWD/CMpZ42+Oqnbz+da7z2UX9474/NjTvnrixf9k/ai3YKRy580Zg1e448KH478/fKtfnRWpLGpnURwPBJALNT2HV48jNbJZfKIpkkR/D9ifre5nKysPtdhNDc2u7fesyJ/n/z89FTz+/feONAVq5zlefQEmMmO4r+f4Mft3p3rhsTv7nz4Bhw/uTZ1qq9+UPzz60TRhlNliEAyFfY6t3HYPNeyZAWJqD17rcjAFCLh6IIAJY//ETdXb3+ZUx0IqQJhBXYMyQKgPJQSkMgcL5oInphiskHLB5qiVJ1AwA3Vv/Bwc6rMyG4z03q0V1SsHkJFROktweUKZgoNp3XD3/Q6bz3vnj713a2nkMojF8w9fp9EhmwAFGuwCxg8WB2EGHUai1ti+32v2u/HgxZfwlUZvClHQMaRd6dMdFxE5urptBOgoIQIPBgYRA52HIEV6Vg9jmIpiAyNwZsDIfS0vr20tTs940J/Z1WelMYYDgADKYA4QBA4EMVQQIU+d4jQJbyZp7m1rDrmNqN2X3THwvJLwTrRBgiBGaCMCHW8RrIpSLhpTEgDdYPiqIcsbXKk4pZ8SvvtI81sfgNoG4LMBAJEDCKajgNpgVw4DHAE3FSlXZdsqpg7zUJym5jetdb6tpUe/7rxsT0aQoOIrIt4rsAdaFCd5wF7yEjskGZ3IZQdxxMXbTRZeZaz80vdNs2fZBnyc0QqiSOzcro1u/pY1lYmGtC6pHxM4jdrDa+qTRUw6jiRSBpcw01tCbbIyLp+Sp3Zv5ll22s4CHN346+OVdceQAAAABJRU5ErkJggg==');
+}

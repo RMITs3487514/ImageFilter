@@ -222,12 +222,12 @@ FilterManager.prototype.shouldFilter = function(image, histogram) {
 	
 	console.log(this.minWidth);
 	console.log($(image).width());
-	console.log($(image).width() < this.minWidth );
+	//console.log($(image).width() < this.minWidth );
 	
 	//console.log(this.maxWidth);
 	console.log(this.minHeight);
 	console.log($(image).height());
-	console.log($(image).height() < this.minHeight);
+	//console.log($(image).height() < this.minHeight);
 	
 	//console.log(this.maxHeight);
 	
