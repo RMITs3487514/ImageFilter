@@ -174,8 +174,9 @@ FilterManager.prototype.isFiltered = function(image) {
 
 //override a filter already applied to an image
  FilterManager.prototype.applyManually = function(image, sources) {
+	 //console.log("Manually overriding a filter!");
 	var image = $(image);
-
+	//debugger;
 	if (!$.inArray(image, this.images))
 	{
 		console.log('Cannot apply filter, image ' + image + " hasn\'t been added yet.");
@@ -185,6 +186,8 @@ FilterManager.prototype.isFiltered = function(image) {
 	var histogram = this.findHistogram(image);
 
 	var filterID = image.data('imagefilter-override');
+	//console.log(filterID);
+	
 	if (filterID)
 	{
 		filter = this.filterOverrides[filterID];
@@ -220,20 +223,20 @@ FilterManager.prototype.isFiltered = function(image) {
 
 FilterManager.prototype.shouldFilter = function(image, histogram) {
 	
-	console.log(this.minWidth);
-	console.log($(image).width());
+	//console.log(this.minWidth);
+	//console.log($(image).width());
 	//console.log($(image).width() < this.minWidth );
 	
 	//console.log(this.maxWidth);
-	console.log(this.minHeight);
-	console.log($(image).height());
-	//console.log($(image).height() < this.minHeight);
+	//console.log(this.minHeight);
+	//console.log($(image).height());
+////console.log($(image).height() < this.minHeight);
 	
 	//console.log(this.maxHeight);
 	
-	console.log("min width check: " + ($(image).width() >= this.minWidth));
+	//console.log("min width check: " + ($(image).width() >= this.minWidth));
 	//console.log("max width check: " + ($(image).width() <= this.maxWidth));
-	console.log("min height check: " + ($(image).height() >= this.minHeight));
+	//console.log("min height check: " + ($(image).height() >= this.minHeight));
 	//console.log("max height check: " + ($(image).height() <= this.maxHeight));
 	
 	//ignore images that are too big
@@ -377,7 +380,8 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 		}, 2000);
 		if ( FilterManager.debugInfo)
 			 FilterManager.debugInfo.remove();
-		 FilterManager.debugInfo = $('<div id="imagefilter-debug" style="opacity: 0.5; pointer-events: none; z-index: 19999999999; position:fixed; top:0px; left:0px; right:0px; background: white; font-size: 14px; border-bottom: 2px solid black;" data-imagefilter-haschild="1"></div>');
+		 //FilterManager.debugInfo = $('<div id="imagefilter-debug" style="opacity: 0.5; pointer-events: none; z-index: 19999999999; position:absolute; top:0px; left:0px; right:0px; background: white; font-size: 14px; border-bottom: 2px solid black; word-wrap: normal; width: auto;" data-imagefilter-haschild="1"></div>');
+		 FilterManager.debugInfo = $('<div id="imagefilter-debug" style="opacity: 0.5; pointer-events: none; z-index: 19999999999; position:fixed; top:0px; left:0px; right:0px; background: white; font-size: 14px; border-bottom: 2px solid black; word-wrap: normal; width: auto;" data-imagefilter-haschild="1"></div>');
 		$(document.body).append( FilterManager.debugInfo);
 		 FilterManager.debugInfo.on('click', function(){
 			 FilterManager.debugInfo.remove();
@@ -390,7 +394,7 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 		else
 			histogram = that.histograms[url];
 
-		var info = $('<div><div style="background:rgba(255,255,255,0.5);">URL: <a href="' + url + '">' + url + '</a></div></div>');
+		var info = $('<div><div style="background:rgba(255,255,255,0.5); white-space: nowrap;">URL: <a href="' + url + '">' + url + '</a></div></div></div></div>');
 		 FilterManager.debugInfo.append(info);
 
 		if (histogram)

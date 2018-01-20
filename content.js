@@ -18,22 +18,54 @@ window.addEventListener('contextmenu', function(e){
 });
 
 function zoomElement(element, ratio) {
+	console.log("zooming in!");
 	var e = $(element);
 	var original = e.data('imagefilter-zoom');
-	if (!original)
+
+	console.log(e);
+	console.log(original);
+	console.log(!original);
+	console.log(original === undefined);
+	console.log("ratio: " + ratio);
+	// if (!original) 
+
+	//if (!original)
+	if (original === undefined)
 	{
+		//debugger;
+		console.log("about to set original properties!");
 		original = {w: e.width(), h: e.height(), bak: e.css(['width', 'height', 'background-size'])};
 		e.data('imagefilter-zoom', original);
 	}
+	
 
-	if (ratio == 1.0)
+	if (ratio == 1.0){
+		//debugger;
+		console.log("about to set properties associated with the original ratio!");
 		e.css(original.bak);
+	}
 	else
 	{
-		e.css('width', Math.floor(original.w * ratio) + ".px");
+		console.log("about to set css!");
+		console.log(original.w * ratio);
+		console.log(original.h * ratio);
+		//debugger;
+		/* e.css('width', Math.floor(original.w * ratio) + ".px");
 		e.css('height', Math.floor(original.h * ratio) + ".px");
-		e.css('background-size', '100% 100%');
+		e.css('background-size', '100% 100%'); */
+		
+	 	e.css({
+			'width': Math.floor(original.w * ratio) + "px",
+			'height': Math.floor(original.h * ratio) + "px",
+			'background-size': '100% 100%'
+		}); 
+			/* e.css({
+			'width': "1200px",
+			'height': Math.floor(original.h * ratio) + ".px",
+			'background-size': '100% 100%'
+		}); */
 	}
+	console.log(e);
 };
 
 function getHostname(url)

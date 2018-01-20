@@ -13,7 +13,10 @@ function ImageFilter(sources, enabled, initialCustomValues, inverted, histogram)
 	this.histogram = histogram;
 	this.inverted = inverted;
 	this.source = this.chooseSource(this.sources);
+	this.prevId = "";
+	this.prevId = this.id;
 	this.id = this.createUniqueName();
+	this.idNum;
 	this.styleid = this.id + '-style';
 	this.styleName = this.id;
 	this.customValue = {}; //e.g. {V1: 0.8, V2: 0.2}
@@ -97,9 +100,99 @@ ImageFilter.prototype.update = function(sources) {
 }
 
 ImageFilter.prototype.enable = function(enabled) {
+	
 	this.enabled = enabled;
 	var filterURL = "url('#" + this.id + "')";
-	var styleString = enabled ? "-webkit-filter: "+filterURL+"; -moz-filter: "+filterURL+"; -ms-filter: "+filterURL+"; -o-filter: "+filterURL+"; filter: "+filterURL+";" : "";
+	//debugger;
+	var styleTagPrefix = "imagefilter";
+	
+	var styleString = "";
+	var originalImageName = (this.id).split("-").pop();
+	//var lastStyleElementId = $("style[id^='" + styleTagPrefix + "']").last().attr('id');
+
+	var lastStyleElementForImage = $("style[id*='" + originalImageName + "']").last();
+	
+	//console.log("Inverted: " + this.inverted);
+	//console.log("Enabled: " + this.enabled);
+	//console.log("this.id: " + this.id);
+	//console.log("style id: " + this.styleid);
+	
+	//console.log(this.idNum);
+	console.log("Original image name: " + originalImageName);
+	//console.log(lastStyleElementForImage);
+	
+	var lastStyleElementText = lastStyleElementForImage.text();
+	//console.log(lastStyleElementText);
+	//console.log(lastStyleElementText.includes("moz"));
+	//console.log(Object.prototype.toString.call(lastStyleElementHtml));
+	//console.log("Last style element id " + lastStyleElementId);
+	//var lastStyleElement = $("style[id^='" + styleTagPrefix + "']");
+	
+	
+	//styleString = enabled ? "-webkit-filter: "+filterURL+"; -moz-filter: "+filterURL+"; -ms-filter: "+filterURL+"; -o-filter: "+filterURL+"; filter: "+filterURL+";" : "";
+
+	// firefox only
+	if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1){
+		
+		if (!this.inverted){
+			
+			styleString = enabled ? "-moz-filter: "+filterURL+"; -webkit-filter: "+filterURL+"; -ms-filter: "+filterURL+"; -o-filter: "+filterURL+"; filter: "+filterURL+";" : "";
+				
+			if (lastStyleElementText.includes("-moz-filter")){
+				styleString = "";
+			}  
+			
+			//if($("style[id*='" + this.styleid + "']").prev())
+			//console.log($("filter[id*='" + this.id + "']"));
+			//console.log($("filter[id*='" + this.id + "']").html().length);
+			//console.log(this.source.length);
+			/* if ($("filter[id*='" + this.id + "']").html().length == 0){
+				styleString = "";
+			} */
+			
+			 if (this.source.length == 0){
+				styleString = "";
+			} 
+			// 'default check'
+			// if the previous style wrapper had default in the class name, make a blank style string
+			// if so, make a blank 
+			/*
+			console.log((this.id).includes("default"));
+			 if ((this.id).includes("default")){
+				
+				styleString = "";
+				
+				 // defaultImgElement.load(window.location.href, function() {
+					// if (defaultImgElement.length > 0){
+						// styleString = "";
+					// }
+				// }); 
+				
+				 // var defaultId = this.id;
+				// var defaultImgElement = $("img[data-imagefilter-class='" + defaultId + "']");
+				// var defaultImgElement = $("img[class='" + this.id + "']");
+				// console.log(defaultImgElement);
+				// console.log("default length " + defaultImgElement.length);
+				// console.log(defaultImgElement.length > 0);
+				// if (defaultImgElement.length > 0){
+					// styleString = "";
+				// } 
+				
+				
+			} */
+			
+		}
+		else {
+			styleString = enabled ? "-moz-filter: "+filterURL+"; -webkit-filter: "+filterURL+"; -ms-filter: "+filterURL+"; -o-filter: "+filterURL+"; filter: "+filterURL+";" : "";
+		}
+	}
+	else {
+		styleString = enabled ? "-webkit-filter: "+filterURL+"; -moz-filter: "+filterURL+"; -ms-filter: "+filterURL+"; -o-filter: "+filterURL+"; filter: "+filterURL+";" : "";
+	}
+	//console.log(styleString);
+	//debugger;
+
+	
 	var style = '<style id=' + this.styleid + '>\n.' + this.styleName + ' {' + styleString + '}\n</style>';
 	var existing = $('#' + this.styleid);
 	if (existing.length)
@@ -134,6 +227,7 @@ ImageFilter.prototype.createUniqueName = function() {
 		ImageFilter.prototype.createUniqueName.nextID = 0;
 	}
 	var name = '';
+	console.log("The Unique Name ID is : " + ImageFilter.prototype.createUniqueName.nextID);
 	if (this.histogram)
 	{
 		var e = this.histogram.element;
@@ -152,5 +246,7 @@ ImageFilter.prototype.createUniqueName = function() {
 		name += 'default';
 	if (name.length > 32)
 		name = name.substring(0,32);
+	this.idNum = ImageFilter.prototype.createUniqueName.nextID;
+	//console.log("The next Unique Name ID is : " + (ImageFilter.prototype.createUniqueName.nextID + 1));
 	return 'imagefilter' + (ImageFilter.prototype.createUniqueName.nextID++) + '-' + name;
 }
