@@ -49,6 +49,7 @@ function  FilterManager() {
 		,
 		'<feColorMatrix in="SourceGraphic" type="matrix" values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0"/>'
 	];
+	this.useHistogram = true;
 }
 
 //an element to put debug info into the document

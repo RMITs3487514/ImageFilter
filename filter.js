@@ -227,7 +227,7 @@ ImageFilter.prototype.createUniqueName = function() {
 		ImageFilter.prototype.createUniqueName.nextID = 0;
 	}
 	var name = '';
-	console.log("The Unique Name ID is : " + ImageFilter.prototype.createUniqueName.nextID);
+	//console.log("The Unique Name ID is : " + ImageFilter.prototype.createUniqueName.nextID);
 	if (this.histogram)
 	{
 		var e = this.histogram.element;

@@ -111,6 +111,16 @@ function setCurrentFilter(name)
 			}
 		});
 	}
+	
+	
+	if (sources.length > 0 && sources[0].match(/<!--.* no_histogram .*-->/g) != null){
+		console.log("sendOption('option-usehistogram', false)");
+		sendOption('option-usehistogram', false);
+	}
+	else {
+		console.log("sendOption('option-usehistogram', true)");
+		sendOption('option-usehistogram', true);
+	}
 
 	filterer.setFilterSources(sources);
 }
@@ -436,6 +446,12 @@ function applyOption(key, value)
 		if (!("site-filter" in optionCache))
 			setCurrentFilter(value);
 		return;
+	}
+	
+	if (key == "option-usehistogram")
+	{
+		console.log("option-usehistogram in applyOption() is " + value);
+		filterer.useHistogram = value;
 	}
 
 	var match = key.match(/^site-(enable|filter)(-(.+))$/);
