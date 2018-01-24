@@ -118,7 +118,7 @@ ImageFilter.prototype.enable = function(enabled) {
 	//console.log("style id: " + this.styleid);
 	
 	//console.log(this.idNum);
-	console.log("Original image name: " + originalImageName);
+	//console.log("Original image name: " + originalImageName);
 	//console.log(lastStyleElementForImage);
 	
 	var lastStyleElementText = lastStyleElementForImage.text();

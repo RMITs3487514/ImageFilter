@@ -67,8 +67,10 @@ function  FilterManager() {
 		//if (merit < this.golayMeritThreshold)
 		//	return false;
 		var peakArea = histogram.getPeakArea(0.02);
-		if (peakArea > 0.3)
+		console.log($(image).attr('src') + " histogram peak area: " + peakArea);
+		if (peakArea > 0.98){
 			return false;
+		}
 	}
 
 	return true;
