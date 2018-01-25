@@ -34,6 +34,7 @@ function parseSiteKey(key)
 
 function applyOption(key, value)
 {
+	console.log("popup.js key: " + key + " value: " + value);
 	key = parseSiteKey(key)
 	if (!key)
 		return;

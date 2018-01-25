@@ -4,7 +4,7 @@
 //TODO: clean up filters when they're not needed
 //TODO: faster isPicture choice with css?: https://stackoverflow.com/questions/2481414/how-do-i-select-a-div-with-class-a-but-not-with-class-b
 
-function  FilterManager() {
+function FilterManager() {
 	this.animationUpdateFrequency = 1000;
 	//this.golayMeritThreshold = 0.08;
 
@@ -49,7 +49,8 @@ function  FilterManager() {
 		,
 		'<feColorMatrix in="SourceGraphic" type="matrix" values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0"/>'
 	];
-	this.useHistogram = true;
+	
+	this.useHistogram = true; // determines if a histogram should be generated during the filtering process
 }
 
 //an element to put debug info into the document
@@ -59,17 +60,28 @@ function  FilterManager() {
  FilterManager.prototype.isPicture = function(image, histogram) {
 	var w = $(image).width();
 	var h = $(image).height();
-	if (w * h < 128 * 128)
+	
+	// minimum height and width check???
+	//debugger;
+	/* console.log(w * h);
+	console.log(this.minWidth * this.minHeight);
+	console.log($(image).attr('src') + " area check: " + !(w * h < this.minWidth * this.minHeight)); */
+	if (w * h < this.minWidth * this.minHeight){
 		return false;
-
-	if (histogram.success)
+	}
+	console.log($(image).attr('src') + " histogram success: " + histogram.success);
+	if (histogram.success && this.useHistogram)
 	{
 		//var merit = histogram.getGolayMerit();
 		//if (merit < this.golayMeritThreshold)
 		//	return false;
+	
+		// why 0.02???
 		var peakArea = histogram.getPeakArea(0.02);
 		console.log($(image).attr('src') + " histogram peak area: " + peakArea);
-		if (peakArea > 0.98){
+		
+		// why 0.3???
+		if (peakArea > 0.97){
 			return false;
 		}
 	}
@@ -270,6 +282,8 @@ FilterManager.prototype.shouldFilter = function(image, histogram) {
 
 FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 	var filteredImages = [];
+	//debugger;
+	//console.log(images);
 	for (var i = 0; i < images.length; ++i)
 	{
 		var apply = true;
@@ -283,17 +297,19 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 			ancestors.each(function(){
 				//remove any filters applied to ancestors
 				var filtered = $(this).attr('data-imagefilter-class');
-				if (filtered)
+				if (filtered){
 					$(this).removeClass(filtered);
-
+				}
 				//don't allow future filtering of ancestors
 				$(this).data('imagefilter-haschild', ($(this).data('imagefilter-haschild') || 0) + 1);
 			});
 
+			console.log(this.shouldFilter(images[i], histogram));
 			//actually apply the filter by adding a class to the element
-			if (this.shouldFilter(images[i], histogram))
+			//debugger;
+			if (this.shouldFilter(images[i], histogram)){
 				$(images[i]).addClass(filter.styleName);
-
+			}
 			//store the class name as a backup, even if it wasn't applied
 			$(images[i]).attr('data-imagefilter-class', filter.styleName);
 
@@ -327,14 +343,27 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 };
 
  FilterManager.prototype.sourceAdded = function(src, firstElement) {
-	if (src && firstElement.nodeName != 'VIDEO')
-	{
-		console.log("Added " + src);
-		this.histograms[src] = new Histogram(src, firstElement, 0);
-		this.histograms[src].onload = this.histogramReady.bind(this);
-		this.histograms[src].onerror = this.histogramReady.bind(this);
+	/* if (this.useHistogram){
+		if (src && firstElement.nodeName != 'VIDEO')
+		{
+			console.log("Added " + src);
+			this.histograms[src] = new Histogram(src, firstElement, 0);
+			this.histograms[src].onload = this.histogramReady.bind(this);
+			this.histograms[src].onerror = this.histogramReady.bind(this);
+		}
 	}
-};
+	else {
+		this.histograms[src] = null;
+	} */
+	
+	if (src && firstElement.nodeName != 'VIDEO')
+		{
+			console.log("Added " + src);
+			this.histograms[src] = new Histogram(src, firstElement, 0, this.useHistogram);
+			this.histograms[src].onload = this.histogramReady.bind(this);
+			this.histograms[src].onerror = this.histogramReady.bind(this);
+		}
+};	
 
  FilterManager.prototype.sourceRemoved = function(src) {
 	if (src in this.histograms)
@@ -351,7 +380,7 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 	{
 		var id = this.uidNext++;
 		$(img).data('imagefilter-histogram-id', id);
-		this.animatedHistograms[id] = new Histogram(url, img, this.animationUpdateFrequency);
+		this.animatedHistograms[id] = new Histogram(url, img, this.animationUpdateFrequency, this.useHistogram);
 		this.animatedHistograms[id].onload = this.histogramReady.bind(this);
 		this.animatedHistograms[id].onupdate = this.updateFilter.bind(this);
 	}
@@ -419,11 +448,20 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 		 FilterManager.debugInfo.append(textInfo);
 		if (this.nodeName != 'VIDEO')
 		{
+			//debugger;
 			var filteredClass = $(this).attr('data-imagefilter-class');
 			textInfo.prepend('<div>Class Applied: ' + $(this).hasClass(filteredClass) + '</div>');
 			textInfo.prepend('<div>Child Counter: ' + $(this).data('imagefilter-haschild') + '</div>');
-			if (histogram.id in that.filters)
+			if (histogram.id in that.filters){
 				textInfo.find('#imagefilter-filterinfo').html(that.filters[histogram.id].getInfo());
+			}
+			/* console.log("FilterManager object info: ");
+			console.log(this);
+			console.log("that.filters: ");
+			console.log(that.filters);
+			console.log("histogram.id: " + histogram.id); */
+			
+			
 		}
 
 	}).on('mouseout', function(){

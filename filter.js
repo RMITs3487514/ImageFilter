@@ -108,32 +108,14 @@ ImageFilter.prototype.enable = function(enabled) {
 	
 	var styleString = "";
 	var originalImageName = (this.id).split("-").pop();
-	//var lastStyleElementId = $("style[id^='" + styleTagPrefix + "']").last().attr('id');
-
 	var lastStyleElementForImage = $("style[id*='" + originalImageName + "']").last();
-	
-	//console.log("Inverted: " + this.inverted);
-	//console.log("Enabled: " + this.enabled);
-	//console.log("this.id: " + this.id);
-	//console.log("style id: " + this.styleid);
-	
-	//console.log(this.idNum);
-	//console.log("Original image name: " + originalImageName);
-	//console.log(lastStyleElementForImage);
-	
 	var lastStyleElementText = lastStyleElementForImage.text();
-	//console.log(lastStyleElementText);
-	//console.log(lastStyleElementText.includes("moz"));
-	//console.log(Object.prototype.toString.call(lastStyleElementHtml));
-	//console.log("Last style element id " + lastStyleElementId);
-	//var lastStyleElement = $("style[id^='" + styleTagPrefix + "']");
-	
-	
-	//styleString = enabled ? "-webkit-filter: "+filterURL+"; -moz-filter: "+filterURL+"; -ms-filter: "+filterURL+"; -o-filter: "+filterURL+"; filter: "+filterURL+";" : "";
 
 	// firefox only
+	// regards a bug that happens when an image isn't inverted and it's shift-clicked on a few times, making the image and its background images disappear
 	if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1){
 		
+		// if the image hasn't been inverted
 		if (!this.inverted){
 			
 			styleString = enabled ? "-moz-filter: "+filterURL+"; -webkit-filter: "+filterURL+"; -ms-filter: "+filterURL+"; -o-filter: "+filterURL+"; filter: "+filterURL+";" : "";
@@ -142,45 +124,10 @@ ImageFilter.prototype.enable = function(enabled) {
 				styleString = "";
 			}  
 			
-			//if($("style[id*='" + this.styleid + "']").prev())
-			//console.log($("filter[id*='" + this.id + "']"));
-			//console.log($("filter[id*='" + this.id + "']").html().length);
-			//console.log(this.source.length);
-			/* if ($("filter[id*='" + this.id + "']").html().length == 0){
-				styleString = "";
-			} */
-			
-			 if (this.source.length == 0){
+			// if there is no source, make the style string empty to prevent the image from disappearing upon shift-clicking
+			if (this.source.length == 0){
 				styleString = "";
 			} 
-			// 'default check'
-			// if the previous style wrapper had default in the class name, make a blank style string
-			// if so, make a blank 
-			/*
-			console.log((this.id).includes("default"));
-			 if ((this.id).includes("default")){
-				
-				styleString = "";
-				
-				 // defaultImgElement.load(window.location.href, function() {
-					// if (defaultImgElement.length > 0){
-						// styleString = "";
-					// }
-				// }); 
-				
-				 // var defaultId = this.id;
-				// var defaultImgElement = $("img[data-imagefilter-class='" + defaultId + "']");
-				// var defaultImgElement = $("img[class='" + this.id + "']");
-				// console.log(defaultImgElement);
-				// console.log("default length " + defaultImgElement.length);
-				// console.log(defaultImgElement.length > 0);
-				// if (defaultImgElement.length > 0){
-					// styleString = "";
-				// } 
-				
-				
-			} */
-			
 		}
 		else {
 			styleString = enabled ? "-moz-filter: "+filterURL+"; -webkit-filter: "+filterURL+"; -ms-filter: "+filterURL+"; -o-filter: "+filterURL+"; filter: "+filterURL+";" : "";

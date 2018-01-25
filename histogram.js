@@ -1,5 +1,5 @@
 
-function Histogram(source, element, updateInterval) {
+function Histogram(source, element, updateInterval, isActive) {
 
 	this.maxHistogramSampleDimension = 128; //if image is bigger than this, scale down before generating the histogram
 	this.attemptsLeft = 4; //try this many times to generate a histogram and then give up
@@ -19,6 +19,8 @@ function Histogram(source, element, updateInterval) {
 	this.totalPixels = 0;
 	this.status = 'About to start';
 	this.id = Histogram.nextID++;
+	
+	this.isActive = isActive;
 
 	if (this.animated)
 	{
@@ -37,7 +39,9 @@ function Histogram(source, element, updateInterval) {
 		this.drawObject.src = this.src;
 	}
 
+	//debugger;
 	console.log("Histogram for " + this.src + ", " + (this.animated ? "animated" : "still"));
+	console.log("Histogram is active: " + this.isActive);
 }
 Histogram.nextID = 0;
 
@@ -49,6 +53,12 @@ Histogram.prototype.createGraph = function() {
 	var h = canvas.height = 128;
 	var ctx = canvas.context;
 
+	
+	if (!this.isActive){
+		return canvas;
+	}
+	
+	
 	ctx.fillStyle="rgba(0,0,0,0.5)";
 	ctx.fillRect(0, 0, w, h);
 	ctx.lineWidth = 1;
@@ -56,6 +66,7 @@ Histogram.prototype.createGraph = function() {
 	var stroke = ['rgba(255,0,0,1)', 'rgba(0,255,0,1)', 'rgba(0,0,255,1)', 'rgba(255,255,255,1)'];
 	var fill = ['rgba(255,0,0,1)', 'rgba(0,255,0,0.5)', 'rgba(0,0,255,0.25)', 'rgba(220,220,220,0.125)'];
 
+	
 	for (var f = 0; f < 2; ++f)
 	{
 		for (var c = 0; c < 4; ++c)
@@ -80,6 +91,11 @@ Histogram.prototype.createGraph = function() {
 
 Histogram.prototype.histoSkip = function(a, n) {
 	var l = [];
+	/* if (!this.isActive){
+		return l;
+	}
+	 */
+	
 	for (var i = 0; i < a.length; i += n)
 		l.push(Math.round(a[i]*1000)/1000);
 	return l;
@@ -97,9 +113,16 @@ Histogram.prototype.stop = function() {
 };
 
 Histogram.prototype.getImagePixels = function(drawable) {
+	
+	if (!this.isActive){
+		return null;
+	}
+
+	
 	if (typeof Histogram.prototype.getImagePixels.tempCanvas == 'undefined') {
 		Histogram.prototype.getImagePixels.tempCanvas = null;
 	}
+	
 
 	try {
 		if (!Histogram.prototype.getImagePixels.tempCanvas)
@@ -141,6 +164,11 @@ Histogram.prototype.getImagePixels = function(drawable) {
 
 Histogram.prototype.updateHistogram = function(drawable) {
 	var pixels = this.getImagePixels(drawable);
+	
+	if (!this.isActive){
+		return false;
+	}
+	
 	if (!pixels)
 		return false;
 
@@ -242,6 +270,11 @@ Histogram.prototype.loaded = function() {
 	this.status = 'Loaded';
 	this.success = this.updateHistogram(this.drawObject);
 	this.attemptsLeft -= 1;
+	
+	/* if (!this.isActive){
+		return;
+	} */
+	
 	if (!this.success)
 	{
 		if (this.attemptsLeft > 0)

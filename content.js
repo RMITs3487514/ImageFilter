@@ -46,24 +46,21 @@ function zoomElement(element, ratio) {
 	}
 	else
 	{
-		console.log("about to set css!");
+		/* console.log("about to set css!");
 		console.log(original.w * ratio);
-		console.log(original.h * ratio);
+		console.log(original.h * ratio); */
 		//debugger;
 		/* e.css('width', Math.floor(original.w * ratio) + ".px");
 		e.css('height', Math.floor(original.h * ratio) + ".px");
 		e.css('background-size', '100% 100%'); */
 		
+		// changed it from '.px' to 'px' for firefox porting
 	 	e.css({
 			'width': Math.floor(original.w * ratio) + "px",
 			'height': Math.floor(original.h * ratio) + "px",
 			'background-size': '100% 100%'
 		}); 
-			/* e.css({
-			'width': "1200px",
-			'height': Math.floor(original.h * ratio) + ".px",
-			'background-size': '100% 100%'
-		}); */
+
 	}
 	console.log(e);
 };
@@ -96,10 +93,24 @@ function getFilterSources(chain)
 
 function setCurrentFilter(name)
 {
+	
 	currentFilterChain = getFilterFallbackChain(name);
 	var sources = getFilterSources(currentFilterChain);
-
+	//debugger;
 	//extract any initial custom values from the filter
+	
+	
+	//debugger;
+	/*
+	if (sources.length > 0 && sources[0].match(/<!--.* no_histogram .*-->/g) != null){
+		console.log("sendOption('option-usehistogram', false)");
+		sendOption('option-usehistogram', false);
+	}
+	else {
+		console.log("sendOption('option-usehistogram', true)");
+		sendOption('option-usehistogram', true);
+	}*/
+	
 	var customValues = {};
 	for (var i = 0; i < sources.length; ++i)
 	{
@@ -112,17 +123,19 @@ function setCurrentFilter(name)
 		});
 	}
 	
-	
-	if (sources.length > 0 && sources[0].match(/<!--.* no_histogram .*-->/g) != null){
-		console.log("sendOption('option-usehistogram', false)");
-		sendOption('option-usehistogram', false);
+	// use this
+	/* if (sources[0].indexOf("V4") != -1){
+		console.log("v4 has arrived.");
 	}
 	else {
-		console.log("sendOption('option-usehistogram', true)");
-		sendOption('option-usehistogram', true);
-	}
-
+		console.log("v4 has not arrived.");
+	} */
+	
+	
+	
+	
 	filterer.setFilterSources(sources);
+	
 }
 
 function setShiftClickToggle(enable)
@@ -313,6 +326,8 @@ function handleShortcut(key, value)
 //all options come through here. not necessarily applicable or non-malicious
 function applyOption(key, value)
 {
+	//debugger;
+	//console.log("content.js key: " + key + " value: " + value);
 	//filters out invlid options, although shouldn't be needed. needed during dev
 	if (key.match(/^site-(enable|filter)$/))
 		return;
@@ -348,6 +363,7 @@ function applyOption(key, value)
 
 	//update custom values in filters
 	var customValue = key.match(/^option-value([1-3])$/);
+	//console.log(customValue);
 	if (customValue)
 	{
 		filterer.setCustomValue('V' + customValue[1], value);
@@ -362,35 +378,6 @@ function applyOption(key, value)
 		setShiftClickToggle(value);
 		return;
 	}
-
-	
-	/*
-	if (key == 'option-maxwidth')
-	{
-		
-		// set defaults if the value retrieved was empty
-		if (!value)
-			value = filterer.DEFAULT_MAX_WIDTH;
-		
-		//filterer.maxWidth = (value ? value : filterer.DEFAULT_MAX_WIDTH);
-		filterer.maxWidth = value;
-		filterer.updateEnabled();
-		return;
-	}&*/
-	
-	/*
-	if (key == 'option-maxheight')
-	{
-		
-		if (!value)
-			value = filterer.DEFAULT_MAX_HEIGHT;
-		
-		filterer.maxHeight = value;
-		//filterer.maxHeight = (value ? value : filterer.DEFAULT_MAX_HEIGHT);
-		filterer.updateEnabled();
-		return;
-	}
-	*/
 	
 	if (key == 'option-minwidth')
 	{
@@ -443,6 +430,21 @@ function applyOption(key, value)
 	}
 	else if (key == "global-filter")
 	{
+		
+		/* currentFilterChain = getFilterFallbackChain(value);
+		var sources = getFilterSources(currentFilterChain);
+		 */
+		// check if the filter doesn't want to generate histograms
+		/* if (sources.length > 0 && sources[0].match(/<!--.* no_histogram .*-->/g) != null){
+			console.log("sendOption('option-usehistogram', false)");
+			sendOption('option-usehistogram', false);
+		}
+		else {
+			console.log("sendOption('option-usehistogram', true)");
+			sendOption('option-usehistogram', true);
+		}
+		 */
+		//debugger;
 		if (!("site-filter" in optionCache))
 			setCurrentFilter(value);
 		return;
@@ -493,6 +495,7 @@ function onLoad()
 		return
 	onLoadCalled = true;
 	mystorage.all(function(items){
+
 		for (var key in items)
 			if (key.match(/^filter.*$/))
 				applyOption(key, items[key]);
@@ -500,6 +503,7 @@ function onLoad()
 			if (!key.match(/^filter.*$/))
 				applyOption(key, items[key]);
 	});
+	debugger;
 }
 
 assertDefaultsAreLoaded(onLoad);

@@ -25,6 +25,7 @@ function findUniqueFilterName(name, callback, uniqueBit)
 
 function saveFilter(filter)
 {
+	debugger;
 	var nameInput = filter.find('.filter-name');
 	var savedName = nameInput.attr('data-saved-name');
 	var newName = nameInput.val();
@@ -38,6 +39,10 @@ function saveFilter(filter)
 		data['filter-' + name] = filter.find('.filter-source').val();
 		data['filterfallback-' + name] = filter.find('.filter-fallback').val();
 		data['filtershortcut-' + name] = shortcut;
+		//data['filterusehistogram-' + name] = filter.find('.filter-usehistogram').val();
+		
+		//data['filterusehistogram-' + name] = filter.find('.filter-usehistogram').prop("checked");
+		console.log(filter.find('.filter-usehistogram').prop("checked"));
 		mystorage.set(data);
 		mylogger.log('saved filter source for "' + name + '"');
 		for (var k in data)
@@ -75,7 +80,7 @@ function deleteFilter(name)
 	mystorage.remove(toRemove);
 }
 
-function createFilter(name, source, fallback, shortcut)
+function createFilter(name, source, fallback, shortcut, use_histogram)
 {
 	shortcut = shortcut || shortcutNone;
 	var filter = $($('#filter-template').html());
@@ -95,6 +100,7 @@ function createFilter(name, source, fallback, shortcut)
 	filter.find('.filter-source').val(source).attr('rows', Math.min(Math.max(sourceLen, 6), 30));
 	filter.find('.filter-fallback').val(fallback);
 	filter.find('.filter-shortcut').val(shortcut);
+	//filter.find('.filter-usehistogram').prop('checked', use_histogram);
 }
 
 function loadOptions(){
@@ -124,7 +130,8 @@ function loadOptions(){
 					filter[1],
 					items[key],
 					items['filterfallback-' + filter[1]],
-					items['filtershortcut-' + filter[1]]
+					items['filtershortcut-' + filter[1]],
+					items['filterusehistogram-' + filter[1]]
 				);
 			}
 
