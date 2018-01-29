@@ -34,14 +34,16 @@ function parseSiteKey(key)
 
 function applyOption(key, value)
 {
-	console.log("popup.js key: " + key + " value: " + value);
+	
 	key = parseSiteKey(key)
 	if (!key)
 		return;
 
 	var filter = key.match(/^filter-(.*)$/);
+	
 	if (filter)
 	{
+		
 		var lists = document.querySelectorAll('.filterlist');
 		for (var i = 0; i < lists.length; ++i)
 		{
@@ -50,6 +52,8 @@ function applyOption(key, value)
 			e.value = filter[1];
 			lists[i].appendChild(e);
 		}
+		//debugger;
+		//console.log(lists);
 		return;
 	}
 
@@ -73,6 +77,7 @@ function applyOption(key, value)
 
 function sendOption(key, value)
 {
+	
 	if (key.match(/^site-.*$/))
 		key = key + "-" + activeHostname;
 
@@ -93,6 +98,7 @@ function sendOption(key, value)
 	mymessages.sendTabs(data);
 
 	//finally, make sure the option page is displaying the right thing
+	//console.log("key: " + key + " value: " + value);
 	applyOption(key, value);
 }
 
@@ -105,15 +111,24 @@ mymessages.listen(function(request){
 document.addEventListener('DOMContentLoaded', function(){
 	ev('.option', 'change', function(event){
 		var e = event.target;
-		if (e.type === 'checkbox')
+		//debugger;
+		if (e.type === 'checkbox'){
+			console.log ("e.name: " + e.name + " e.checked: " + e.checked);
 			sendOption(e.name, e.checked);
-		else
+		}
+		else{
+			console.log ("e.name: " + e.name + " e.value: " + e.value);
 			sendOption(e.name, e.value);
+		}
 	});
 	ev('#clear-overrides', 'click', function(e){
 		var elements = document.querySelectorAll("#site-specific input, #site-specific select");
-		for (var i = 0; i < elements.length; ++i)
+		for (var i = 0; i < elements.length; ++i){
 			sendOption(elements[i].name, null);
+		}
+		console.log("ELEMENTS: " + elements);
+		
+		
 	});
 	ev('#open-options', 'click', function(e){
 		openOptions();

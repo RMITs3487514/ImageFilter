@@ -3,7 +3,7 @@ var mymessages = {};
 (function(){
 	if (typeof chrome !== 'undefined')
 	{
-		mymessages.sendBacgkround = chrome.runtime.sendMessage;
+		mymessages.sendBackground = chrome.runtime.sendMessage;
 		mymessages.sendTabs = function(message){
 			chrome.tabs.query({}, function(tabs) {
 				for (var i=0; i < tabs.length; ++i)
@@ -20,7 +20,7 @@ var mymessages = {};
 	{
 		//var self = self || addon;
 
-		mymessages.sendBacgkround = function (message) {
+		mymessages.sendBackground = function (message) {
 			if (self.port)
 				self.port.emit('mymessage', message);
 			//else if (self.sendMessage)

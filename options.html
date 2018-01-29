@@ -122,7 +122,14 @@
 		You may press a sequence of keys too. To remove a shortcut, enter <span class="code">Esc</span>
 		or <span class="code">Del</span>.
 	<div><label title="Allows shift-clicking images to toggle filtering.">
-			<input type="checkbox" class="option" name="option-shiftclicktoggle"> Shift-click to toggle.</label></div>
+			<input type="checkbox" class="option" name="option-shiftclicktoggle"> Shift-click to toggle.</label>
+	</div>
+	<div><label title="Reduces processing time by limiting the amount of histograms generated during the filtering process.">
+			<input type="checkbox" class="option" name="option-nohistograms"> Limit histogram generation when filtering.</label>
+	</div>
+	<!--<div><label title="Another variant of the below option. Instead of using a binary switch, it increases the tolerance for the peak area of generated histograms. Still in development.">
+			<input type="checkbox" class="option" name="option-binaryimages"> Filter icon and images with text (v2).</label>
+	</div>-->
 	<div>
 		<label title="Attempts to classify images as either pictures or more figures and text which shouldn't be filtered.">
 			<input type="checkbox" class="option" name="option-onlypictures">Don't filter icons and images with text.
@@ -142,6 +149,20 @@
 	<div><label title="Toggles whether to filter websites by default">Enable default: <input class="shortcut option" name="shortcut-global-enable" type="button" /></label></div>
 	<div><label title="Change to the next filter for websites by default">Next default filter: <input class="shortcut option" name="shortcut-global-next" type="button" /></label></div>
 	<div><label title="Change to the previous filter for websites by default">Previous default filter: <input class="shortcut option" name="shortcut-global-previous" type="button" /></label></div>
+	
+	
+	<!--
+	<p>
+		Miscellaneous image filter functions
+	</p>
+	<div><label title="Increases gamma across all web pages">Increase Gamma: <input class="shortcut option" name="shortcut-global-gammaup" type="button" /></label></div>
+	<div><label title="Decreases gamma across all web pages">Decrease Gamma: <input class="shortcut option" name="shortcut-site-gammadown" type="button" /></label></div>
+	<div><label title="Increases brightness across all web pages">Increase Brightness: <input class="shortcut option" name="shortcut-site-brightnessup" type="button" /></label></div>
+	<div><label title="Decreases brightness across all web pages">Decrease Brightness: <input class="shortcut option" name="shortcut-global-brightnessdown" type="button" /></label></div>
+	<div><label title="Increases contrast across all web pages">Increase Contrast: <input class="shortcut option" name="shortcut-global-contrastup" type="button" /></label></div>
+	<div><label title="Decreases contrast across all web pages">Decrease Contrast: <input class="shortcut option" name="shortcut-global-contrastdown" type="button" /></label></div>
+	<div><label title="Toggles between a variety of states">Toggle between states s +ve binary, -ve binary, +ve Full, -ve Full: <input class="shortcut option" name="shortcut-global-togglestates" type="button" /></label></div>
+	-->
 	
 	<p>
 		You can edit the parameter range of the images to be filtered. All values are measured in pixels.

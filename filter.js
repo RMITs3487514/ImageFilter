@@ -120,9 +120,9 @@ ImageFilter.prototype.enable = function(enabled) {
 			
 			styleString = enabled ? "-moz-filter: "+filterURL+"; -webkit-filter: "+filterURL+"; -ms-filter: "+filterURL+"; -o-filter: "+filterURL+"; filter: "+filterURL+";" : "";
 				
-			if (lastStyleElementText.includes("-moz-filter")){
+			/* if (lastStyleElementText.includes("-moz-filter")){
 				styleString = "";
-			}  
+			}   */
 			
 			// if there is no source, make the style string empty to prevent the image from disappearing upon shift-clicking
 			if (this.source.length == 0){

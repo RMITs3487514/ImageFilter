@@ -51,6 +51,7 @@ function FilterManager() {
 	];
 	
 	this.useHistogram = true; // determines if a histogram should be generated during the filtering process
+	this.filterBinaryImages = false;
 }
 
 //an element to put debug info into the document
@@ -61,6 +62,8 @@ function FilterManager() {
 	var w = $(image).width();
 	var h = $(image).height();
 	
+	var peakAreaLimit = this.filterBinaryImages ? 1.1 : 0.3;
+	//var peakAreaLimit = 0.3;
 	// minimum height and width check???
 	//debugger;
 	/* console.log(w * h);
@@ -78,10 +81,10 @@ function FilterManager() {
 	
 		// why 0.02???
 		var peakArea = histogram.getPeakArea(0.02);
-		console.log($(image).attr('src') + " histogram peak area: " + peakArea);
+		console.log($(image).attr('src') + " histogram peak area: " + peakArea + ", is beneath the limit of " + peakAreaLimit + ": " + (peakArea > peakAreaLimit));
 		
 		// why 0.3???
-		if (peakArea > 0.97){
+		if (peakArea >= peakAreaLimit){
 			return false;
 		}
 	}
@@ -273,6 +276,7 @@ FilterManager.prototype.shouldFilter = function(image, histogram) {
 	}
 
 	//handle the only-filter-pictures option
+	debugger;
 	if (this.onlyPictures && !this.isPicture(image, histogram)) {
 		return false;
 	}
@@ -431,14 +435,21 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 
 		if (histogram)
 		{
+			debugger;
 			 FilterManager.debugInfo.data('imagefilter-src', histogram.src);
 			if (histogram.success)
 			{
 				 FilterManager.debugInfo.append($(histogram.createGraph()).attr('id', 'imagefilter-histogram').css('border', '1px solid black'));
 				info.css('position', 'absolute');
 			}
-			else
-				info.append($('<div>Histogram status: '+histogram.status+'</div>'));
+			else {
+				if (this.useHistogram){
+					info.append($('<div>Histogram status: '+histogram.status+'</div>'));
+				}
+				else {
+					info.append($('<div>filtermanager useHistogram status: ' + that.useHistogram+'</div>'));
+				}
+			}
 		}
 
 		if (url && this.nodeName != 'VIDEO')

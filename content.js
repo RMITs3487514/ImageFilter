@@ -248,7 +248,7 @@ function enableInPageOptions(enabled)
 
 function sendOption(key, value)
 {
-	var success = mymessages.sendBacgkround({key:key, value:value});
+	var success = mymessages.sendBackground({key:key, value:value});
 
 	//if the messaging system doesn't work just apply the option
 	if (typeof chrome === 'undefined')
@@ -327,7 +327,7 @@ function handleShortcut(key, value)
 function applyOption(key, value)
 {
 	//debugger;
-	//console.log("content.js key: " + key + " value: " + value);
+	
 	//filters out invlid options, although shouldn't be needed. needed during dev
 	if (key.match(/^site-(enable|filter)$/))
 		return;
@@ -378,6 +378,26 @@ function applyOption(key, value)
 		setShiftClickToggle(value);
 		return;
 	}
+	
+	// option for no histograms
+	if (key == 'option-nohistograms')
+	{
+		debugger;
+		console.log("content.js key: " + key + " value: " + value);
+		//sendOption('option-usehistogram', !value);
+		filterer.useHistogram = !value;
+
+		return;
+	}
+	
+	// option for binary images
+	 if (key == 'option-binaryimages')
+	{
+		console.log("content.js key: " + key + " value: " + value);
+		//sendOption('option-binaryimages', value);
+		filterer.filterBinaryImages = value;
+		return;
+	} 
 	
 	if (key == 'option-minwidth')
 	{
@@ -450,11 +470,12 @@ function applyOption(key, value)
 		return;
 	}
 	
-	if (key == "option-usehistogram")
+/* 	if (key == "option-usehistogram")
 	{
 		console.log("option-usehistogram in applyOption() is " + value);
 		filterer.useHistogram = value;
-	}
+	} */
+	
 
 	var match = key.match(/^site-(enable|filter)(-(.+))$/);
 	if (match && match[2].length > 0 && thisHostname == match[3])
