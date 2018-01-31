@@ -38,13 +38,28 @@ ImageFilter.prototype.invert = function(enable) {
 }
 
 ImageFilter.prototype.setCustomValue = function(key, value) {
+	//debugger;
 	if (!(key in this.customValue) || this.customValue[key] !== value)
 	{
+		
+		/* if (key.match(/^V[0-9]{1}$/)){
+			var new_name = "zglobal-value" + key.substr(-1);
+			if (new_name.match(/^zglobal-value[0-9]{1}$/)){
+				chrome.storage.sync.get(new_name, function (result) {
+					value = result[new_name];
+				});
+			}
+
+		}   */
+		
 		this.customValue[key] = value;
 
 		//update if variables are used
-		if (this.requiresVariables)
+		if (this.requiresVariables){
 			this.update();
+		}
+		
+		
 	}
 }
 

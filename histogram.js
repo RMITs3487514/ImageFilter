@@ -40,8 +40,8 @@ function Histogram(source, element, updateInterval, isActive) {
 	}
 
 	//debugger;
-	console.log("Histogram for " + this.src + ", " + (this.animated ? "animated" : "still"));
-	console.log("Histogram is active: " + this.isActive);
+	//console.log("Histogram for " + this.src + ", " + (this.animated ? "animated" : "still"));
+	//console.log("Histogram is active: " + this.isActive);
 }
 Histogram.nextID = 0;
 

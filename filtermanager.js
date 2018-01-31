@@ -81,7 +81,7 @@ function FilterManager() {
 	
 		// why 0.02???
 		var peakArea = histogram.getPeakArea(0.02);
-		console.log($(image).attr('src') + " histogram peak area: " + peakArea + ", is beneath the limit of " + peakAreaLimit + ": " + (peakArea > peakAreaLimit));
+		//console.log($(image).attr('src') + " histogram peak area: " + peakArea + ", is beneath the limit of " + peakAreaLimit + ": " + (peakArea > peakAreaLimit));
 		
 		// why 0.3???
 		if (peakArea >= peakAreaLimit){
@@ -134,13 +134,38 @@ function FilterManager() {
 };
 
  FilterManager.prototype.setCustomValue = function(key, value) {
+	
+	
 	this.customValueCache[key] = value;
-	if (this.defaultFilter)
+	if (this.defaultFilter){
 		this.defaultFilter.setCustomValue(key, value);
-	for (var k in this.filters)
+	}
+	for (var k in this.filters){
 		this.filters[k].setCustomValue(key, value);
-	for (var k in this.filterOverrides)
+	}
+	for (var k in this.filterOverrides){
 		this.filterOverrides[k].setCustomValue(key, value);
+	}
+	
+	//debugger;
+	/* 	 chrome.storage.sync.get(["option-value1", "option-value2", "option-value3"], function(result){
+     //Showing first the first one and then the second one
+		console.log("option-value1: " + result["option-value1"]);
+		console.log("option-value2: " + result["option-value2"]);
+		console.log("option-value3: " + result["option-value3"]);
+	}); 
+	 */
+	// store the global versions of the values
+	 /* if (key.match(/^V[0-9]{1}$/)){
+		debugger;
+		//var original_name = key.split('-');
+		var new_name = "global-value" + key.substr(-1);
+		if (new_name.match(/^global-value[0-9]{1}$/)){
+			chrome.storage.sync.set({new_name: value});
+		}
+		
+	}  */
+	
 };
 
  FilterManager.prototype.setFilterSources = function(sources) {
@@ -276,7 +301,7 @@ FilterManager.prototype.shouldFilter = function(image, histogram) {
 	}
 
 	//handle the only-filter-pictures option
-	debugger;
+	//debugger;
 	if (this.onlyPictures && !this.isPicture(image, histogram)) {
 		return false;
 	}
@@ -362,7 +387,7 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 	
 	if (src && firstElement.nodeName != 'VIDEO')
 		{
-			console.log("Added " + src);
+			//console.log("Added " + src);
 			this.histograms[src] = new Histogram(src, firstElement, 0, this.useHistogram);
 			this.histograms[src].onload = this.histogramReady.bind(this);
 			this.histograms[src].onerror = this.histogramReady.bind(this);
@@ -435,7 +460,7 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 
 		if (histogram)
 		{
-			debugger;
+			//debugger;
 			 FilterManager.debugInfo.data('imagefilter-src', histogram.src);
 			if (histogram.success)
 			{

@@ -2,7 +2,7 @@
 //TODO: get options loading before filters to avoid multiple updates
 //TODO: I think duplicate histograms per src are being created
 
-var customValueDelta = 0.025;
+var customValueDelta = 0.1;
 
 var filterer = new FilterManager();
 filterer.start();
@@ -13,6 +13,9 @@ var filterNameCache = [];
 var thisHostname = location.hostname;
 
 var contextMenuElement = null;
+
+var optionCalledAready = [];
+
 window.addEventListener('contextmenu', function(e){
 	contextMenuElement = e.target;
 });
@@ -304,10 +307,23 @@ function handleShortcut(key, value)
 	var customValueShortcut = key.match(/^shortcut-v([1-3])-(inc|dec)$/);
 	if (customValueShortcut)
 	{
+		
+		
 		setShortcut(key, value, function(){
 			var change = customValueShortcut[2] == 'inc' ? customValueDelta : -customValueDelta;
-			var val = Math.max(0.0, Math.min(1.0, parseFloat(optionCache['option-value' + customValueShortcut[1]]) + change));
-			sendOption('option-value' + customValueShortcut[1], val);
+			var val = Math.max(0.00, Math.min(1.00, parseFloat(optionCache['option-value' + customValueShortcut[1]]) + change));
+			debugger;
+			
+			// should update zglobal-value here
+			var new_key = "zglobal-value" + customValueShortcut[1];
+			var data = {};
+			data[new_key] = val;
+			mystorage.set(data);
+			//sendOption('option-value' + customValueShortcut[1], val);
+			
+			// changed to minimize the amount of writes to storage
+			applyOption('option-value' + customValueShortcut[1], val);
+			
 		});
 		return true;
 	}
@@ -326,7 +342,7 @@ function handleShortcut(key, value)
 //all options come through here. not necessarily applicable or non-malicious
 function applyOption(key, value)
 {
-	//debugger;
+	debugger;
 	
 	//filters out invlid options, although shouldn't be needed. needed during dev
 	if (key.match(/^site-(enable|filter)$/))
@@ -364,12 +380,41 @@ function applyOption(key, value)
 	//update custom values in filters
 	var customValue = key.match(/^option-value([1-3])$/);
 	//console.log(customValue);
-	if (customValue)
+	
+	
+		if (customValue)
+		{
+			
+			//if (optionCalledAlready.indexOf(key) != -1){
+			
+			debugger;
+			filterer.setCustomValue('V' + customValue[1], value);
+			
+			// set the global-value variables for use later
+			/* var new_key = "zglobal-value" + key.substr(-1);
+			var data = {};
+			data[new_key] = value;
+			mystorage.set(data); */
+			//optionCalled
+			return;
+			//}
+		}
+	
+	
+	 customValue = key.match(/^zglobal-value([1-3])$/);
+	
+	if(customValue)
 	{
+		debugger;
 		filterer.setCustomValue('V' + customValue[1], value);
-		return;
+		
+		// set the option-values from the global-value variables
+		/* var new_key = "option-value" + key.substr(-1);
+		var data = {};
+		data[new_key] = value;
+		mystorage.set(data);  */
 	}
-
+	 
 	if (key == 'option-inpageoptions')
 		enableInPageOptions(value);
 
@@ -499,14 +544,38 @@ function applyOption(key, value)
 }
 
 mymessages.listen(function(request) {
-	if (request.contextMenuClick == 'filter')
+
+	debugger;
+	if (request.contextMenuClick == 'filter'){
 		filterer.applyManually(contextMenuElement, getFilterSources(getFilterFallbackChain(request.name)));
-	else if (request.contextMenuClick == 'clearfilter')
+	}
+	else if (request.contextMenuClick == 'clearfilter'){
 		filterer.applyManually(contextMenuElement, null);
-	else if (request.contextMenuClick == 'zoom')
+	}
+	else if (request.contextMenuClick == 'zoom'){
 		zoomElement(contextMenuElement, request.ratio);
-	else
+	}
+	else{
 		applyOption(request.key, request.value);
+		
+		
+	}
+	debugger;
+	
+	chrome.storage.sync.get(["zglobal-value1", "zglobal-value2", "zglobal-value3"], function(result){
+    // Showing first the first one and then the second one
+		var customValue = ("zglobal-value1").match(/^zglobal-value([1-3])$/);
+		filterer.setCustomValue('V' + customValue[1], result["zglobal-value1"]);
+		
+		customValue = ("zglobal-value2").match(/^zglobal-value([1-3])$/);
+		filterer.setCustomValue('V' + customValue[1], result["zglobal-value2"]);
+		
+		customValue = ("zglobal-value3").match(/^zglobal-value([1-3])$/);
+		filterer.setCustomValue('V' + customValue[1], result["zglobal-value3"]);
+	});
+	
+	
+	
 });
 
 var onLoadCalled = false;
@@ -516,7 +585,7 @@ function onLoad()
 		return
 	onLoadCalled = true;
 	mystorage.all(function(items){
-
+		//debugger;
 		for (var key in items)
 			if (key.match(/^filter.*$/))
 				applyOption(key, items[key]);
@@ -524,7 +593,7 @@ function onLoad()
 			if (!key.match(/^filter.*$/))
 				applyOption(key, items[key]);
 	});
-	debugger;
+	//debugger;
 }
 
 assertDefaultsAreLoaded(onLoad);

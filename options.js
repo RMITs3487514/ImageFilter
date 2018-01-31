@@ -25,7 +25,7 @@ function findUniqueFilterName(name, callback, uniqueBit)
 
 function saveFilter(filter)
 {
-	debugger;
+	//debugger;
 	var nameInput = filter.find('.filter-name');
 	var savedName = nameInput.attr('data-saved-name');
 	var newName = nameInput.val();
