@@ -68,7 +68,9 @@ ImageFilter.prototype.getInfo = function() {
 		"Fallback Index: " + this.sourceIndex + "<br/>";
 }
 
+// seems to occur at the start of a page load
 ImageFilter.prototype.update = function(sources) {
+	debugger;
 	var that = this;
 	if (sources)
 		this.sources = sources;

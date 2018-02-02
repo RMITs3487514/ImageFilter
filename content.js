@@ -103,8 +103,7 @@ function setCurrentFilter(name)
 	//extract any initial custom values from the filter
 	
 	
-	//debugger;
-	/*
+	 debugger;
 	if (sources.length > 0 && sources[0].match(/<!--.* no_histogram .*-->/g) != null){
 		console.log("sendOption('option-usehistogram', false)");
 		sendOption('option-usehistogram', false);
@@ -112,7 +111,7 @@ function setCurrentFilter(name)
 	else {
 		console.log("sendOption('option-usehistogram', true)");
 		sendOption('option-usehistogram', true);
-	}*/
+	}  
 	
 	var customValues = {};
 	for (var i = 0; i < sources.length; ++i)
@@ -342,7 +341,7 @@ function handleShortcut(key, value)
 //all options come through here. not necessarily applicable or non-malicious
 function applyOption(key, value)
 {
-	debugger;
+	//debugger;
 	
 	//filters out invlid options, although shouldn't be needed. needed during dev
 	if (key.match(/^site-(enable|filter)$/))
@@ -387,7 +386,7 @@ function applyOption(key, value)
 			
 			//if (optionCalledAlready.indexOf(key) != -1){
 			
-			debugger;
+			//debugger;
 			filterer.setCustomValue('V' + customValue[1], value);
 			
 			// set the global-value variables for use later
@@ -405,7 +404,7 @@ function applyOption(key, value)
 	
 	if(customValue)
 	{
-		debugger;
+		//debugger;
 		filterer.setCustomValue('V' + customValue[1], value);
 		
 		// set the option-values from the global-value variables
@@ -425,15 +424,15 @@ function applyOption(key, value)
 	}
 	
 	// option for no histograms
-	if (key == 'option-nohistograms')
+	/* if (key == 'a-option-nohistograms')
 	{
 		debugger;
 		console.log("content.js key: " + key + " value: " + value);
 		//sendOption('option-usehistogram', !value);
-		filterer.useHistogram = !value;
-
+		//filterer.useHistogram = !value;
+		applyOption('option-usehistogram', !value);
 		return;
-	}
+	} */
 	
 	// option for binary images
 	 if (key == 'option-binaryimages')
@@ -495,31 +494,18 @@ function applyOption(key, value)
 	}
 	else if (key == "global-filter")
 	{
-		
-		/* currentFilterChain = getFilterFallbackChain(value);
-		var sources = getFilterSources(currentFilterChain);
-		 */
-		// check if the filter doesn't want to generate histograms
-		/* if (sources.length > 0 && sources[0].match(/<!--.* no_histogram .*-->/g) != null){
-			console.log("sendOption('option-usehistogram', false)");
-			sendOption('option-usehistogram', false);
-		}
-		else {
-			console.log("sendOption('option-usehistogram', true)");
-			sendOption('option-usehistogram', true);
-		}
-		 */
 		//debugger;
 		if (!("site-filter" in optionCache))
 			setCurrentFilter(value);
 		return;
 	}
 	
-/* 	if (key == "option-usehistogram")
+ 	if (key == "option-usehistogram")
 	{
+		debugger;
 		console.log("option-usehistogram in applyOption() is " + value);
 		filterer.useHistogram = value;
-	} */
+	} 
 	
 
 	var match = key.match(/^site-(enable|filter)(-(.+))$/);
@@ -545,7 +531,7 @@ function applyOption(key, value)
 
 mymessages.listen(function(request) {
 
-	debugger;
+	//debugger;
 	if (request.contextMenuClick == 'filter'){
 		filterer.applyManually(contextMenuElement, getFilterSources(getFilterFallbackChain(request.name)));
 	}
@@ -560,7 +546,7 @@ mymessages.listen(function(request) {
 		
 		
 	}
-	debugger;
+	//debugger;
 	
 	chrome.storage.sync.get(["zglobal-value1", "zglobal-value2", "zglobal-value3"], function(result){
     // Showing first the first one and then the second one

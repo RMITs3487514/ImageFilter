@@ -124,9 +124,9 @@
 	<div><label title="Allows shift-clicking images to toggle filtering.">
 			<input type="checkbox" class="option" name="option-shiftclicktoggle"> Shift-click to toggle.</label>
 	</div>
-	<div><label title="Reduces processing time by limiting the amount of histograms generated during the filtering process.">
-			<input type="checkbox" class="option" name="option-nohistograms"> Limit histogram generation when filtering.</label>
-	</div>
+	<!--<div><label title="Reduces processing time by limiting the amount of histograms generated during the filtering process.">
+			<input type="checkbox" class="option" name="a-option-nohistograms"> Limit histogram generation when filtering.</label>
+	</div>-->
 	<!--<div><label title="Another variant of the below option. Instead of using a binary switch, it increases the tolerance for the peak area of generated histograms. Still in development.">
 			<input type="checkbox" class="option" name="option-binaryimages"> Filter icon and images with text (v2).</label>
 	</div>-->
@@ -220,6 +220,8 @@
 		These values are the cumulative sum of the raw histogram, 255 values separated by spaces.
 		For efficiency, the number of values can be reduced, for <span class="code">%16HY</span> enters
 		just 16 values from the cumulative sum of the luminance histogram.
+		
+		You can also add <span class="code">no_histogram</span> in the XML comment to limit the amount of histograms generated during the filtering process. This should reduce the amount of time it takes for the filtering process.
 	</p>
 	<div>		
 		<label>V1 increase: <input class="shortcut option" name="shortcut-v1-inc" type="button" /></label>

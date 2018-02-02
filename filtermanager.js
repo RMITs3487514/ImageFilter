@@ -466,15 +466,17 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 			{
 				 FilterManager.debugInfo.append($(histogram.createGraph()).attr('id', 'imagefilter-histogram').css('border', '1px solid black'));
 				info.css('position', 'absolute');
+				
 			}
-			else {
+/* 			else {
 				if (this.useHistogram){
-					info.append($('<div>Histogram status: '+histogram.status+'</div>'));
+					
 				}
 				else {
+					
 					info.append($('<div>filtermanager useHistogram status: ' + that.useHistogram+'</div>'));
 				}
-			}
+			} */
 		}
 
 		if (url && this.nodeName != 'VIDEO')
@@ -488,6 +490,8 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 			var filteredClass = $(this).attr('data-imagefilter-class');
 			textInfo.prepend('<div>Class Applied: ' + $(this).hasClass(filteredClass) + '</div>');
 			textInfo.prepend('<div>Child Counter: ' + $(this).data('imagefilter-haschild') + '</div>');
+			textInfo.prepend($('<div>Histogram status: '+histogram.status+'</div>'));
+			textInfo.prepend($('<div>filtermanager useHistogram status: ' + that.useHistogram+'</div>'));
 			if (histogram.id in that.filters){
 				textInfo.find('#imagefilter-filterinfo').html(that.filters[histogram.id].getInfo());
 			}
