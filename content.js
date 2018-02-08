@@ -341,7 +341,7 @@ function handleShortcut(key, value)
 //all options come through here. not necessarily applicable or non-malicious
 function applyOption(key, value)
 {
-	//debugger;
+	debugger;
 	
 	//filters out invlid options, although shouldn't be needed. needed during dev
 	if (key.match(/^site-(enable|filter)$/))

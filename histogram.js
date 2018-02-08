@@ -42,11 +42,16 @@ function Histogram(source, element, updateInterval, isActive) {
 	//debugger;
 	//console.log("Histogram for " + this.src + ", " + (this.animated ? "animated" : "still"));
 	//console.log("Histogram is active: " + this.isActive);
+	
+	debugger;
 }
 Histogram.nextID = 0;
 
 
+// only drawn during the debug overlay
 Histogram.prototype.createGraph = function() {
+	
+	
 	
 	var canvas = document.createElement("canvas");
 	canvas.context = canvas.getContext("2d");
@@ -115,6 +120,7 @@ Histogram.prototype.stop = function() {
 
 Histogram.prototype.getImagePixels = function(drawable) {
 	
+	debugger;
 	if (!this.isActive){
 		return null;
 	}
@@ -152,6 +158,7 @@ Histogram.prototype.getImagePixels = function(drawable) {
 		var pixelWidth = canvasContext.canvas.width || canvasContext.canvas.naturalWidth;
 		var pixelHeight = canvasContext.canvas.height || canvasContext.canvas.naturalHeight;
 		
+		// this is an imageData object
 		var pixels = canvasContext.getImageData(0, 0, pixelWidth, pixelHeight);
 		return pixels;
 	}
@@ -163,7 +170,9 @@ Histogram.prototype.getImagePixels = function(drawable) {
 	}
 };
 
+// 
 Histogram.prototype.updateHistogram = function(drawable) {
+	debugger;
 	var pixels = this.getImagePixels(drawable);
 	
 	if (!this.isActive){
@@ -177,6 +186,7 @@ Histogram.prototype.updateHistogram = function(drawable) {
 	if (this.totalPixels == 0)
 		return false;
 
+	//Is a Uint8ClampedArray representing a one-dimensional array containing the data in the RGBA order, with integer values between 0 and 255 (included). (From Firefox API docs)
 	var data = pixels.data;
 
 	this.lastHistogram = this.histogram;

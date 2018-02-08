@@ -169,6 +169,8 @@ function FilterManager() {
 };
 
  FilterManager.prototype.setFilterSources = function(sources) {
+	debugger;
+	 
 	this.filterSources = sources;
 	if (this.defaultFilter)
 		this.defaultFilter.update(sources);
@@ -372,6 +374,7 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 };
 
  FilterManager.prototype.sourceAdded = function(src, firstElement) {
+	 debugger;
 	/* if (this.useHistogram){
 		if (src && firstElement.nodeName != 'VIDEO')
 		{
@@ -405,6 +408,7 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 };
 
  FilterManager.prototype.imageAdded = function(img, url) {
+	 debugger;
 	if (img.nodeName == 'VIDEO')
 	{
 		var id = this.uidNext++;

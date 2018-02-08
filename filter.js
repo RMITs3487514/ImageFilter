@@ -95,13 +95,9 @@ ImageFilter.prototype.update = function(sources) {
 		});
 	}
 
-	/*
-	filterString = filterString.replace(/%\(([^\)]*V[1-3][^\)]*)\)/g, function(m, equation){
-		equation = equation.replace(/V([1-3])/g, function (m, i) {return options.get("value" + i);});
-		return eval(equation);
-	});
-	*/
 
+	
+	// this seems to do the actual replacing
 	var invertSource = this.inverted ? '\n<feColorMatrix type="matrix" values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0"/>\n' : '';
 
 	var svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0"><filter id="' + this.id +
