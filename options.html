@@ -13,159 +13,59 @@
 	<script type="text/javascript" src="logging.js"></script>
 	<script type="text/javascript" src="defaults.js"></script>
 	<script type="text/javascript" src="options.js"></script>
-	<!--
-	<style>
-	body {
-		font-size: 17.5px;
-	}
-	p {
-		margin-left: 12px;
-		font-size: 14px;
-		max-width: 40em;
-	}
-	.filter {
-		margin: 8px;
-		border-left: 4px solid #aaa;
-		padding-left: 12px;
-	}
-	.filter-name {
-		font-size: 24px;
-	}
-	textarea {
-		font-family: "Courier New", Courier, monospace;
-		font-size: 17.5px;
-	}
-	#logs {
-		font-family: "Courier New", Courier, monospace;
-		font-size: 17.5px;
-		height: 800px;
-		max-height: 800px;
-		max-width: 800px;
-		border: 1px solid black;
-		padding-top: 12px;
-		padding-bottom: 12px;
-		white-space: nowrap;
-		overflow: scroll;
-	}
-	input[type=text] {
-		font-size: 17.5px;
-	}
-	.shortcut {
-		min-width: 100px;
-	}
-	button, input[type=button] {
-		margin: 3px;
-		padding: 5px 9px;
-		font-size: 17.5px;
-		-webkit-border-radius: 6px;
-		-moz-border-radius: 6px;
-		border-radius: 6px;
-		color: #fff;
-		text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
-		background-color: #006dcc;
-		background-image: -moz-linear-gradient(top,#08c,#04c);
-		background-image: -webkit-gradient(linear,0 0,0 100%,from(#08c),to(#04c));
-		background-image: -webkit-linear-gradient(top,#08c,#04c);
-		background-image: -o-linear-gradient(top,#08c,#04c);
-		background-image: linear-gradient(to bottom,#08c,#04c);
-		background-repeat: repeat-x;
-		border-color: #04c #04c #002a80;
-		border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
-	}
-	button:hover, input[type=button]:hover {
-		background-color: #04c;
-		background-position: 0 -15px;
-		transition: background-position .1s linear;
-	}
-	button:active, input[type=button]:active {
-		background-image: none;
-		outline: 0;
-		box-shadow: inset 0 2px 4px rgba(0,0,0,0.15),0 1px 2px rgba(0,0,0,0.05);
-	}
-	input[type=button].recording {
-		background-color: #ec5151;
-		background-image: none;
-		outline: 0;
-		box-shadow: inset 0 2px 4px rgba(0,0,0,0.15),0 1px 2px rgba(0,0,0,0.05);
-	}
-	.code {
-		border: 1px dotted #aaa;
-		font-family: "Courier New", Courier, monospace;
-		background: #ddd;
-		padding: 1.5px 3px;
-	}
-	.icon {
-		margin: -4px 0px;
-		border: 2px solid #ddd;
-		border-radius: 3px;
-		display: inline-block;
-		width: 16px;
-		height: 16px;
-		background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AEYCi4BA8pbjgAAAq9JREFUOMulk02I1WUUxp/3ff//e+/cuXObjyajZtIbVAyiOyHDFlH2Qa0UgiCIAgUXEULQ7IIgcOFCEFy5UcSWLVy5EEIkCFqUhGEz4Ki3vPNx7537/34/zjnurjnoyrM7zzn8znMWD/CMpZ42+Oqnbz+da7z2UX9474/NjTvnrixf9k/ai3YKRy580Zg1e448KH478/fKtfnRWpLGpnURwPBJALNT2HV48jNbJZfKIpkkR/D9ifre5nKysPtdhNDc2u7fesyJ/n/z89FTz+/feONAVq5zlefQEmMmO4r+f4Mft3p3rhsTv7nz4Bhw/uTZ1qq9+UPzz60TRhlNliEAyFfY6t3HYPNeyZAWJqD17rcjAFCLh6IIAJY//ETdXb3+ZUx0IqQJhBXYMyQKgPJQSkMgcL5oInphiskHLB5qiVJ1AwA3Vv/Bwc6rMyG4z03q0V1SsHkJFROktweUKZgoNp3XD3/Q6bz3vnj713a2nkMojF8w9fp9EhmwAFGuwCxg8WB2EGHUai1ti+32v2u/HgxZfwlUZvClHQMaRd6dMdFxE5urptBOgoIQIPBgYRA52HIEV6Vg9jmIpiAyNwZsDIfS0vr20tTs940J/Z1WelMYYDgADKYA4QBA4EMVQQIU+d4jQJbyZp7m1rDrmNqN2X3THwvJLwTrRBgiBGaCMCHW8RrIpSLhpTEgDdYPiqIcsbXKk4pZ8SvvtI81sfgNoG4LMBAJEDCKajgNpgVw4DHAE3FSlXZdsqpg7zUJym5jetdb6tpUe/7rxsT0aQoOIrIt4rsAdaFCd5wF7yEjskGZ3IZQdxxMXbTRZeZaz80vdNs2fZBnyc0QqiSOzcro1u/pY1lYmGtC6pHxM4jdrDa+qTRUw6jiRSBpcw01tCbbIyLp+Sp3Zv5ll22s4CHN346+OVdceQAAAABJRU5ErkJggg==');
-	}
-	</style>
-	-->
 	
 
 </head>
 <body>
 	<h1>Image Filter Options</h1>
 	<p>
-		This extension filters images on webpages you visit to improve visibility and detail.
-		It can be controlled via the popup button <span class="icon"></span>
-		or using shortcuts.
-		You can toggle it on and off and choose between different filters and adjust their parameters.
-		You can also add completely new filters by entering svg filter code below.
+		Welcome to ImageFilter.	This web extension applies filters to images on webpages you visit to improve visibility and detail, depending on your preferences. Filters can be toggled on and off via the menus in the popup button <span class="icon"></span>  or by pressing the appropiate keyboard shortcuts. 
+	</p>
+	<p>
+		 ImageFilter allows you to add, delete and edit filters (via the source code). You can give filters up to three custom values, allowing you to dynamically manipulate the aspects of the filter via the popup's sliders. For more information, head to the filter source code section down below. 
+	</p>
+	<p>
+		There are also a variety of miscellaneous options present on this page which may be of interest to you. For more information, hover over their respective text. These options will be automatically saved once this page is closed. 
 	</p>
 	<p>
 		Set keyboard shortcuts by clicking the button and pressing the desired keys.
 		You may press a sequence of keys too. To remove a shortcut, enter <span class="code">Esc</span>
 		or <span class="code">Del</span>.
-	<div><label title="Allows shift-clicking images to toggle filtering.">
-			<input type="checkbox" class="option" name="option-shiftclicktoggle"> Shift-click to toggle.</label>
+	<div><label title="Allows shift-clicking images to manually toggle the current filter.">
+			<input type="checkbox" class="option" name="option-shiftclicktoggle"> Shift-click to toggle a filter.</label>
 	</div>
-	<!--<div><label title="Reduces processing time by limiting the amount of histograms generated during the filtering process.">
-			<input type="checkbox" class="option" name="a-option-nohistograms"> Limit histogram generation when filtering.</label>
-	</div>-->
-	<!--<div><label title="Another variant of the below option. Instead of using a binary switch, it increases the tolerance for the peak area of generated histograms. Still in development.">
-			<input type="checkbox" class="option" name="option-binaryimages"> Filter icon and images with text (v2).</label>
-	</div>-->
+	
 	<div>
-		<label title="Attempts to classify images as either pictures or more figures and text which shouldn't be filtered.">
+		<label title="Attempts to detect images containing text and not filter them. Should get most of these images. Unticking this will filter all images.">
 			<input type="checkbox" class="option" name="option-onlypictures">Don't filter icons and images with text.
 		</label>
 		<label>Shortcut: <input class="shortcut option" name="shortcut-onlypictures" type="button" /></label>
 	</div>
 	<div>
-		<label title="Displays an overlay with filter information when you mouse over images. Meant for developers.">
+		<label title="Displays an overlay with filter information and a histogram graph when you mouse over images. Meant for developers.">
 			<input type="checkbox" class="option" name="option-debugpopup">Display debug overlay on mouseover.
 		</label>
 		<label>Shortcut: <input class="shortcut option" name="shortcut-debugpopup" type="button" /></label>
 	</div>
-	<div><label title="A global invert in addition to the current filter">Toggle Invert: <input class="shortcut option" name="shortcut-invert" type="button" /></label></div>
-	<div><label title="Toggles whether to filter for just the website you're currently visiting">Enable site: <input class="shortcut option" name="shortcut-site-enable" type="button" /></label></div>
-	<div><label title="Change to the next filter for just the website you're currently visiting">Next site filter: <input class="shortcut option" name="shortcut-site-next" type="button" /></label></div>
-	<div><label title="Change to the previous filter for just the website you're currently visiting">Previous site filter: <input class="shortcut option" name="shortcut-site-previous" type="button" /></label></div>
-	<div><label title="Toggles whether to filter websites by default">Enable default: <input class="shortcut option" name="shortcut-global-enable" type="button" /></label></div>
-	<div><label title="Change to the next filter for websites by default">Next default filter: <input class="shortcut option" name="shortcut-global-next" type="button" /></label></div>
-	<div><label title="Change to the previous filter for websites by default">Previous default filter: <input class="shortcut option" name="shortcut-global-previous" type="button" /></label></div>
 	
 	
-	<!--
 	<p>
-		Miscellaneous image filter functions
+		There are two sections in the popup: one set for the default behaviour that applies to all sites, and another for per-site overrides. The overrides have a green border when active and can be cleared via the 'Clear Overrides' button to allow the default options to apply again. These settings are persistent (also synced on your Chrome/Firefox account, if enabled).
 	</p>
-	<div><label title="Increases gamma across all web pages">Increase Gamma: <input class="shortcut option" name="shortcut-global-gammaup" type="button" /></label></div>
-	<div><label title="Decreases gamma across all web pages">Decrease Gamma: <input class="shortcut option" name="shortcut-site-gammadown" type="button" /></label></div>
-	<div><label title="Increases brightness across all web pages">Increase Brightness: <input class="shortcut option" name="shortcut-site-brightnessup" type="button" /></label></div>
-	<div><label title="Decreases brightness across all web pages">Decrease Brightness: <input class="shortcut option" name="shortcut-global-brightnessdown" type="button" /></label></div>
-	<div><label title="Increases contrast across all web pages">Increase Contrast: <input class="shortcut option" name="shortcut-global-contrastup" type="button" /></label></div>
-	<div><label title="Decreases contrast across all web pages">Decrease Contrast: <input class="shortcut option" name="shortcut-global-contrastdown" type="button" /></label></div>
-	<div><label title="Toggles between a variety of states">Toggle between states s +ve binary, -ve binary, +ve Full, -ve Full: <input class="shortcut option" name="shortcut-global-togglestates" type="button" /></label></div>
-	-->
+	
+	<div><label title="Inverts all images on the page. A global feature.">Toggle Invert: <input class="shortcut option" name="shortcut-invert" type="button" /></label></div>
+	<div><label title="Toggles whether to filter for just the website you're currently visiting.">Enable site: <input class="shortcut option" name="shortcut-site-enable" type="button" /></label></div>
+	<div><label title="Change to the next filter for just the website you're currently visiting.">Next site filter: <input class="shortcut option" name="shortcut-site-next" type="button" /></label></div>
+	<div><label title="Change to the previous filter for just the website you're currently visiting.">Previous site filter: <input class="shortcut option" name="shortcut-site-previous" type="button" /></label></div>
+	<div><label title="Toggles whether to filter websites by default.">Enable default: <input class="shortcut option" name="shortcut-global-enable" type="button" /></label></div>
+	<div><label title="Change to the next filter for websites by default.">Next default filter: <input class="shortcut option" name="shortcut-global-next" type="button" /></label></div>
+	<div><label title="Change to the previous filter for websites by default.">Previous default filter: <input class="shortcut option" name="shortcut-global-previous" type="button" /></label></div>
+	
 	
 	<p>
-		You can edit the parameter range of the images to be filtered. All values are measured in pixels.
+		You can edit the minimum size of images to be filtered. Images with dimensions less than what is listed below will not be filtered. This intended for pages that have too many small images.
+		
+		If an input field is empty, it is treated as if it is '128'.
 	</p>
 	
 	<div><label title="Enter a size in pixels. If either the width or height of a filtered element is above this, it will be ignored.">
@@ -173,32 +73,17 @@
 		<div><label title="Enter a size in pixels. If either the width or height of a filtered element is above this, it will be ignored.">
 		Minimum element height to filter: <input type="number" class="option" name="option-minheight" value = "128"></label></div>
 	
-		
-		<!--
-		<div><label title="Enter a size in pixels. If either the width or height of a filtered element is above this, it will be ignored.">
-		Maximum element width to filter: <input type="number" class="option" name="option-maxwidth" value = "99999"></label></div>
-	<div><label title="Enter a size in pixels. If either the width or height of a filtered element is above this, it will be ignored.">
-		Maximum element height to filter: <input type="number" class="option" name="option-maxheight" value = "99999"></label></div>
-		-->
 
-	<!--
-	TODO: provide this option once the feature is properly implemented
-	<div>
-		<label title="Rather than use the browser's popup button, this extension can be controlled from a popup when clicking an image or video.">
-			<input type="checkbox" class="option" name="option-inpageoptions">Enable in-page popup.
-		</label>
-	</div>
-	-->
 
 	<h1>Filters:</h1>
 	<p>
-		Below is a list of svg filter source code (normally the contents of
-		a <span class="code">&lt;filter&gt;</span> tag),
-		which is applied to images on websites you visit.
-		The popup button <span class="icon"></span> contains options to enable/disable filtering and select which filter you want applied.
-		Shortcuts above make this more convenient if changed often.
-		You can add new filters with the <b>New</b> button, edit and <b>Save</b> filters or <b>Delete</b> them
-		if you don't want them in the list of available filters.
+		Below is a list of svg filter source code (normally the contents of a <span class="code">&lt;filter&gt;</span> tag), which is applied to images on websites you visit. The popup button <span class="icon"></span> contains options to enable/disable filtering and select which filter you want applied. Shortcuts above make this more convenient if changed often. 
+	</p>
+	<p>
+		A fallback filter can be set to an individual filter. The fallback filter will activate if the latter fails.
+	</p>
+	<p>
+		You can add new filters with the <b>New</b> button, edit and <b>Save</b> filters or <b>Delete</b> them. Remember to click Save once you have made your changes. 
 		Filter documentation can be found at the <a href="https://www.w3.org/TR/SVG/filters.html">W3C SVG Filter Effects page</a>.
 	</p>
 	<p>
@@ -209,7 +94,7 @@
 		<span class="code">{{ V3 }}</span> to have it substituted with their value between zero and one.
 		Javascript equations within the braces are also evaluated, for example
 		<span class="code">{{ (V1 + 1) / 2 }}</span>.
-		Initial values can be set by including xml comments with V= assignments, for example
+		Initial values can be set by including XML comments with V= assignments, for example
 		<span class="code">&lt;!-- V1=0.5 --&gt;</span>.
 	</p>
 	<p>
@@ -221,7 +106,7 @@
 		For efficiency, the number of values can be reduced, for <span class="code">%16HY</span> enters
 		just 16 values from the cumulative sum of the luminance histogram.
 		
-		You can also add <span class="code">no_histogram</span> in the XML comment to limit the amount of histograms generated during the filtering process. This should reduce the amount of time it takes for the filtering process.
+		<!-- You can also add <span class="code">no_histogram</span> in the XML comment to limit the amount of histograms generated during the filtering process. This should reduce the amount of time it takes for the filtering process. -->
 	</p>
 	<div>		
 		<label>V1 increase: <input class="shortcut option" name="shortcut-v1-inc" type="button" /></label>
@@ -259,6 +144,10 @@
 		</li>
 	</div>
 
+	<p>
+		You can import and export all options present here as a single JSON file. Clear Options will reset all option settings, including the filters, to their default values.
+	</p>
+	
 	<div>
 		<button id="export">Export Options</button>
 		<button id="import">Import Options</button>
@@ -266,6 +155,11 @@
 		<input style="display:none" type="file" id="importfile" />
 	</div>
 
+	
+	<p>
+		You can log the user of this extension, such as visited sites and enabled. You can show and download these logs.
+	</p>
+	
 	<div style="margin-top:24px">
 		<label title="Logs your usage of this extension, such as visited sites and enabled filters.">
 			<input type="checkbox" class="option" name="option-usagelog">Log Usage

@@ -1,6 +1,5 @@
 
 //FIXME: video filters are being added with the same id
-
 function ImageFilter(sources, enabled, initialCustomValues, inverted, histogram) {
 	this.enabled = enabled;
 	this.animatedHistogramRegex = /%([0-9]*)LH([RGBY])/g;
@@ -38,20 +37,8 @@ ImageFilter.prototype.invert = function(enable) {
 }
 
 ImageFilter.prototype.setCustomValue = function(key, value) {
-	//debugger;
 	if (!(key in this.customValue) || this.customValue[key] !== value)
 	{
-		
-		/* if (key.match(/^V[0-9]{1}$/)){
-			var new_name = "zglobal-value" + key.substr(-1);
-			if (new_name.match(/^zglobal-value[0-9]{1}$/)){
-				chrome.storage.sync.get(new_name, function (result) {
-					value = result[new_name];
-				});
-			}
-
-		}   */
-		
 		this.customValue[key] = value;
 
 		//update if variables are used
@@ -68,7 +55,7 @@ ImageFilter.prototype.getInfo = function() {
 		"Fallback Index: " + this.sourceIndex + "<br/>";
 }
 
-// seems to occur at the start of a page load
+// generates the filter code based on a histogram
 ImageFilter.prototype.update = function(sources) {
 	debugger;
 	var that = this;
@@ -100,6 +87,7 @@ ImageFilter.prototype.update = function(sources) {
 	// this seems to do the actual replacing
 	var invertSource = this.inverted ? '\n<feColorMatrix type="matrix" values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0"/>\n' : '';
 
+	// part of the code that gets injected into the page source code
 	var svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0"><filter id="' + this.id +
 		'" color-interpolation-filters="sRGB" x="0%" y="0%" width="100%" height="100%">' + this.source + invertSource +
 		'</filter></svg>';
@@ -125,17 +113,16 @@ ImageFilter.prototype.enable = function(enabled) {
 	var lastStyleElementText = lastStyleElementForImage.text();
 
 	// firefox only
-	// regards a bug that happens when an image isn't inverted and it's shift-clicked on a few times, making the image and its background images disappear
+	// fixes a bug that happens when an image isn't inverted and it's shift-clicked on a few times, making the image and its background images disappear
+	// https://stackoverflow.com/questions/12797262/how-to-load-script-only-for-firefox
+	
+	// this might break if someone is spoofing the user but no bugs were found during testing
 	if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1){
 		
 		// if the image hasn't been inverted
 		if (!this.inverted){
 			
 			styleString = enabled ? "-moz-filter: "+filterURL+"; -webkit-filter: "+filterURL+"; -ms-filter: "+filterURL+"; -o-filter: "+filterURL+"; filter: "+filterURL+";" : "";
-				
-			/* if (lastStyleElementText.includes("-moz-filter")){
-				styleString = "";
-			}   */
 			
 			// if there is no source, make the style string empty to prevent the image from disappearing upon shift-clicking
 			if (this.source.length == 0){
@@ -149,9 +136,6 @@ ImageFilter.prototype.enable = function(enabled) {
 	else {
 		styleString = enabled ? "-webkit-filter: "+filterURL+"; -moz-filter: "+filterURL+"; -ms-filter: "+filterURL+"; -o-filter: "+filterURL+"; filter: "+filterURL+";" : "";
 	}
-	//console.log(styleString);
-	//debugger;
-
 	
 	var style = '<style id=' + this.styleid + '>\n.' + this.styleName + ' {' + styleString + '}\n</style>';
 	var existing = $('#' + this.styleid);
@@ -182,12 +166,12 @@ ImageFilter.prototype.chooseSource = function(sources) {
 	return source;
 }
 
+// creates the filter's name 
 ImageFilter.prototype.createUniqueName = function() {
 	if (typeof ImageFilter.prototype.createUniqueName.nextID == 'undefined') {
 		ImageFilter.prototype.createUniqueName.nextID = 0;
 	}
 	var name = '';
-	//console.log("The Unique Name ID is : " + ImageFilter.prototype.createUniqueName.nextID);
 	if (this.histogram)
 	{
 		var e = this.histogram.element;
@@ -207,6 +191,5 @@ ImageFilter.prototype.createUniqueName = function() {
 	if (name.length > 32)
 		name = name.substring(0,32);
 	this.idNum = ImageFilter.prototype.createUniqueName.nextID;
-	//console.log("The next Unique Name ID is : " + (ImageFilter.prototype.createUniqueName.nextID + 1));
 	return 'imagefilter' + (ImageFilter.prototype.createUniqueName.nextID++) + '-' + name;
 }

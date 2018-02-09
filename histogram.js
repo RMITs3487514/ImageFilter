@@ -38,20 +38,14 @@ function Histogram(source, element, updateInterval, isActive) {
 		this.drawObject.onerror = this.loadError.bind(this);
 		this.drawObject.src = this.src;
 	}
-
-	//debugger;
-	//console.log("Histogram for " + this.src + ", " + (this.animated ? "animated" : "still"));
-	//console.log("Histogram is active: " + this.isActive);
 	
 	debugger;
 }
 Histogram.nextID = 0;
 
 
-// only drawn during the debug overlay
+// only drawn during the debug overlay strangely enough
 Histogram.prototype.createGraph = function() {
-	
-	
 	
 	var canvas = document.createElement("canvas");
 	canvas.context = canvas.getContext("2d");
@@ -63,8 +57,6 @@ Histogram.prototype.createGraph = function() {
 	if (!this.isActive){
 		return canvas;
 	}
-	
-	
 	ctx.fillStyle="rgba(0,0,0,0.5)";
 	ctx.fillRect(0, 0, w, h);
 	ctx.lineWidth = 1;
@@ -118,6 +110,7 @@ Histogram.prototype.stop = function() {
 	window.clearInterval(this.timer);
 };
 
+// retrieves pixel data from the image
 Histogram.prototype.getImagePixels = function(drawable) {
 	
 	debugger;
@@ -277,6 +270,7 @@ Histogram.prototype.loadError = function(event) {
 		this.onerror(this);
 };
 
+// runs after all the image sources are fetched, 
 Histogram.prototype.loaded = function() {
 	this.status = 'Loaded';
 	this.success = this.updateHistogram(this.drawObject);

@@ -30,9 +30,7 @@ function zoomElement(element, ratio) {
 	console.log(!original);
 	console.log(original === undefined);
 	console.log("ratio: " + ratio);
-	// if (!original) 
-
-	//if (!original)
+ 
 	if (original === undefined)
 	{
 		//debugger;
@@ -49,14 +47,6 @@ function zoomElement(element, ratio) {
 	}
 	else
 	{
-		/* console.log("about to set css!");
-		console.log(original.w * ratio);
-		console.log(original.h * ratio); */
-		//debugger;
-		/* e.css('width', Math.floor(original.w * ratio) + ".px");
-		e.css('height', Math.floor(original.h * ratio) + ".px");
-		e.css('background-size', '100% 100%'); */
-		
 		// changed it from '.px' to 'px' for firefox porting
 	 	e.css({
 			'width': Math.floor(original.w * ratio) + "px",
@@ -99,11 +89,8 @@ function setCurrentFilter(name)
 	
 	currentFilterChain = getFilterFallbackChain(name);
 	var sources = getFilterSources(currentFilterChain);
-	//debugger;
-	//extract any initial custom values from the filter
 	
-	
-	 debugger;
+	// no histogram option gateway
 	if (sources.length > 0 && sources[0].match(/<!--.* no_histogram .*-->/g) != null){
 		console.log("sendOption('option-usehistogram', false)");
 		sendOption('option-usehistogram', false);
@@ -124,18 +111,6 @@ function setCurrentFilter(name)
 			}
 		});
 	}
-	
-	// use this
-	/* if (sources[0].indexOf("V4") != -1){
-		console.log("v4 has arrived.");
-	}
-	else {
-		console.log("v4 has not arrived.");
-	} */
-	
-	
-	
-	
 	filterer.setFilterSources(sources);
 	
 }
@@ -313,12 +288,11 @@ function handleShortcut(key, value)
 			var val = Math.max(0.00, Math.min(1.00, parseFloat(optionCache['option-value' + customValueShortcut[1]]) + change));
 			debugger;
 			
-			// should update zglobal-value here
-			var new_key = "zglobal-value" + customValueShortcut[1];
+			// now update the global versions of the option-value
+			var new_key = "option-valueglobal" + customValueShortcut[1];
 			var data = {};
 			data[new_key] = val;
 			mystorage.set(data);
-			//sendOption('option-value' + customValueShortcut[1], val);
 			
 			// changed to minimize the amount of writes to storage
 			applyOption('option-value' + customValueShortcut[1], val);
@@ -378,40 +352,21 @@ function applyOption(key, value)
 
 	//update custom values in filters
 	var customValue = key.match(/^option-value([1-3])$/);
-	//console.log(customValue);
+	
+	if (customValue)
+	{
+		filterer.setCustomValue('V' + customValue[1], value);
+		return;
+	}
 	
 	
-		if (customValue)
-		{
-			
-			//if (optionCalledAlready.indexOf(key) != -1){
-			
-			//debugger;
-			filterer.setCustomValue('V' + customValue[1], value);
-			
-			// set the global-value variables for use later
-			/* var new_key = "zglobal-value" + key.substr(-1);
-			var data = {};
-			data[new_key] = value;
-			mystorage.set(data); */
-			//optionCalled
-			return;
-			//}
-		}
-	
-	
-	 customValue = key.match(/^zglobal-value([1-3])$/);
+	// if the value is a global option-value then update the filters
+	// this code is executed after the user moves the sliders on the popup
+	customValue = key.match(/^option-valueglobal([1-3])$/);
 	
 	if(customValue)
 	{
-		//debugger;
 		filterer.setCustomValue('V' + customValue[1], value);
-		
-		// set the option-values from the global-value variables
-		/* var new_key = "option-value" + key.substr(-1);
-		var data = {};
-		data[new_key] = value;
-		mystorage.set(data);  */
 	}
 	 
 	if (key == 'option-inpageoptions')
@@ -423,22 +378,11 @@ function applyOption(key, value)
 		return;
 	}
 	
-	// option for no histograms
-	/* if (key == 'a-option-nohistograms')
-	{
-		debugger;
-		console.log("content.js key: " + key + " value: " + value);
-		//sendOption('option-usehistogram', !value);
-		//filterer.useHistogram = !value;
-		applyOption('option-usehistogram', !value);
-		return;
-	} */
 	
 	// option for binary images
 	 if (key == 'option-binaryimages')
 	{
 		console.log("content.js key: " + key + " value: " + value);
-		//sendOption('option-binaryimages', value);
 		filterer.filterBinaryImages = value;
 		return;
 	} 
@@ -450,7 +394,6 @@ function applyOption(key, value)
 			value = filterer.DEFAULT_MIN_WIDTH;
 		
 		filterer.minWidth = value;
-		//filterer.minWidth = (value ? value : filterer.DEFAULT_MIN_WIDTH);
 		filterer.updateEnabled();
 		return;
 	}
@@ -462,7 +405,6 @@ function applyOption(key, value)
 			value = filterer.DEFAULT_MIN_HEIGHT;
 		
 		filterer.minHeight = value;
-		//filterer.minHeight = (value ? value : filterer.DEFAULT_MIN_HEIGHT);
 		filterer.updateEnabled();
 		return;
 	}
@@ -494,7 +436,6 @@ function applyOption(key, value)
 	}
 	else if (key == "global-filter")
 	{
-		//debugger;
 		if (!("site-filter" in optionCache))
 			setCurrentFilter(value);
 		return;
@@ -512,7 +453,6 @@ function applyOption(key, value)
 	if (match && match[2].length > 0 && thisHostname == match[3])
 	{
 		var option = match[1];
-		//if null, the global default replaces the site-specitic override
 		if (value === null)
 		{
 			delete optionCache["site-" + option];
@@ -531,7 +471,6 @@ function applyOption(key, value)
 
 mymessages.listen(function(request) {
 
-	//debugger;
 	if (request.contextMenuClick == 'filter'){
 		filterer.applyManually(contextMenuElement, getFilterSources(getFilterFallbackChain(request.name)));
 	}
@@ -543,21 +482,26 @@ mymessages.listen(function(request) {
 	}
 	else{
 		applyOption(request.key, request.value);
-		
-		
+
 	}
-	//debugger;
 	
-	chrome.storage.sync.get(["zglobal-value1", "zglobal-value2", "zglobal-value3"], function(result){
-    // Showing first the first one and then the second one
-		var customValue = ("zglobal-value1").match(/^zglobal-value([1-3])$/);
-		filterer.setCustomValue('V' + customValue[1], result["zglobal-value1"]);
+	// sets the custom filter values
+	// the reason why this is here is because after all the options variables are loaded (as seen in defaults.js) including the custom filter values, the web extension loads the custom filter values variables again, using the default '0.5's (for some reason).
+	// so we have to store the custom filter values in a global variant and then load them after everything else finished. There's also another part in the code that activates when the user manually moves the popup sliders
+	
+	// this is not the best of solutions and may lead to some flashing effects during load
+	// also if the user moves the sliders or presses the shortcut keys too frequently in a short timespan this feature might break the custom value feature until the user reloads the browser
+	
+	
+	chrome.storage.sync.get(["option-valueglobal1", "option-valueglobal2", "option-valueglobal3"], function(result){
+		var customValue = ("option-valueglobal1").match(/^option-valueglobal([1-3])$/);
+		filterer.setCustomValue('V' + customValue[1], result["option-valueglobal1"]);
 		
-		customValue = ("zglobal-value2").match(/^zglobal-value([1-3])$/);
-		filterer.setCustomValue('V' + customValue[1], result["zglobal-value2"]);
+		customValue = ("option-valueglobal2").match(/^option-valueglobal([1-3])$/);
+		filterer.setCustomValue('V' + customValue[1], result["option-valueglobal2"]);
 		
-		customValue = ("zglobal-value3").match(/^zglobal-value([1-3])$/);
-		filterer.setCustomValue('V' + customValue[1], result["zglobal-value3"]);
+		customValue = ("option-valueglobal3").match(/^option-valueglobal([1-3])$/);
+		filterer.setCustomValue('V' + customValue[1], result["option-valueglobal3"]);
 	});
 	
 	

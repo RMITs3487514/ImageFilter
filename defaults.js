@@ -32,15 +32,15 @@ var defaultOptions = {
 	"filtershortcut-Unsharp":null,
 	"global-enable":true,
 	"global-filter":"EquilizeRGB",
-	"global-value1":"0.5",
-	"global-value2":"0.5",
-	"global-value3":"0.5",
 	"option-debugpopup":false,
 	"option-invert":false,
 	"option-onlypictures":true,
 	"option-value1":"0.5",
 	"option-value2":"0.5",
 	"option-value3":"0.5", 
+	"option-valueglobal1":"0.5",
+	"option-valueglobal2":"0.5",
+	"option-valueglobal3":"0.5",
 	"shortcut-global-enable":null,
 	"shortcut-global-next":"alt+end",
 	"shortcut-invert":"ctrl+i",
@@ -56,10 +56,11 @@ var defaultOptions = {
 	"site-enable-www.netflix.com":false,
 	"site-enable-www.youtube.com":false,
 	"site-enablelocalhost":true,
-	"site-enableolivier.chapelle.cc":false,
-	"zglobal-value1":"0.5", // z means that it'll be the last processed
-	"zglobal-value2":"0.5",
-	"zglobal-value3":"0.5"
+	"site-enableolivier.chapelle.cc":false
+	/* ,
+	"zoption-valueglobal1":"0.5", // z means that it'll be the last processed
+	"zoption-valueglobal2":"0.5",
+	"zoption-valueglobal3":"0.5" */
 }
 
 function assertDefaultsAreLoaded(callback)

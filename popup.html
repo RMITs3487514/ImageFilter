@@ -9,142 +9,7 @@
 	<script type="text/javascript" src="crossbrowser.js"></script>
 	<script type="text/javascript" src="logging.js"></script>
 	<script type="text/javascript" src="popup.js"></script>
-	<!--
-	<style>
-	body {
-		font-size: 14pt;
-	}
-	a {
-		color: #277bc4;
-		cursor: pointer;
-	}
-	a:hover {
-		text-decoration: underline;
-	}
-	h1 {
-		font-size: 14pt;
-		font-weight: bold;
-	}
-	h2 {
-		font-size: 18pt;
-		margin: 0px;
-		padding: 0px;
-		margin-top: 18px;
-		margin-bottom: 6px;
-	}
-	label {
-		white-space: nowrap;
-	}
-	.select-wrap {
-		flex: 1;
-		background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%) url("data:image/png;base64,R0lGODlhDwAUAIABAAAAAP///yH5BAEAAAEALAAAAAAPABQAAAIXjI+py+0Po5wH2HsXzmw//lHiSJZmUAAAOw==") no-repeat right center;
-		height: 20px;
-		border: 4px solid #aaa;
-	}
 
-	.select-wrap select {
-		width: 100%;
-		display: block;
-		background: transparent;
-		padding: 2px;
-		border: 0;
-		border-radius: 0;
-		font-size: 16px;
-		line-height: 1;
-		height: 20px;
-	}
-
-	input[type=button] {
-		width: 100%;
-	}
-
-	.slider {
-		display: flex;
-	}
-
-	.slider  input {
-		flex: 1;
-	}
-
-	.input-group {
-		display: flex;
-		white-space: nowrap;
-		font-size: 0;
-	}
-	.input-group > * {
-		font-size: 14pt;
-		vertical-align: top;
-		margin-left: 0px;
-		margin-right: 0px;
-	}
-	.input-group >*:first-child {
-		border-radius: 4px 0px 0px 4px;
-	}
-	.input-group >*:not(:first-child) {
-		border-left: none;
-	}
-	.input-group >*:last-child {
-		border-radius: 0px 4px 4px 0px;
-	}
-
-	.override {
-		border-color: #6cbc7c !important;
-	}
-
-	.bigcheck {
-		width: 20px;
-		height: 20px;
-		background: #eee;
-		border: 4px solid #aaa;
-		position: relative;
-	}
-
-	.bigcheck label {
-		cursor: pointer;
-		position: absolute;
-		width: 20px;
-		height: 20px;
-		left: 0px;
-		top: 0px;
-		background: #eee;
-	}
-
-	.bigcheck label:after {
-		-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-		filter: alpha(opacity=0);
-		opacity: 0;
-		content: '';
-		position: absolute;
-		width: 9px;
-		height: 5px;
-		background: transparent;
-		top: 4px;
-		left: 4px;
-		border: 3px solid #45484d;
-		border-top: none;
-		border-right: none;
-
-		-webkit-transform: rotate(-45deg);
-		-moz-transform: rotate(-45deg);
-		-o-transform: rotate(-45deg);
-		-ms-transform: rotate(-45deg);
-		transform: rotate(-45deg);
-	}
-
-	.bigcheck label:hover::after {
-		-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
-		filter: alpha(opacity=30);
-		opacity: 0.3;
-	}
-
-	.bigcheck input[type=checkbox]:checked + label:after {
-		-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-		filter: alpha(opacity=100);
-		opacity: 1;
-	}
-
-	</style>
-	-->
 </head>
 <body>
 
@@ -162,7 +27,7 @@
 	</div>
 </div>
 <div>
-	<input id="clear-overrides" type="button" value="Clear Overrides" />
+	<input id="clear-overrides" type="button" value="Clear Overrides" title="Clears the above 'This Site' filter option." />
 </div>
 
 <h2>Defaults</h2>

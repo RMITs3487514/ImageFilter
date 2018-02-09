@@ -23,8 +23,6 @@ var mymessages = {};
 		mymessages.sendBackground = function (message) {
 			if (self.port)
 				self.port.emit('mymessage', message);
-			//else if (self.sendMessage)
-			//	self.sendMessage(message);
 			else
 				console.error("Error: cannot send messages");
 		};
@@ -36,10 +34,6 @@ var mymessages = {};
 		mymessages.listen = function(callback){
 			if (self.port)
 				self.port.on('mymessage', callback);
-			//else if (self.onmessage)
-			//	self.onmessage(callback);
-			//else if (self.on)
-			//	self.on(callback);
 			else
 				console.error("Error: cannot receive messages");
 		};

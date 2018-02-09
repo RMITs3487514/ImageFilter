@@ -52,39 +52,12 @@ function applyOption(key, value)
 			e.value = filter[1];
 			lists[i].appendChild(e);
 		}
-		//debugger;
-		//console.log(lists);
+
 		return;
 	}
 	
 	 filter = key.match(/^global-filter$/);
-	if (filter)
-	{
-		/* for (var i = 1; i <= 3; i++){
-			option_key = "option-value" + i;
-			zglobal_key = "zglobal-value" + i;
-			var data = {};
-			data[option_key] = 0.5;
-			data[zglobal_key] = 0.5
-			mystorage.set(data); 
-		} */
-		
-		/* document.getElementById("v1").contentWindow.location.reload(true);
-		document.getElementById("v2").contentWindow.location.reload(true);
-		document.getElementById("v3").contentWindow.location.reload(true); */
-	} 
-	//debugger;
 	
-	
-	// may have to put this when the program loads immediately
-	/* if (key.match(/^global-value[0-9]{1}$/)){
-		var new_name = "option-value" + key.substr(-1);
-		if (new_name.match(/^option-value[0-9]{1}$/)){
-			var e = document.querySelector('*[name="' + new_name + '"]');
-			chrome.storage.sync.set({new_name: 0.2});
-		}
-	} 
-	 */
 	
 	var e = document.querySelector('*[name="' + key + '"]');
 	if (e)
@@ -94,7 +67,6 @@ function applyOption(key, value)
 		}
 		else {
 			e.value = value;
-			//var new_value;
 			
 		}	
 		if (key.match(/^site-/))
@@ -107,18 +79,20 @@ function applyOption(key, value)
 	}
 	
 	// activated when the popup loads for the first time
-	// takes the zglobal-values and applies them to the normal option-value process
-	// z is to ensure that zglobal-values are interpreted last in the set
-	 if (key.match(/^zglobal-value[0-9]{1}$/)){
+	// option-valueglobal refers a global variant of the standard option-value variables and are used to ensure that the custom filter values remain through new page loads and reloads
+	// takes the option-valueglobal variables and applies them to the normal option-value variables
+	 if (key.match(/^option-valueglobal[0-9]{1}$/)){
 		console.log("key: " + key + ", value: " + value);
 		var new_key = "option-value" + key.substr(-1);
+		
+		// store the globals with their respective option-value counterparts
+		// also update the sliders as well
 		if (new_key.match(/^option-value[0-9]{1}$/)){
 			var e = document.querySelector('*[name="' + new_key + '"]');
-			 e.value = value;
+			e.value = value;
  			var data = {};
 			data[new_key] = value;
 			mystorage.set(data); 
-			//sendOption(new_key, value);
 			var data2 = {key:new_key, value:value};
 			mymessages.sendTabs(data2);  
 			
@@ -149,14 +123,11 @@ function sendOption(key, value)
 	mymessages.sendTabs(data);
 
 	//finally, make sure the option page is displaying the right thing
-	//console.log("key: " + key + " value: " + value);
 	applyOption(key, value);
 }
 
 mymessages.listen(function(request){
-	//var re = /^[a-z-]+$/;
 	var re = /^[a-z-]+[0-9]*$/;
-	//debugger;
 	if (re.test(request.key))
 		applyOption(request.key, request.value);
 });
@@ -165,7 +136,6 @@ document.addEventListener('DOMContentLoaded', function(){
 	
 	ev('.option', 'change', function(event){
 		var e = event.target;
-		//debugger;
 		if (e.type === 'checkbox'){
 			console.log ("e.name: " + e.name + " e.checked: " + e.checked);
 			sendOption(e.name, e.checked);
@@ -176,8 +146,8 @@ document.addEventListener('DOMContentLoaded', function(){
 			//stores the option-values in a global version so that it can remain between pages and reloads
 			console.log ("e.name: " + e.name + " e.value: " + e.value);
 			 if ((e.name).match(/^option-value[0-9]{1}$/)){
-				var new_key = "zglobal-value" + (e.name).substr(-1);
-				if (new_key.match(/^zglobal-value[0-9]{1}$/)){
+				var new_key = "option-valueglobal" + (e.name).substr(-1);
+				if (new_key.match(/^option-valueglobal[0-9]{1}$/)){
 					var data = {};
 					data[new_key] = e.value;
 					mystorage.set(data);
@@ -187,7 +157,6 @@ document.addEventListener('DOMContentLoaded', function(){
 			sendOption(e.name, e.value);
 		}
 		else{
-			//debugger;
 			console.log ("e.name: " + e.name + " e.value: " + e.value);
 			sendOption(e.name, e.value);
 		}
@@ -198,8 +167,7 @@ document.addEventListener('DOMContentLoaded', function(){
 			sendOption(elements[i].name, null);
 		}
 		console.log("ELEMENTS: " + elements);
-		
-		
+
 	});
 	ev('#open-options', 'click', function(e){
 		openOptions();
@@ -214,11 +182,7 @@ function onLoad()
 	getActiveTabURL(function(url) {
 		activeURL = url;
 		activeHostname = getHostname(url);
-		
-		
-		
 		mystorage.all(function(items){
-			//console.log("BEFORE mystorage.all activates: ");
 			debugger;
 			for (var key in items){
 				if (key.match(/^filter.*$/)){
@@ -235,13 +199,7 @@ function onLoad()
 				}
 			}
 		});
-		
-		
-		
 	});
-	
 
-	
-	
 }
  window.onload = onLoad; 

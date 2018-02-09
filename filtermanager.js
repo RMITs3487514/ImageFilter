@@ -24,8 +24,7 @@ function FilterManager() {
 		
 	this.minWidth = this.DEFAULT_MIN_WIDTH;
 	this.minHeight = this.DEFAULT_MIN_HEIGHT;
-	//this.maxWidth = this.DEFAULT_MAX_WIDTH;
-	//this.maxHeight = this.DEFAULT_MAX_HEIGHT;
+
 
 	this.customValueCache = {V1:0.5, V2:0.5, V3:0.5};
 
@@ -62,26 +61,17 @@ function FilterManager() {
 	var w = $(image).width();
 	var h = $(image).height();
 	
-	var peakAreaLimit = this.filterBinaryImages ? 1.1 : 0.3;
-	//var peakAreaLimit = 0.3;
-	// minimum height and width check???
-	//debugger;
-	/* console.log(w * h);
-	console.log(this.minWidth * this.minHeight);
-	console.log($(image).attr('src') + " area check: " + !(w * h < this.minWidth * this.minHeight)); */
+	var peakAreaLimit = 0.3;
 	if (w * h < this.minWidth * this.minHeight){
 		return false;
 	}
 	console.log($(image).attr('src') + " histogram success: " + histogram.success);
 	if (histogram.success && this.useHistogram)
 	{
-		//var merit = histogram.getGolayMerit();
-		//if (merit < this.golayMeritThreshold)
-		//	return false;
+
 	
 		// why 0.02???
 		var peakArea = histogram.getPeakArea(0.02);
-		//console.log($(image).attr('src') + " histogram peak area: " + peakArea + ", is beneath the limit of " + peakAreaLimit + ": " + (peakArea > peakAreaLimit));
 		
 		// why 0.3???
 		if (peakArea >= peakAreaLimit){
@@ -93,15 +83,7 @@ function FilterManager() {
 };
 
  FilterManager.prototype.invertAll = function(enabled) {
-	/*
-	var style = $('#imagefilter-invertall');
-	if (!style.length)
-	{
-		style = $('<style id="imagefilter-invertall"></style>');
-		$(document.body).append(style);
-	}
-	style.html(enable ? '.imagefilter-all {-moz-filter: invert(100%); -webkit-filter: invert(100%); filter: invert(100%);}' : '');
-	*/
+
 	this.inverted = enabled;
 	if (this.defaultFilter)
 		this.defaultFilter.invert(enabled);
@@ -147,24 +129,6 @@ function FilterManager() {
 		this.filterOverrides[k].setCustomValue(key, value);
 	}
 	
-	//debugger;
-	/* 	 chrome.storage.sync.get(["option-value1", "option-value2", "option-value3"], function(result){
-     //Showing first the first one and then the second one
-		console.log("option-value1: " + result["option-value1"]);
-		console.log("option-value2: " + result["option-value2"]);
-		console.log("option-value3: " + result["option-value3"]);
-	}); 
-	 */
-	// store the global versions of the values
-	 /* if (key.match(/^V[0-9]{1}$/)){
-		debugger;
-		//var original_name = key.split('-');
-		var new_name = "global-value" + key.substr(-1);
-		if (new_name.match(/^global-value[0-9]{1}$/)){
-			chrome.storage.sync.set({new_name: value});
-		}
-		
-	}  */
 	
 };
 
@@ -209,6 +173,7 @@ function FilterManager() {
 		return this.histograms[url];
 }
 
+// checks if an image is filtered
 FilterManager.prototype.isFiltered = function(image) {
 	var image = $(image);
 	if (!image.attr('data-imagefilter-class')) {
@@ -219,9 +184,7 @@ FilterManager.prototype.isFiltered = function(image) {
 
 //override a filter already applied to an image
  FilterManager.prototype.applyManually = function(image, sources) {
-	 //console.log("Manually overriding a filter!");
 	var image = $(image);
-	//debugger;
 	if (!$.inArray(image, this.images))
 	{
 		console.log('Cannot apply filter, image ' + image + " hasn\'t been added yet.");
@@ -231,7 +194,6 @@ FilterManager.prototype.isFiltered = function(image) {
 	var histogram = this.findHistogram(image);
 
 	var filterID = image.data('imagefilter-override');
-	//console.log(filterID);
 	
 	if (filterID)
 	{
@@ -268,29 +230,6 @@ FilterManager.prototype.isFiltered = function(image) {
 
 FilterManager.prototype.shouldFilter = function(image, histogram) {
 	
-	//console.log(this.minWidth);
-	//console.log($(image).width());
-	//console.log($(image).width() < this.minWidth );
-	
-	//console.log(this.maxWidth);
-	//console.log(this.minHeight);
-	//console.log($(image).height());
-////console.log($(image).height() < this.minHeight);
-	
-	//console.log(this.maxHeight);
-	
-	//console.log("min width check: " + ($(image).width() >= this.minWidth));
-	//console.log("max width check: " + ($(image).width() <= this.maxWidth));
-	//console.log("min height check: " + ($(image).height() >= this.minHeight));
-	//console.log("max height check: " + ($(image).height() <= this.maxHeight));
-	
-	//ignore images that are too big
-	/*
-	if ((this.maxWidth > 0 && this.maxHeight > 0) && ($(image).width() >= this.maxWidth && $(image).height() >= this.maxHeight)) {
-		
-		return false;
-	}*/
-	
 	//ignore images that are too small
 	if ((this.minWidth > 0 && this.minHeight > 0) && ($(image).width() < this.minWidth) && ($(image).height() < this.minHeight)) {
 		
@@ -303,7 +242,6 @@ FilterManager.prototype.shouldFilter = function(image, histogram) {
 	}
 
 	//handle the only-filter-pictures option
-	//debugger;
 	if (this.onlyPictures && !this.isPicture(image, histogram)) {
 		return false;
 	}
@@ -311,10 +249,10 @@ FilterManager.prototype.shouldFilter = function(image, histogram) {
 	return true;
 };
 
+// applies a filter to an image
 FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 	var filteredImages = [];
-	//debugger;
-	//console.log(images);
+
 	for (var i = 0; i < images.length; ++i)
 	{
 		var apply = true;
@@ -375,18 +313,6 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 
  FilterManager.prototype.sourceAdded = function(src, firstElement) {
 	 debugger;
-	/* if (this.useHistogram){
-		if (src && firstElement.nodeName != 'VIDEO')
-		{
-			console.log("Added " + src);
-			this.histograms[src] = new Histogram(src, firstElement, 0);
-			this.histograms[src].onload = this.histogramReady.bind(this);
-			this.histograms[src].onerror = this.histogramReady.bind(this);
-		}
-	}
-	else {
-		this.histograms[src] = null;
-	} */
 	
 	if (src && firstElement.nodeName != 'VIDEO')
 		{
@@ -424,6 +350,8 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 	}
 
 	var that = this;
+	
+	// this part works to display the debug overlay
 	$(img).on('mouseover', function(e){
 		e.stopPropagation();
 
@@ -445,8 +373,9 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 		}, 2000);
 		if ( FilterManager.debugInfo)
 			 FilterManager.debugInfo.remove();
-		 //FilterManager.debugInfo = $('<div id="imagefilter-debug" style="opacity: 0.5; pointer-events: none; z-index: 19999999999; position:absolute; top:0px; left:0px; right:0px; background: white; font-size: 14px; border-bottom: 2px solid black; word-wrap: normal; width: auto;" data-imagefilter-haschild="1"></div>');
 		 FilterManager.debugInfo = $('<div id="imagefilter-debug" style="opacity: 0.5; pointer-events: none; z-index: 19999999999; position:fixed; top:0px; left:0px; right:0px; background: white; font-size: 14px; border-bottom: 2px solid black; word-wrap: normal; width: auto;" data-imagefilter-haschild="1"></div>');
+		 
+		// remove the overlay upon clicking
 		$(document.body).append( FilterManager.debugInfo);
 		 FilterManager.debugInfo.on('click', function(){
 			 FilterManager.debugInfo.remove();
@@ -464,23 +393,15 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 
 		if (histogram)
 		{
-			//debugger;
+			
 			 FilterManager.debugInfo.data('imagefilter-src', histogram.src);
 			if (histogram.success)
 			{
-				 FilterManager.debugInfo.append($(histogram.createGraph()).attr('id', 'imagefilter-histogram').css('border', '1px solid black'));
+				// actually draw the graph
+				FilterManager.debugInfo.append($(histogram.createGraph()).attr('id', 'imagefilter-histogram').css('border', '1px solid black'));
 				info.css('position', 'absolute');
 				
 			}
-/* 			else {
-				if (this.useHistogram){
-					
-				}
-				else {
-					
-					info.append($('<div>filtermanager useHistogram status: ' + that.useHistogram+'</div>'));
-				}
-			} */
 		}
 
 		if (url && this.nodeName != 'VIDEO')
@@ -490,7 +411,7 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 		 FilterManager.debugInfo.append(textInfo);
 		if (this.nodeName != 'VIDEO')
 		{
-			//debugger;
+			// show debug overlay content
 			var filteredClass = $(this).attr('data-imagefilter-class');
 			textInfo.prepend('<div>Class Applied: ' + $(this).hasClass(filteredClass) + '</div>');
 			textInfo.prepend('<div>Child Counter: ' + $(this).data('imagefilter-haschild') + '</div>');
@@ -499,12 +420,7 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 			if (histogram.id in that.filters){
 				textInfo.find('#imagefilter-filterinfo').html(that.filters[histogram.id].getInfo());
 			}
-			/* console.log("FilterManager object info: ");
-			console.log(this);
-			console.log("that.filters: ");
-			console.log(that.filters);
-			console.log("histogram.id: " + histogram.id); */
-			
+
 			
 		}
 
