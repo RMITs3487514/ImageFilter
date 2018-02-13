@@ -230,12 +230,29 @@ FilterManager.prototype.isFiltered = function(image) {
 
 FilterManager.prototype.shouldFilter = function(image, histogram) {
 	
+	
+	/* console.log("minWidth: " + this.minWidth + ", minHeight: " + this.minHeight);
+	console.log("image width: " + $(image).width() + ", image height: " + $(image).height());
+	console.log(($(image).width() < this.minWidth));
+	console.log(($(image).height() < this.minHeight));
+	console.log((this.minWidth < 0 && this.minHeight < 0) || ($(image).width() < this.minWidth) || ($(image).height() < this.minHeight) ); */
 	//ignore images that are too small
-	if ((this.minWidth > 0 && this.minHeight > 0) && ($(image).width() < this.minWidth) && ($(image).height() < this.minHeight)) {
-		
+	
+	// less than zero check
+	if ((this.minWidth < 0 && this.minHeight < 0)){
 		return false;
 	}
-
+	
+	// width check
+	if ($(image).width() < this.minWidth){
+		return false;
+	}
+	
+	// height check
+	if ($(image).height() < this.minHeight) {
+		return false;
+	}
+	
 	//always filter video
 	if (image.nodeName == 'VIDEO') {
 		return true;
