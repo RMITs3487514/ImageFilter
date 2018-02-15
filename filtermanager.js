@@ -49,7 +49,7 @@ function FilterManager() {
 		'<feColorMatrix in="SourceGraphic" type="matrix" values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0"/>'
 	];
 	
-	this.useHistogram = true; // determines if a histogram should be generated during the filtering process
+	//this.useHistogram = true; // determines if a histogram should be generated during the filtering process
 	this.filterBinaryImages = false;
 }
 
@@ -61,19 +61,18 @@ function FilterManager() {
 	var w = $(image).width();
 	var h = $(image).height();
 	
+	// can be adjusted to increase or decrease the number of images accepted
 	var peakAreaLimit = 0.3;
 	if (w * h < this.minWidth * this.minHeight){
 		return false;
-	}
-	console.log($(image).attr('src') + " histogram success: " + histogram.success);
-	if (histogram.success && this.useHistogram)
+	}	if (histogram.success)
 	{
 
 	
-		// why 0.02???
+		// same as above
 		var peakArea = histogram.getPeakArea(0.02);
 		
-		// why 0.3???
+		
 		if (peakArea >= peakAreaLimit){
 			return false;
 		}
@@ -231,12 +230,6 @@ FilterManager.prototype.isFiltered = function(image) {
 FilterManager.prototype.shouldFilter = function(image, histogram) {
 	
 	
-	/* console.log("minWidth: " + this.minWidth + ", minHeight: " + this.minHeight);
-	console.log("image width: " + $(image).width() + ", image height: " + $(image).height());
-	console.log(($(image).width() < this.minWidth));
-	console.log(($(image).height() < this.minHeight));
-	console.log((this.minWidth < 0 && this.minHeight < 0) || ($(image).width() < this.minWidth) || ($(image).height() < this.minHeight) ); */
-	//ignore images that are too small
 	
 	// less than zero check
 	if ((this.minWidth < 0 && this.minHeight < 0)){
@@ -290,9 +283,6 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 				$(this).data('imagefilter-haschild', ($(this).data('imagefilter-haschild') || 0) + 1);
 			});
 
-			console.log(this.shouldFilter(images[i], histogram));
-			//actually apply the filter by adding a class to the element
-			//debugger;
 			if (this.shouldFilter(images[i], histogram)){
 				$(images[i]).addClass(filter.styleName);
 			}
@@ -334,7 +324,7 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 	if (src && firstElement.nodeName != 'VIDEO')
 		{
 			//console.log("Added " + src);
-			this.histograms[src] = new Histogram(src, firstElement, 0, this.useHistogram);
+			this.histograms[src] = new Histogram(src, firstElement, 0);
 			this.histograms[src].onload = this.histogramReady.bind(this);
 			this.histograms[src].onerror = this.histogramReady.bind(this);
 		}
@@ -343,7 +333,7 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
  FilterManager.prototype.sourceRemoved = function(src) {
 	if (src in this.histograms)
 	{
-		console.log("Removed " + src);
+		//console.log("Removed " + src);
 		this.removeFilter(this.histograms[src]);
 		this.histograms[src].stop();
 		delete this.histograms[src];
@@ -356,7 +346,7 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 	{
 		var id = this.uidNext++;
 		$(img).data('imagefilter-histogram-id', id);
-		this.animatedHistograms[id] = new Histogram(url, img, this.animationUpdateFrequency, this.useHistogram);
+		this.animatedHistograms[id] = new Histogram(url, img, this.animationUpdateFrequency);
 		this.animatedHistograms[id].onload = this.histogramReady.bind(this);
 		this.animatedHistograms[id].onupdate = this.updateFilter.bind(this);
 	}

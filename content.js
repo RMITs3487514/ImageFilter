@@ -21,34 +21,24 @@ window.addEventListener('contextmenu', function(e){
 });
 
 function zoomElement(element, ratio) {
-	console.log("zooming in!");
 	var e = $(element);
 	var original = e.data('imagefilter-zoom');
 
-	console.log(e);
-	console.log(original);
-	console.log(!original);
-	console.log(original === undefined);
-	console.log("ratio: " + ratio);
- 
+
 	if (original === undefined)
 	{
 		//debugger;
-		console.log("about to set original properties!");
 		original = {w: e.width(), h: e.height(), bak: e.css(['width', 'height', 'background-size'])};
 		e.data('imagefilter-zoom', original);
 	}
 	
 
 	if (ratio == 1.0){
-		//debugger;
-		console.log("about to set properties associated with the original ratio!");
 		e.css(original.bak);
 	}
 	else
 	{
-		// changed it from '.px' to 'px' for firefox porting
-	 	e.css({
+		// changed it from '.px' to 'px' for firefox compatability
 			'width': Math.floor(original.w * ratio) + "px",
 			'height': Math.floor(original.h * ratio) + "px",
 			'background-size': '100% 100%'
@@ -89,16 +79,6 @@ function setCurrentFilter(name)
 	
 	currentFilterChain = getFilterFallbackChain(name);
 	var sources = getFilterSources(currentFilterChain);
-	
-	// no histogram option gateway
-	if (sources.length > 0 && sources[0].match(/<!--.* no_histogram .*-->/g) != null){
-		console.log("sendOption('option-usehistogram', false)");
-		sendOption('option-usehistogram', false);
-	}
-	else {
-		console.log("sendOption('option-usehistogram', true)");
-		sendOption('option-usehistogram', true);
-	}  
 	
 	var customValues = {};
 	for (var i = 0; i < sources.length; ++i)
@@ -286,7 +266,6 @@ function handleShortcut(key, value)
 		setShortcut(key, value, function(){
 			var change = customValueShortcut[2] == 'inc' ? customValueDelta : -customValueDelta;
 			var val = Math.max(0.00, Math.min(1.00, parseFloat(optionCache['option-value' + customValueShortcut[1]]) + change));
-			debugger;
 			
 			// now update the global versions of the option-value
 			var new_key = "option-valueglobal" + customValueShortcut[1];
@@ -315,7 +294,6 @@ function handleShortcut(key, value)
 //all options come through here. not necessarily applicable or non-malicious
 function applyOption(key, value)
 {
-	debugger;
 	
 	//filters out invlid options, although shouldn't be needed. needed during dev
 	if (key.match(/^site-(enable|filter)$/))
@@ -382,7 +360,6 @@ function applyOption(key, value)
 	// option for binary images
 	 if (key == 'option-binaryimages')
 	{
-		console.log("content.js key: " + key + " value: " + value);
 		filterer.filterBinaryImages = value;
 		return;
 	} 
@@ -441,12 +418,6 @@ function applyOption(key, value)
 		return;
 	}
 	
- 	if (key == "option-usehistogram")
-	{
-		debugger;
-		console.log("option-usehistogram in applyOption() is " + value);
-		filterer.useHistogram = value;
-	} 
 	
 
 	var match = key.match(/^site-(enable|filter)(-(.+))$/);
@@ -515,7 +486,6 @@ function onLoad()
 		return
 	onLoadCalled = true;
 	mystorage.all(function(items){
-		//debugger;
 		for (var key in items)
 			if (key.match(/^filter.*$/))
 				applyOption(key, items[key]);
@@ -523,7 +493,7 @@ function onLoad()
 			if (!key.match(/^filter.*$/))
 				applyOption(key, items[key]);
 	});
-	//debugger;
+	//;
 }
 
 assertDefaultsAreLoaded(onLoad);

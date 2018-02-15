@@ -1,6 +1,7 @@
 
-function Histogram(source, element, updateInterval, isActive) {
-
+//function Histogram(source, element, updateInterval) {
+	
+function Histogram(source, element, updateInterval) {
 	this.maxHistogramSampleDimension = 128; //if image is bigger than this, scale down before generating the histogram
 	this.attemptsLeft = 4; //try this many times to generate a histogram and then give up
 
@@ -19,8 +20,6 @@ function Histogram(source, element, updateInterval, isActive) {
 	this.totalPixels = 0;
 	this.status = 'About to start';
 	this.id = Histogram.nextID++;
-	
-	this.isActive = isActive;
 
 	if (this.animated)
 	{
@@ -38,8 +37,7 @@ function Histogram(source, element, updateInterval, isActive) {
 		this.drawObject.onerror = this.loadError.bind(this);
 		this.drawObject.src = this.src;
 	}
-	
-	debugger;
+
 }
 Histogram.nextID = 0;
 
@@ -53,10 +51,7 @@ Histogram.prototype.createGraph = function() {
 	var h = canvas.height = 128;
 	var ctx = canvas.context;
 
-	
-	if (!this.isActive){
-		return canvas;
-	}
+
 	ctx.fillStyle="rgba(0,0,0,0.5)";
 	ctx.fillRect(0, 0, w, h);
 	ctx.lineWidth = 1;
@@ -89,10 +84,6 @@ Histogram.prototype.createGraph = function() {
 
 Histogram.prototype.histoSkip = function(a, n) {
 	var l = [];
-	/* if (!this.isActive){
-		return l;
-	}
-	 */
 	
 	for (var i = 0; i < a.length; i += n)
 		l.push(Math.round(a[i]*1000)/1000);
@@ -113,10 +104,6 @@ Histogram.prototype.stop = function() {
 // retrieves pixel data from the image
 Histogram.prototype.getImagePixels = function(drawable) {
 	
-	debugger;
-	if (!this.isActive){
-		return null;
-	}
 
 	
 	if (typeof Histogram.prototype.getImagePixels.tempCanvas == 'undefined') {
@@ -147,7 +134,7 @@ Histogram.prototype.getImagePixels = function(drawable) {
 		var canvasContext = Histogram.prototype.getImagePixels.tempCanvas.getContext("2d");
 		canvasContext.drawImage(drawable, 0, 0, w, h, 0, 0, Histogram.prototype.getImagePixels.tempCanvas.width, Histogram.prototype.getImagePixels.tempCanvas.height);
 		
-		//var pixels = canvasContext.getImageData(0, 0, canvasContext.canvas.width, canvasContext.canvas.height);
+		// sometimes the width or height can't be accessed, requiring the naturalWidth and naturalHeight
 		var pixelWidth = canvasContext.canvas.width || canvasContext.canvas.naturalWidth;
 		var pixelHeight = canvasContext.canvas.height || canvasContext.canvas.naturalHeight;
 		
@@ -165,13 +152,8 @@ Histogram.prototype.getImagePixels = function(drawable) {
 
 // 
 Histogram.prototype.updateHistogram = function(drawable) {
-	debugger;
 	var pixels = this.getImagePixels(drawable);
-	
-	if (!this.isActive){
-		return false;
-	}
-	
+	 
 	if (!pixels)
 		return false;
 
@@ -179,7 +161,7 @@ Histogram.prototype.updateHistogram = function(drawable) {
 	if (this.totalPixels == 0)
 		return false;
 
-	//Is a Uint8ClampedArray representing a one-dimensional array containing the data in the RGBA order, with integer values between 0 and 255 (included). (From Firefox API docs)
+	// Is a Uint8ClampedArray representing a one-dimensional array containing the data in the RGBA order, with integer values between 0 and 255 (included). (From Firefox API docs)
 	var data = pixels.data;
 
 	this.lastHistogram = this.histogram;
@@ -196,6 +178,9 @@ Histogram.prototype.updateHistogram = function(drawable) {
 	var n = pixels.width * pixels.height;
 	var scale = 1.0 / n;
 	var total = [0, 0, 0];
+	
+	// this part can take a while
+	// consider optimizing this in the future
 	for (i = 0; i < n; ++i)
 	{
 		//channel 0, 1, 2 = rgb
@@ -208,6 +193,7 @@ Histogram.prototype.updateHistogram = function(drawable) {
 	}
 
 	//integrate h into this.histogram
+	// this part can also take a while
 	for (c = 0; c < channels; ++c)
 		total[c] = 0;
 	for (i = 0; i < 256; ++i)
@@ -275,10 +261,7 @@ Histogram.prototype.loaded = function() {
 	this.status = 'Loaded';
 	this.success = this.updateHistogram(this.drawObject);
 	this.attemptsLeft -= 1;
-	
-	/* if (!this.isActive){
-		return;
-	} */
+
 	
 	if (!this.success)
 	{

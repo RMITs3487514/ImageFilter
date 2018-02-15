@@ -34,7 +34,7 @@ function parseSiteKey(key)
 
 function applyOption(key, value)
 {
-	debugger;
+	//debugger;
 	key = parseSiteKey(key)
 	if (!key)
 		return;
@@ -82,7 +82,6 @@ function applyOption(key, value)
 	// option-valueglobal refers a global variant of the standard option-value variables and are used to ensure that the custom filter values remain through new page loads and reloads
 	// takes the option-valueglobal variables and applies them to the normal option-value variables
 	 if (key.match(/^option-valueglobal[0-9]{1}$/)){
-		console.log("key: " + key + ", value: " + value);
 		var new_key = "option-value" + key.substr(-1);
 		
 		// store the globals with their respective option-value counterparts
@@ -90,9 +89,11 @@ function applyOption(key, value)
 		if (new_key.match(/^option-value[0-9]{1}$/)){
 			var e = document.querySelector('*[name="' + new_key + '"]');
 			e.value = value;
+
  			var data = {};
 			data[new_key] = value;
 			mystorage.set(data); 
+			
 			var data2 = {key:new_key, value:value};
 			mymessages.sendTabs(data2);  
 			
@@ -107,7 +108,6 @@ function sendOption(key, value)
 		key = key + "-" + activeHostname;
 	
 	mylogger.log('popup sets ' + key + '=' + value + ' - ' + encodeURI(activeURL));
-	console.log("popup key: " + key + " value: " + value);
 	//saving the option
 	if (value !== null)
 	{
@@ -137,14 +137,12 @@ document.addEventListener('DOMContentLoaded', function(){
 	ev('.option', 'change', function(event){
 		var e = event.target;
 		if (e.type === 'checkbox'){
-			console.log ("e.name: " + e.name + " e.checked: " + e.checked);
 			sendOption(e.name, e.checked);
 		}
 		else if (e.type === 'range'){
 			var name = e.name;
 			
 			//stores the option-values in a global version so that it can remain between pages and reloads
-			console.log ("e.name: " + e.name + " e.value: " + e.value);
 			 if ((e.name).match(/^option-value[0-9]{1}$/)){
 				var new_key = "option-valueglobal" + (e.name).substr(-1);
 				if (new_key.match(/^option-valueglobal[0-9]{1}$/)){
@@ -157,7 +155,6 @@ document.addEventListener('DOMContentLoaded', function(){
 			sendOption(e.name, e.value);
 		}
 		else{
-			console.log ("e.name: " + e.name + " e.value: " + e.value);
 			sendOption(e.name, e.value);
 		}
 	});
@@ -166,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function(){
 		for (var i = 0; i < elements.length; ++i){
 			sendOption(elements[i].name, null);
 		}
-		console.log("ELEMENTS: " + elements);
 
 	});
 	ev('#open-options', 'click', function(e){
@@ -183,7 +179,7 @@ function onLoad()
 		activeURL = url;
 		activeHostname = getHostname(url);
 		mystorage.all(function(items){
-			debugger;
+			//debugger;
 			for (var key in items){
 				if (key.match(/^filter.*$/)){
 					applyOption(key, items[key]);

@@ -104,7 +104,6 @@ ImageFilter.prototype.enable = function(enabled) {
 	
 	this.enabled = enabled;
 	var filterURL = "url('#" + this.id + "')";
-	//debugger;
 	var styleTagPrefix = "imagefilter";
 	
 	var styleString = "";

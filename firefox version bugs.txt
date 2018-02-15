@@ -1,7 +1,0 @@
-Bugs with the Firefox version (v 57):
--No CSS in popup
--No CSS in options menu
--Debug display: images with long URLs fill up a good chunk of the screen. Compare this to the Chrome extension, which has these long URLs go off the screen instead 
--Some sites are affected by the filter while others are not. There are differences between Firefox and Chrome.
--Shift-clicking too many times on an image results in it disappearing from the page. Shift-click enough times and the entire screen can become blank.
--Minimum/maximum size filter doesn't work?
