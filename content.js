@@ -39,6 +39,7 @@ function zoomElement(element, ratio) {
 	else
 	{
 		// changed it from '.px' to 'px' for firefox compatability
+		e.css({
 			'width': Math.floor(original.w * ratio) + "px",
 			'height': Math.floor(original.h * ratio) + "px",
 			'background-size': '100% 100%'

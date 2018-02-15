@@ -49,7 +49,7 @@ function FilterManager() {
 		'<feColorMatrix in="SourceGraphic" type="matrix" values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0"/>'
 	];
 	
-	//this.useHistogram = true; // determines if a histogram should be generated during the filtering process
+	 // determines if a histogram should be generated during the filtering process
 	this.filterBinaryImages = false;
 }
 
@@ -423,7 +423,6 @@ FilterManager.prototype.applyFilterToImage = function(images, histogram) {
 			textInfo.prepend('<div>Class Applied: ' + $(this).hasClass(filteredClass) + '</div>');
 			textInfo.prepend('<div>Child Counter: ' + $(this).data('imagefilter-haschild') + '</div>');
 			textInfo.prepend($('<div>Histogram status: '+histogram.status+'</div>'));
-			textInfo.prepend($('<div>filtermanager useHistogram status: ' + that.useHistogram+'</div>'));
 			if (histogram.id in that.filters){
 				textInfo.find('#imagefilter-filterinfo').html(that.filters[histogram.id].getInfo());
 			}

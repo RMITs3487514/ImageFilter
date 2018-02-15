@@ -39,9 +39,6 @@ function saveFilter(filter)
 		data['filter-' + name] = filter.find('.filter-source').val();
 		data['filterfallback-' + name] = filter.find('.filter-fallback').val();
 		data['filtershortcut-' + name] = shortcut;
-		//data['filterusehistogram-' + name] = filter.find('.filter-usehistogram').val();
-		
-		//data['filterusehistogram-' + name] = filter.find('.filter-usehistogram').prop("checked");
 		mystorage.set(data);
 		mylogger.log('saved filter source for "' + name + '"');
 		for (var k in data)
@@ -99,7 +96,6 @@ function createFilter(name, source, fallback, shortcut, use_histogram)
 	filter.find('.filter-source').val(source).attr('rows', Math.min(Math.max(sourceLen, 6), 30));
 	filter.find('.filter-fallback').val(fallback);
 	filter.find('.filter-shortcut').val(shortcut);
-	//filter.find('.filter-usehistogram').prop('checked', use_histogram);
 }
 
 function loadOptions(){
@@ -130,7 +126,7 @@ function loadOptions(){
 					items[key],
 					items['filterfallback-' + filter[1]],
 					items['filtershortcut-' + filter[1]],
-					items['filterusehistogram-' + filter[1]]
+					//items['filterusehistogram-' + filter[1]]
 				);
 			}
 
